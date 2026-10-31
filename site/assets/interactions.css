@@ -1,0 +1,19 @@
+/* Human choices and messages use rules and typography, not extra panels. */
+.interaction-section{border-top:1.5px solid var(--ink);padding-top:20px;margin:32px 0}
+.interaction-section h2,.interaction-row h2{font-size:22px;margin-bottom:12px}
+.interaction-section summary{font-weight:600;cursor:pointer;padding-bottom:12px}
+.interaction-section .posting-text{font-family:var(--serif);font-style:italic;font-size:24px}
+.interaction-tie{max-width:760px;margin:32px 0}
+.interaction-tie .why{overflow-wrap:anywhere}
+.interaction-row{padding:20px 0;border-bottom:1px solid var(--rule)}
+.interaction-row h3{font-size:20px}.interaction-row .serif{font-size:24px}
+.interaction-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;margin:24px 0}
+.interaction-actions form{margin:0}.interaction-actions .btn{min-height:46px}
+.interaction-words{white-space:pre-wrap;overflow-wrap:anywhere}
+.conversation-messages{border-top:1.5px solid var(--ink);margin:32px 0}
+.interaction-message{padding:20px 0;border-bottom:1px solid var(--rule)}
+.interaction-message h2{font-size:16px;font-weight:600;display:flex;flex-wrap:wrap;gap:8px 20px;align-items:baseline}
+.interaction-message h2 time{font:400 12px/1.5 var(--mono);color:var(--muted)}
+.interaction-message.message-you h2{color:var(--cobalt)}
+.interaction-closed{border-top:1.5px solid var(--ink);padding-top:24px;font-weight:600}
+@media(max-width:600px){.interaction-section .posting-text{font-size:21px}.interaction-tie .why{max-width:72%;font-size:20px}.interaction-actions{gap:12px}.interaction-message h2{gap:4px 12px}}

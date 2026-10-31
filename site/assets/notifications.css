@@ -1,0 +1,17 @@
+.notification-bell{display:inline-flex;align-items:center;gap:7px;min-height:24px;max-width:100%}
+.notification-bell svg{width:19px;height:19px;flex:none;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.notification-count{font:500 12px/1.4 var(--mono);color:var(--cobalt);min-width:20px;text-align:center}
+.notification-row{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:24px 0;border-top:1px solid var(--rule)}
+.notification-row:last-child{border-bottom:1px solid var(--rule)}
+.notification-row[data-notification-read="false"]{background:var(--sheet);border:1.5px solid var(--ink);border-top:3px solid var(--cobalt);padding:20px;margin:20px 0}
+.notification-row h2{font-size:22px}.notification-row .meta{margin:0 0 8px;font-size:13px}
+.notification-row form{flex:none}.notification-row .btn{min-height:44px}
+.notification-pages{display:flex;flex-wrap:wrap;gap:24px;margin:24px 0}
+.notification-preferences fieldset{border:0;padding:0;margin:24px 0;min-width:0}
+.notification-preferences legend{font-weight:600;font-size:22px;margin-bottom:16px}
+.reports-app .notification-option{display:flex;align-items:flex-start;gap:14px;border-top:1px solid var(--rule);padding:20px 0;margin:0;cursor:pointer;font-weight:400}
+.reports-app .notification-option input[type=checkbox]{width:20px;height:20px;flex:none;display:inline-block;padding:0;margin:3px 0 0;accent-color:var(--cobalt)}
+.notification-explanation{display:block;margin-top:6px;color:var(--ink-2);font-weight:400}
+.notification-mode{border-left:3px solid var(--cobalt);padding-left:16px}
+.notification-account-link{margin-bottom:24px}
+@media(max-width:600px){.notification-row{align-items:flex-start;flex-direction:column;gap:8px}.notification-row h2{font-size:20px}.notification-row form{margin:8px 0}.notification-bell{gap:6px}}

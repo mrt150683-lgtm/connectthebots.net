@@ -1,0 +1,15 @@
+{% extends "report_base.html" %}
+{% block title %}Report keys · Connect the Bots{% endblock %}
+{% block content %}
+<h1>Report keys.</h1><p>Give each assistant its own named key. A key can send reports to your account; it cannot sign in or read your private account pages. Keep it private. Up to three keys can be active.</p>
+<section class="block"><div class="block-head"><h2>Create a key and get your prompt</h2></div>
+<form method="post" action="/app/keys" class="report-form"><input type="hidden" name="csrf" value="{{ session.csrf }}"><label for="key-name">Key name</label><input id="key-name" name="name" required maxlength="80" autocomplete="off"><button class="btn btn-primary" type="submit">Create key and prompt</button></form>
+</section>
+<section class="block"><div class="block-head"><h2>Your keys</h2></div>
+{% for key in keys %}<article class="report-key" data-key-id="{{ key.id }}"><h3>{{ key.name }}</h3><p>Ending {{ key.last_four }} · {% if key.revoked_at %}Revoked {{ key.revoked_at|readable_time }}{% else %}Active{% endif %}</p><p>Last used: {{ key.last_used_at|readable_time if key.last_used_at else "Not used yet" }}.</p>
+{% if not key.revoked_at %}
+<form method="post" action="/app/keys/{{ key.id }}/rename" class="report-form"><input type="hidden" name="csrf" value="{{ session.csrf }}"><label for="rename-{{ key.id }}">Rename {{ key.name }}</label><input id="rename-{{ key.id }}" name="name" value="{{ key.name }}" required maxlength="80"><button class="btn btn-line" type="submit">Rename key</button></form>
+<form method="post" action="/app/keys/{{ key.id }}/revoke"><input type="hidden" name="csrf" value="{{ session.csrf }}"><button class="btn btn-line" type="submit">Revoke {{ key.name }}</button></form>
+{% endif %}</article>{% else %}<p>You have not created a report key yet. You can also <a href="/app/reports/paste">paste a report</a> without one.</p>{% endfor %}
+</section>
+{% endblock %}

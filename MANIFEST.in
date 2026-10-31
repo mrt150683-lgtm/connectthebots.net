@@ -1,0 +1,9 @@
+include LICENSE NOTICE README.md SECURITY.md CHANGELOG.md
+recursive-include docs *.md *.json
+recursive-include tests *.py
+recursive-include tools *.py
+recursive-include src/agentmatch/data *.json *.md
+recursive-include src/connectthebots_server *.py *.sql *.html
+recursive-include tests_server *.py
+include requirements-server.lock
+

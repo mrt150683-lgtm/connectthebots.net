@@ -1,0 +1,249 @@
+name: verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Verify fixtures
+        run: python3 run_agentmatch.py fixtures verify
+      - name: Run test suite
+        run: python3 run_agentmatch.py verify --offline --out artifacts/r0/verification
+      - name: Run test suite with network denied
+        run: |
+          sudo apt-get install -y libseccomp2
+          python3 tools/isolated_exec.py -- python3 run_agentmatch.py verify --offline --out artifacts/r0/isolated
+
+  windows-portability:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Verify checkout fixture bytes
+        run: python run_agentmatch.py fixtures verify
+      - name: Run test suite
+        run: python run_agentmatch.py verify --offline --out artifacts/windows/verification
+      - name: Check canonical demo and unchanged manifest
+        run: python tools/verify_demo.py --out artifacts/windows/reproducibility
+      - name: Check comparison rejects changed content
+        run: python tools/test_verify_demo.py
+
+  workbench-ui:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: workbench/ui
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install pinned development dependencies
+        run: npm ci
+      - name: Type-check the interface
+        run: npm run typecheck
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run complete desktop and mobile browser journeys
+        run: npm run e2e
+      - name: Save browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: workbench-browser-evidence
+          path: artifacts/workbench/screenshots/
+          if-no-files-found: warn
+
+
+  site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install pinned Playwright
+        working-directory: workbench/ui
+        run: npm ci && npx playwright install --with-deps chromium
+      - name: Check deployment scripts parse
+        run: bash -n site/deploy/deploy.sh && bash -n site/deploy/server-setup.sh
+      - name: Check Connect the Bots preview pages
+        run: PLAYWRIGHT_MODULE="$PWD/workbench/ui/node_modules/playwright/index.js" node site/tools/check_site.mjs --out artifacts/site
+      - name: Save site screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-screenshots
+          path: artifacts/site/
+          if-no-files-found: warn
+  hosted-server:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify dependency-free server tests skip cleanly
+        run: PYTHONPATH=src python -S -m unittest discover -s tests_server -v
+      - name: Install hashed server dependencies and pinned build tools
+        run: |
+          python -m pip install --require-hashes --only-binary=:all: -r requirements-server.lock
+          python -m pip install setuptools==84.1.0 wheel==0.48.0 pip-audit==2.9.0
+          python -m pip install -r requirements-server-test.txt
+      - name: Test server and deployment boundaries
+        run: PYTHONPATH=src python -m unittest discover -s tests_server -v
+      - name: Audit the complete runtime dependency lock
+        run: |
+          mkdir -p artifacts/server
+          python -m pip_audit -r requirements-server.lock --no-deps --disable-pip --format json --output artifacts/server/dependency-audit.json
+      - name: Scan added lines for likely credentials
+        env:
+          DIFF_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [ -z "$DIFF_BASE" ] || [ "$DIFF_BASE" = "0000000000000000000000000000000000000000" ]; then DIFF_BASE=HEAD^; fi
+          python tools/check_secret_diff.py --base "$DIFF_BASE"
+      - name: Build deployable wheel
+        run: python -m pip wheel --no-index --no-deps --no-build-isolation . --wheel-dir artifacts/server-dist
+      - name: Verify frozen reference evidence
+        run: python tools/verify_demo.py --out artifacts/server/reproducibility
+      - name: Install Chromium for staging journeys
+        working-directory: workbench/ui
+        run: npm ci && npx playwright install --with-deps chromium
+      - name: Package and install foundation on Ubuntu staging
+        run: |
+          # GitHub's disposable runner includes the stock nginx site. Clear only
+          # that known symlink; the verifier still refuses any unrelated sites.
+          test "$GITHUB_ACTIONS" = true && test "$RUNNER_ENVIRONMENT" = github-hosted
+          if [ -L /etc/nginx/sites-enabled/default ] && [ "$(readlink -f /etc/nginx/sites-enabled/default)" = /etc/nginx/sites-available/default ]; then
+            sudo systemctl stop nginx
+            sudo unlink /etc/nginx/sites-enabled/default
+          fi
+          python tools/build_server_bundle.py --wheel artifacts/server-dist/agentmatch-0.1.0-py3-none-any.whl --out artifacts/server-bundle
+          sudo python3 tools/verify_server_staging.py --bundle "$PWD/artifacts/server-bundle" --out "$PWD/artifacts/server-staging"
+          sudo chown -R "$(id -u):$(id -g)" artifacts/server-staging
+      - name: Check hosted routes and desktop/mobile pages
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/workbench/ui/node_modules/playwright/index.js
+        run: |
+          node site/tools/check_server.mjs --base-url http://localhost --out artifacts/server-staging/browser
+          node site/tools/check_site.mjs --base-url http://localhost --out artifacts/server-staging/site
+      - name: Check Google sign-in and account browser journeys
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/workbench/ui/node_modules/playwright/index.js
+          PYTHON: python
+        run: node site/tools/check_auth.mjs --out artifacts/auth-browser
+      - name: Check report delivery and real dashboard journeys
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/workbench/ui/node_modules/playwright/index.js
+          PYTHON: python
+        run: node site/tools/check_reports.mjs --out artifacts/report-browser
+      - name: Check exact publication and public board journeys
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/workbench/ui/node_modules/playwright/index.js
+          PYTHON: python
+        run: node site/tools/check_board.mjs --out artifacts/board-browser
+      - name: Check mutual introductions and private conversation journeys
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/workbench/ui/node_modules/playwright/index.js
+          PYTHON: python
+        run: node site/tools/check_interactions.mjs --out artifacts/interaction-browser
+      - name: Check notification preferences and outbox journeys
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/workbench/ui/node_modules/playwright/index.js
+          PYTHON: python
+        run: node site/tools/check_notifications.mjs --out artifacts/notification-browser
+      - name: Check moderation and operator browser journeys
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/workbench/ui/node_modules/playwright/index.js
+          PYTHON: python
+        run: node site/tools/check_moderation.mjs --out artifacts/moderation-browser
+      - name: Check the complete two-person hosted journey
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/workbench/ui/node_modules/playwright/index.js
+          PYTHON: python
+        run: node site/tools/check_full_journey.mjs --out artifacts/full-journey-browser
+      - name: Verify encrypted operator recovery on a private scratch database
+        run: |
+          python tools/verify_operator_recovery.py --out artifacts/operator-recovery
+          /opt/connectthebots/venv/bin/python tools/verify_operator_recovery.py --installed --out artifacts/operator-recovery-installed
+      - name: Save server evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hosted-server-evidence
+          path: |
+            artifacts/server/
+            artifacts/server-dist/
+            artifacts/server-staging/
+            artifacts/auth-browser/
+            artifacts/report-browser/
+            artifacts/board-browser/
+            artifacts/interaction-browser/
+            artifacts/notification-browser/
+            artifacts/moderation-browser/
+            artifacts/full-journey-browser/
+            artifacts/operator-recovery/
+            artifacts/operator-recovery-installed/
+          if-no-files-found: warn
+  agent-runtime:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install optional pinned runtime
+        run: python -m pip install -e ".[runtime]"
+      - name: Verify full suite with optional runtime enabled
+        run: python run_agentmatch.py verify --offline --out artifacts/agent-runtime/verification
+      - name: Install browser verification tools
+        working-directory: workbench/ui
+        run: npm ci
+      - name: Install Chromium
+        working-directory: workbench/ui
+        run: npx playwright install --with-deps chromium
+      - name: Verify actual agent journey, restart and viewer
+        run: python tools/verify_agent_runtime.py --browser
+      - name: Verify viewer activity, limits and failure recovery
+        run: node tools/verify_viewer_operations.mjs
+      - name: Preserve runtime evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-runtime-${{ matrix.os }}
+          path: |
+            artifacts/agent-runtime/verification/
+            artifacts/agent-runtime/journey.json
+            artifacts/agent-runtime/screenshots/
+            artifacts/operational-fixes/viewer/

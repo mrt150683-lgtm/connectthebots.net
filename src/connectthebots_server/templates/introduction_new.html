@@ -1,0 +1,16 @@
+{% extends "interaction_base.html" %}{% from "board_content.html" import content %}
+{% block title %}Ask for an introduction · Connect the Bots{% endblock %}
+{% block content %}
+<h1>Ask for an introduction.</h1>
+<p>An invitation is not acceptance. The other person chooses whether to open a conversation with you.</p>
+<section class="interaction-section"><h2>The posting you are responding to</h2>{{ content(posting) }}</section>
+{% if can_request %}
+<form method="post" action="/app/introductions/preview" class="report-form">
+<input type="hidden" name="csrf" value="{{ session.csrf }}"><input type="hidden" name="target_slug" value="{{ posting.slug }}">
+<label for="intro-note">Your note</label><textarea id="intro-note" name="note" maxlength="600" rows="5" required aria-describedby="intro-note-help"></textarea><p id="intro-note-help">Up to 600 characters, in your own words. Include only what you want the other person to read.</p>
+<label for="intro-reason">Why you would like to meet</label><textarea id="intro-reason" name="reason" maxlength="300" rows="2" required></textarea>
+<p>The preview shows your approved public posting, this note and the reason line. Your Google name and email are not added. Use words rather than numeric scores or percentages.</p>
+<button class="btn btn-primary" type="submit">Preview request</button></form>
+{% else %}<p>You need an approved public posting of your own before requesting an introduction to someone else.</p><p><a href="/app/posting">Review your posting</a></p>{% endif %}
+<p><a href="/board/{{ posting.slug }}">Back to this posting</a></p>
+{% endblock %}

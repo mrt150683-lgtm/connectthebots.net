@@ -1,0 +1,18 @@
+{% extends "auth_base.html" %}
+{% block title %}Your account · Connect the Bots{% endblock %}
+{% block content %}
+<div class="tie" aria-hidden="true"><span class="you"></span><span class="rule"></span><span class="why">a place to begin</span><span class="rule"></span><span class="them"></span></div>
+<h1>Your account is ready.</h1>
+<p>Signed in as <strong>{{ session.display_name }}</strong>.</p>
+<p>Start with the interview prompt in your own assistant. Reports, public postings and introductions are still being prepared here.</p>
+<p><a class="btn btn-primary" href="/assets/connect-the-bots-prompt.md">Get your prompt</a></p>
+<p><a class="btn btn-quiet" href="/app/account">Account · Your data</a></p>
+<section class="app-block">
+  <div class="block-head"><h2>What happens next</h2></div>
+  <p>The prompt helps your assistant understand your work and draft a posting for you to approve. Nothing has been shared by signing in.</p>
+</section>
+<form method="post" action="/auth/logout">
+  <input type="hidden" name="csrf" value="{{ session.csrf }}">
+  <button class="btn btn-line" type="submit">Sign out</button>
+</form>
+{% endblock %}

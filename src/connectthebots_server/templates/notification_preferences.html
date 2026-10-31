@@ -1,0 +1,12 @@
+{% extends "report_base.html" %}
+{% block title %}Email preferences · Connect the Bots{% endblock %}
+{% block content %}
+<h1>Email preferences.</h1><p>Choose which updates may be emailed to you. In-app notifications remain available whether or not you choose email.</p>
+{% if email_mode == "outbox" %}<p class="notification-mode" data-email-mode="outbox">Email delivery is off. You can choose your preferences now; no email will be sent until delivery is enabled.</p>{% else %}<p class="notification-mode" data-email-mode="smtp">We’ll use your account email for the updates you select.</p>{% endif %}
+<form method="post" action="/app/notifications/preferences" class="notification-preferences">
+<input type="hidden" name="csrf" value="{{ session.csrf }}">
+<fieldset><legend>Emails you choose</legend>{% for kind, label, explanation in choices %}<label class="notification-option" for="preference-{{ kind }}"><input id="preference-{{ kind }}" type="checkbox" name="{{ kind }}" value="on"{% if preferences[kind] %} checked{% endif %}><span><strong>{{ label }}</strong><span class="notification-explanation">{{ explanation }}</span></span></label>{% endfor %}</fieldset>
+<p>Optional email starts off. The first sign-in security notice starts on. Each email has a link to stop that type of email without signing in.</p>
+<button class="btn btn-primary" type="submit">Save email preferences</button></form>
+<p><a href="/app/notifications">Back to notifications</a></p>
+{% endblock %}

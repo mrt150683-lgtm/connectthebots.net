@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Node
+node_modules/
+
+# Generated reports and local run output
+artifacts/
+
+# Local data: never commit real owner data, vaults, keys or exports
+*.sqlite
+*.sqlite3
+*.db
+# Hosted SQLite sidecars and private recovery files must never enter Git.
+*.db-wal
+*.db-shm
+*.runtime.lock
+*.ctb
+.ctb-recovery-*
+*.key
+*.pem
+.env
+.env.*
+local-data/
+private/
+
+# Models
+*.gguf
+*.safetensors
+
+# Editors and OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Workbench interface build output
+workbench/ui/dist/
+ctb-numbers.csv

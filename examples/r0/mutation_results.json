@@ -1,0 +1,20 @@
+{
+  "scope": "two selected deliberate R0 regressions, not comprehensive mutation coverage",
+  "all_detected": true,
+  "results": [
+    {
+      "mutation": "hard_veto_removed",
+      "test": "tests.test_matching.MatchingTests.test_T_MATCH_002_hard_failure_overrides_score",
+      "detected": true,
+      "exit_code": 1,
+      "output": "test_T_MATCH_002_hard_failure_overrides_score (tests.test_matching.MatchingTests.test_T_MATCH_002_hard_failure_overrides_score) ... FAIL\n\n======================================================================\nFAIL: test_T_MATCH_002_hard_failure_overrides_score (tests.test_matching.MatchingTests.test_T_MATCH_002_hard_failure_overrides_score)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/agentmatch-mutation-f87z44x7/tests/test_matching.py\", line 45, in test_T_MATCH_002_hard_failure_overrides_score\n    self.assertEqual(result.status, \"not_eligible\")\nAssertionError: 'qualified_candidate' != 'not_eligible'\n- qualified_candidate\n+ not_eligible\n\n\n----------------------------------------------------------------------\nRan 1 test in 0.020s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutation": "audience_check_removed",
+      "test": "tests.test_consent.ConsentTests.test_T_PRIV_002_exact_audience_purpose_and_question",
+      "detected": true,
+      "exit_code": 1,
+      "output": "test_T_PRIV_002_exact_audience_purpose_and_question (tests.test_consent.ConsentTests.test_T_PRIV_002_exact_audience_purpose_and_question) ... \n  test_T_PRIV_002_exact_audience_purpose_and_question (tests.test_consent.ConsentTests.test_T_PRIV_002_exact_audience_purpose_and_question) (kwargs={'peer': 'another-peer'}) ... FAIL\n\n======================================================================\nFAIL: test_T_PRIV_002_exact_audience_purpose_and_question (tests.test_consent.ConsentTests.test_T_PRIV_002_exact_audience_purpose_and_question) (kwargs={'peer': 'another-peer'})\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/agentmatch-mutation-qjrqnzyy/tests/test_consent.py\", line 42, in test_T_PRIV_002_exact_audience_purpose_and_question\n    with self.subTest(kwargs=kwargs), self.assertRaises(ValueError):\n                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ValueError not raised\n\n----------------------------------------------------------------------\nRan 1 test in 0.017s\n\nFAILED (failures=1)\n"
+    }
+  ]
+}

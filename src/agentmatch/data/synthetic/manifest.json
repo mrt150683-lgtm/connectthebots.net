@@ -1,0 +1,29 @@
+{
+  "schema_version": "0.1",
+  "fixture_version": "1",
+  "corpus_id": "agentmatch-r0-fiction-1",
+  "provenance": "wholly_authored_fiction_no_real_people_or_archives",
+  "owner_count": 40,
+  "conversation_count": 200,
+  "conversations_per_owner": 5,
+  "source_message_count": 800,
+  "minimum_edge_scenarios": 12,
+  "named_case_count": 22,
+  "files": {
+    "corpus.json": {
+      "sha256": "b6d93a17b9b9a534188ebe3be9625cf387f19acf7244909941965e1d5663d0e6",
+      "bytes": 627508
+    },
+    "expected_outcomes.json": {
+      "sha256": "ae5de24ed8da397e46a05961b700f810c5f4fa04a64b8179a1aefd059438b76b",
+      "bytes": 11720
+    }
+  },
+  "default_owner": "lumen",
+  "default_intent": "lumen-collaboration",
+  "default_as_of": "2026-10-25T12:00:00Z",
+  "claims_are": "manual_fixture_annotations_not_extracted_or_verified_traits",
+  "availability_notice": "Fictional owners are test fixtures, never people available for introduction.",
+  "reference_corpus_used": false,
+  "real_owner_data_used": false
+}

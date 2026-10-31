@@ -1,0 +1,18 @@
+{% extends "interaction_base.html" %}{% from "interaction_content.html" import status, context %}
+{% block title %}Introduction · Connect the Bots{% endblock %}
+{% block content %}
+<article data-introduction-id="{{ intro.id }}" data-introduction-status="{{ intro.state }}">
+<h1>{{ status(intro) }}</h1>
+{% if intro.requester_posting %}{{ context(intro, intro.direction == "incoming") }}{% endif %}
+{% if intro.state == "requested" %}<p>This request expires {{ intro.expires_at|readable_time }}. No conversation is open yet.</p>{% endif %}
+{% if "accept" in intro.actions %}<p>Choosing Yes opens a private conversation with the other person about these words. It does not agree work, payment, time or deadlines.</p>{% endif %}
+<div class="interaction-actions">
+{% if "accept" in intro.actions %}<form method="post" action="/app/introductions/{{ intro.id }}/accept"><input type="hidden" name="csrf" value="{{ session.csrf }}"><input type="hidden" name="accept_token" value="{{ accept_token }}"><button class="btn btn-primary" type="submit">Yes</button></form>{% endif %}
+{% if "decline" in intro.actions %}<form method="post" action="/app/introductions/{{ intro.id }}/decline"><input type="hidden" name="csrf" value="{{ session.csrf }}"><button class="btn btn-line" type="submit">Not now</button></form>{% endif %}
+{% if "withdraw" in intro.actions %}<form method="post" action="/app/introductions/{{ intro.id }}/withdraw"><input type="hidden" name="csrf" value="{{ session.csrf }}"><button class="btn btn-line" type="submit">Withdraw request</button></form>{% endif %}
+{% if "open_conversation" in intro.actions and intro.conversation_id %}<a class="btn btn-primary" href="/app/conversations/{{ intro.conversation_id }}">Open conversation</a>{% endif %}
+{% if "block" in intro.actions %}<form method="post" action="/app/introductions/{{ intro.id }}/block"><input type="hidden" name="csrf" value="{{ session.csrf }}"><button class="btn btn-line" type="submit">Block</button></form>{% endif %}
+</div>
+{% if "block" in intro.actions %}<p>Blocking closes contact, refuses future requests and hides your postings from each other when signed in. The other person is not told that you blocked them. Public postings remain readable without signing in.</p>{% endif %}
+</article><p><a href="/app/introductions">All introductions</a></p>
+{% endblock %}

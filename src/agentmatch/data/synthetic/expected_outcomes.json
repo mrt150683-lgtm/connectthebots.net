@@ -1,0 +1,311 @@
+{
+  "schema_version": "0.1",
+  "oracle_version": "1",
+  "cases": [
+    {
+      "test_id": "T-MATCH-001",
+      "scenario_id": "worked_reciprocal",
+      "seeker_id": "lumen",
+      "candidate_id": "harbor",
+      "kind": "base_corpus",
+      "expected": {
+        "F": "17/20",
+        "S": "41/50",
+        "C": "1/1",
+        "reverse_F": "4/5",
+        "reverse_S": "77/100",
+        "offline_rank": "77/100",
+        "status": "qualified_candidate"
+      },
+      "reasoning": "Four equally weighted capabilities give 3/4; four workflow atoms give 3/4; goal fits fully; approved communication inference has q=7/10. Reverse capability is 1/2; other fits are one. Hand calculation appears in DATA_AND_MATCHING.md.",
+      "authorship": "hand_authored_from_contract_not_scorer_output"
+    },
+    {
+      "test_id": "T-MATCH-002",
+      "scenario_id": "hard_veto",
+      "seeker_id": "birch",
+      "candidate_id": "aster",
+      "kind": "base_corpus",
+      "expected": {
+        "status": "not_eligible"
+      },
+      "reasoning": "Aster explicitly requires paid work; Birch requires volunteer work. A known hard compensation failure overrides any soft overlap.",
+      "authorship": "hand_authored_from_contract_not_scorer_output"
+    },
+    {
+      "test_id": "T-MATCH-003",
+      "scenario_id": "unknown_mandatory",
+      "seeker_id": "cobalt",
+      "candidate_id": "dune",
+      "kind": "base_corpus",
+      "expected": {
+        "status": "needs_information"
+      },
+      "reasoning": "Dune availability is unreviewed. It cannot satisfy Cobalt’s hard availability condition.",
+      "authorship": "hand_authored_from_contract_not_scorer_output"
+    },
+    {
+      "test_id": "T-MATCH-004",
+      "scenario_id": "sparse_profile",
+      "seeker_id": "xenon",
+      "candidate_id": "willow",
+      "kind": "independent_scenario_oracle",
+      "expected": {
+        "F": "2/5",
+        "S": "2/5",
+        "C": "2/5",
+        "status": "insufficient_evidence"
+      },
+      "reasoning": "Scenario renews Xenon intent only. Willow has usable soft evidence only for the 0.4 capability family; other soft claims remain unreviewed.",
+      "authorship": "hand_authored_from_contract_not_scorer_output"
+    },
+    {
+      "test_id": "T-MATCH-005",
+      "scenario_id": "known_negative",
+      "seeker_id": "lumen",
+      "candidate_id": "harbor",
+      "kind": "independent_scenario_oracle",
+      "expected": {
+        "F": "0/1",
+        "S": "0/1",
+        "C": "1/1",
+        "status": "not_recommended"
+      },
+      "reasoning": "Scenario supplies complete empty capability/goal sets and explicit nonmatching workflow and communication values while keeping hard gates passing. Known negatives count as covered.",
+      "authorship": "hand_authored_from_contract_not_scorer_output"
+    },
+    {
+      "test_id": "T-MATCH-006",
+      "scenario_id": "inference_discount",
+      "seeker_id": "aerolith",
+      "candidate_id": "bramble",
+      "kind": "independent_scenario_oracle",
+      "expected": {
+        "F": "1/1",
+        "S": "7/10",
+        "C": "1/1",
+        "status": "qualified_candidate"
+      },
+      "reasoning": "Scenario changes required usable soft origins to approved contextual inference without changing values. All weighted fits are one; evidence factor is 0.7.",
+      "authorship": "hand_authored_from_contract_not_scorer_output"
+    },
+    {
+      "test_id": "T-MATCH-007",
+      "scenario_id": "one_sided_benefit",
+      "seeker_id": "lumen",
+      "candidate_id": "harbor",
+      "kind": "independent_scenario_oracle",
+      "expected": {
+        "F": "17/20",
+        "S": "41/50",
+        "reverse_F": "11/20",
+        "reverse_S": "11/20",
+        "pair_qualified": false
+      },
+      "reasoning": "Scenario uses reverse family fits (1/4,1,1/2,1/2), q=1. Reverse total is 0.4/4+0.3+0.2/2+0.1/2=0.55.",
+      "authorship": "hand_authored_from_contract_not_scorer_output"
+    },
+    {
+      "test_id": "T-MATCH-008",
+      "scenario_id": "lexical_decoy",
+      "seeker_id": "lumen",
+      "candidate_id": "harbor",
+      "kind": "independent_scenario_oracle",
+      "expected": {
+        "status": "not_eligible"
+      },
+      "reasoning": "Scenario adds an explicit hard current-project requirement and a known mismatching candidate value. Repeated shared words in source text never satisfy a typed requirement.",
+      "authorship": "hand_authored_from_contract_not_scorer_output"
+    },
+    {
+      "test_id": "T-MATCH-009",
+      "scenario_id": "speaker_and_repetition",
+      "seeker_id": "lumen",
+      "candidate_id": "harbor",
+      "kind": "independent_scenario_oracle",
+      "expected": {
+        "assistant_claim_allowed": false,
+        "duplicated_event_changes_score": false
+      },
+      "reasoning": "An agent utterance is not owner evidence; repeated references to one originating event do not create additional weight.",
+      "authorship": "hand_authored_from_contract_not_scorer_output"
+    },
+    {
+      "test_id": "T-MATCH-010",
+      "scenario_id": "contradiction",
+      "seeker_id": "zephyr",
+      "candidate_id": "yarrow",
+      "kind": "base_corpus",
+      "expected": {
+        "C": "7/10",
+        "status": "insufficient_evidence"
+      },
+      "reasoning": "Yarrow’s goal claim has an unresolved contradiction. The 0.3 goal family is unknown while capability, workflow and communication are known.",
+      "authorship": "hand_authored_from_contract_not_scorer_output"
+    },
+    {
+      "test_id": "T-MATCH-011",
+      "scenario_id": "expired_intent",
+      "seeker_id": "xenon",
+      "candidate_id": "willow",
+      "kind": "base_corpus",
+      "expected": {
+        "status": "invalid_intent"
+      },
+      "reasoning": "Xenon intent expires before the frozen evaluation clock; old conversation text cannot renew it.",
+      "authorship": "hand_authored_from_contract_not_scorer_output"
+    },
+    {
+      "test_id": "T-MATCH-012",
+      "scenario_id": "prestige_invariance",
+      "seeker_id": "lumen",
+      "candidate_id": "harbor",
+      "kind": "independent_scenario_oracle",
+      "expected": {
+        "score_changes": false
+      },
+      "reasoning": "Changing an alias alone never changes declared evidence, intent atoms, weights, gates or score.",
+      "authorship": "hand_authored_from_contract_not_scorer_output"
+    },
+    {
+      "test_id": "T-MATCH-013",
+      "scenario_id": "rare_failure",
+      "seeker_id": "loam",
+      "candidate_id": "kelp",
+      "kind": "base_corpus",
+      "expected": {
+        "status": "not_recommended"
+      },
+      "reasoning": "Kelp offers a complete empty capability set. The remaining 0.6 soft fit is below Loam’s explicit 0.85 threshold. Rarity cannot rescue it.",
+      "authorship": "hand_authored_from_contract_not_scorer_output"
+    },
+    {
+      "test_id": "T-MATCH-014",
+      "scenario_id": "sensitive_projection",
+      "seeker_id": "hazel",
+      "candidate_id": "grove",
+      "kind": "independent_scenario_oracle",
+      "expected": {
+        "sensitive_canary_outbound": false,
+        "sensitive_changes_score": false
+      },
+      "reasoning": "The disabled politics canary is outside the active purpose policy and has no disclosure grant. Changing it must not affect any fit or outbound record.",
+      "authorship": "hand_authored_from_contract_not_scorer_output"
+    },
+    {
+      "test_id": "T-MATCH-015",
+      "scenario_id": "no_qualifying_candidate",
+      "seeker_id": "flint",
+      "candidate_id": "estuary",
+      "kind": "base_corpus",
+      "expected": {
+        "offers": []
+      },
+      "reasoning": "Flint has capacity zero. A successful abstention must remain empty; the program cannot fill cards with a weak replacement.",
+      "authorship": "hand_authored_from_contract_not_scorer_output"
+    },
+    {
+      "test_id": "T-MATCH-016",
+      "scenario_id": "network_honesty",
+      "seeker_id": "lumen",
+      "candidate_id": "harbor",
+      "kind": "independent_scenario_oracle",
+      "expected": {
+        "verified_remote_joint_score": false
+      },
+      "reasoning": "R0 can inspect both synthetic owners offline. Any simulated network willingness must not pretend to verify the remote private score.",
+      "authorship": "hand_authored_from_contract_not_scorer_output"
+    },
+    {
+      "test_id": "T-MATCH-017",
+      "scenario_id": "boundary_and_permutation",
+      "seeker_id": "lumen",
+      "candidate_id": "harbor",
+      "kind": "independent_scenario_oracle",
+      "expected": {
+        "gate_exact": "3/4",
+        "permutation_changes_result": false
+      },
+      "reasoning": "The independent component fixture uses exact F=0.6 and C=0.75. Exact equality passes; candidate and atom order do not change arithmetic.",
+      "authorship": "hand_authored_from_contract_not_scorer_output"
+    },
+    {
+      "test_id": "T-MATCH-018",
+      "scenario_id": "frozen_applicability",
+      "seeker_id": "lumen",
+      "candidate_id": "harbor",
+      "kind": "independent_scenario_oracle",
+      "expected": {
+        "missing_candidate_renormalizes": false
+      },
+      "reasoning": "Removing optional candidate evidence leaves the intent’s fixed weights intact; no remaining family gains weight.",
+      "authorship": "hand_authored_from_contract_not_scorer_output"
+    },
+    {
+      "test_id": "T-MATCH-019",
+      "scenario_id": "self_and_block",
+      "seeker_id": "hazel",
+      "candidate_id": "grove",
+      "kind": "base_corpus",
+      "expected": {
+        "offer_allowed": false
+      },
+      "reasoning": "Hazel blocks Grove. Self and blocked IDs are excluded before proposals regardless of score.",
+      "authorship": "hand_authored_from_contract_not_scorer_output"
+    },
+    {
+      "test_id": "T-MATCH-020",
+      "scenario_id": "recurring_fractions",
+      "seeker_id": "lumen",
+      "candidate_id": "harbor",
+      "kind": "independent_scenario_oracle",
+      "expected": {
+        "F": "3/4",
+        "S": "3/4",
+        "C": "3/4",
+        "communication_unknown_C": "7/10"
+      },
+      "reasoning": "Independent weighted known fractions are 0.4*(2/3)+0.3*1+0.2*(2/3)+0.1*(1/2)=3/4. Removing the final 1/2 contribution gives 7/10.",
+      "authorship": "hand_authored_from_contract_not_scorer_output"
+    },
+    {
+      "test_id": "T-SELECTIVITY-003",
+      "scenario_id": "close_fit_bilateral",
+      "seeker_id": "lumen",
+      "candidate_id": "harbor",
+      "kind": "independent_scenario_oracle",
+      "expected": {
+        "thresholds": [
+          "0.85",
+          "0.85"
+        ],
+        "pair_qualified": false,
+        "independent_thresholds": [
+          "0.85",
+          "0.80"
+        ],
+        "independent_pair_qualified": true
+      },
+      "reasoning": "Lumen F=0.85 passes either case; Harbor F=0.80 fails 0.85 and passes 0.80 exactly.",
+      "authorship": "hand_authored_from_contract_not_scorer_output"
+    },
+    {
+      "test_id": "T-SELECTIVITY-004",
+      "scenario_id": "unknown_not_mismatch",
+      "seeker_id": "lumen",
+      "candidate_id": "harbor",
+      "kind": "independent_scenario_oracle",
+      "expected": {
+        "F": "3/4",
+        "S": "3/4",
+        "C": "9/10",
+        "U": "17/20",
+        "threshold": "0.85",
+        "status": "insufficient_evidence"
+      },
+      "reasoning": "Scenario makes Harbor communication unknown only. Lumen loses F=0.10 and S=0.07. Unknown weight 0.10 gives U=0.85, so strict selectivity is unresolved, not a known mismatch.",
+      "authorship": "hand_authored_from_contract_not_scorer_output"
+    }
+  ],
+  "notice": "Some cases specify controlled mutations or independent component fixtures, not an assertion about the unchanged base corpus. This file records hand-authored expectations; it is not scorer input."
+}

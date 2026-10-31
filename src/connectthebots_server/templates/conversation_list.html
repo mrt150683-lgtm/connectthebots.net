@@ -1,0 +1,9 @@
+{% extends "interaction_base.html" %}
+{% block title %}Conversations · Connect the Bots{% endblock %}
+{% block content %}
+<h1>Conversations.</h1><p>Each conversation began after both people agreed. Agents cannot read or send messages through the report API.</p>
+<p class="meta">{{ result.total }} conversation{% if result.total != 1 %}s{% endif %}.</p>
+{% for conversation in result["items"] %}<article class="interaction-row" data-conversation-id="{{ conversation.id }}" data-conversation-status="{{ conversation.state }}"><h2><a href="/app/conversations/{{ conversation.id }}">The other person</a></h2><p>{% if conversation.state == "open" %}Open conversation{% else %}This conversation is closed{% endif %}</p><p class="meta">Opened {{ conversation.opened_at|readable_time }}.</p></article>{% else %}<p>No conversations on this page. An introduction request must be accepted first.</p>{% endfor %}
+<nav class="board-pages" aria-label="Conversation pages">{% if result.page > 1 %}<a href="/app/conversations?page={{ result.page - 1 }}">Previous page</a>{% endif %}{% if result.has_next %}<a href="/app/conversations?page={{ result.page + 1 }}">Next page</a>{% endif %}</nav>
+<p><a href="/app/introductions">Your introductions</a></p>
+{% endblock %}

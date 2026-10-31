@@ -1,0 +1,10 @@
+{% extends "interaction_base.html" %}{% from "interaction_content.html" import context %}
+{% block title %}Review your introduction request · Connect the Bots{% endblock %}
+{% block content %}
+<h1>Review your introduction request.</h1>
+<p>These are the exact posting, note and reason the other person will see. Sending says that you would like to talk; it does not say that they have agreed. No message thread opens until they choose Yes.</p>
+<article data-introduction-preview>{{ context(preview) }}</article>
+<p>This request will expire after 14 days. If either public posting changes before you send, preview the request again. The recipient can review it on their dashboard. Email alerts follow their preferences.</p>
+<form method="post" action="/app/introductions"><input type="hidden" name="csrf" value="{{ session.csrf }}"><input type="hidden" name="request_token" value="{{ request_token }}"><button class="btn btn-primary" type="submit">Send request</button></form>
+<p><a href="/app/introductions/new?slug={{ preview.target_slug }}">Start again</a></p>
+{% endblock %}

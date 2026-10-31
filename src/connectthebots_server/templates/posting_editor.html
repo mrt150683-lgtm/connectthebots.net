@@ -1,0 +1,23 @@
+{% extends "report_base.html" %}
+{% block title %}Your public posting · Connect the Bots{% endblock %}
+{% block scripts %}<link rel="stylesheet" href="/assets/board.css">{% endblock %}
+{% block content %}
+<h1>Your public posting.</h1><p>Write or paste three to five sentences, up to 800 characters, with what you are looking for and offering. Add up to five tags if useful. No account name or email is added automatically. Anything you type here can become public when you approve it.</p>
+{% if posting.visible %}<p>Your approved posting is public. <a href="/board/{{ posting.slug }}">View the public version</a>.</p><p>Saving edits below changes only your private draft. The board keeps showing the last approved version until you approve a replacement or unpublish it.</p>
+<form method="post" action="/app/posting/unpublish"><input type="hidden" name="csrf" value="{{ session.csrf }}"><button class="btn btn-line" type="submit">Unpublish posting</button></form>
+{% elif posting.hidden %}<p>Your posting is not currently public. <a href="/contact">Contact us</a> if you need help.</p>
+{% if posting.published %}<form method="post" action="/app/posting/unpublish"><input type="hidden" name="csrf" value="{{ session.csrf }}"><button class="btn btn-line" type="submit">Unpublish posting</button></form>{% endif %}
+{% else %}<p>You do not currently have a public posting.</p>{% endif %}
+{% set payload = posting.draft.payload if posting.draft else {} %}
+<form method="post" action="/app/posting" class="report-form">
+<input type="hidden" name="csrf" value="{{ session.csrf }}">
+<label for="posting-text">Public posting</label><textarea id="posting-text" name="text" rows="7" maxlength="800" required>{{ payload.text }}</textarea>
+<label for="posting-tags">Tags (comma separated, up to five)</label><input id="posting-tags" name="tags" value="{{ payload.tags|join(', ') if payload.tags else '' }}" maxlength="158"><p>Each tag can be up to 30 characters.</p>
+<label for="posting-looking">Looking for</label><input id="posting-looking" name="looking_for" value="{{ payload.looking_for }}" maxlength="160" required>
+<label for="posting-offering">Offering</label><input id="posting-offering" name="offering" value="{{ payload.offering }}" maxlength="160" required>
+<button class="btn btn-line" type="submit">Save draft</button></form>
+{% if posting.draft %}
+<section class="block"><div class="block-head"><h2>Review your saved draft</h2></div><p>Saved {{ posting.draft.saved_at|readable_time }}. {% if posting.has_unpublished_changes %}This draft has changes that have not been approved for publication.{% else %}There are no unapproved changes to your published words.{% endif %}</p><p>Save any edits first, then preview the exact text, tags and fields that will appear publicly.</p>
+<form method="post" action="/app/posting/preview"><input type="hidden" name="csrf" value="{{ session.csrf }}"><button class="btn btn-primary" type="submit">Preview publication</button></form></section>
+{% endif %}
+{% endblock %}

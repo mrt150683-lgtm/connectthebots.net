@@ -1,0 +1,5 @@
+{% macro content(payload) %}
+<p class="posting-text">{{ payload.text }}</p>
+{% if payload.tags %}<ul class="posting-tags" aria-label="Tags">{% for tag in payload.tags %}<li>{{ tag }}</li>{% endfor %}</ul>{% endif %}
+<dl class="report-facts"><dt>Looking for</dt><dd>{{ payload.looking_for }}</dd><dt>Offering</dt><dd>{{ payload.offering }}</dd></dl>
+{% endmacro %}

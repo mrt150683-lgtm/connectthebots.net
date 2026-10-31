@@ -1,0 +1,4344 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src 'none'; base-uri 'none'; form-action 'none'">
+<title>AgentMatch · R0 reference</title><style>
+:root{--ink:#172e36;--muted:#516870;--paper:#f5f3eb;--line:#d0d9d4;--accent:#17634d;--soft:#e1eee7}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.6 system-ui,sans-serif}
+main{max-width:1080px;margin:auto;padding:48px 28px 80px}a{color:var(--accent)}header{padding:28px 0 40px;border-bottom:1px solid var(--line)}
+.eyebrow{font:700 12px/1.5 monospace;letter-spacing:.13em;text-transform:uppercase;color:var(--accent)}h1{font-size:clamp(38px,7vw,72px);line-height:1.08;letter-spacing:-.045em;margin:20px 0}h2{font-size:28px;letter-spacing:-.025em;margin:0 0 16px}h3{font-size:23px;margin:8px 0}p{max-width:72ch}.lead{font-size:21px;color:var(--muted)}
+.badge{display:inline-block;padding:5px 11px;background:var(--soft);border-radius:20px;font-weight:650;font-size:12px;margin-right:6px}nav{display:flex;flex-wrap:wrap;gap:20px;padding:20px 0;font-size:14px}section{padding:36px 0;border-bottom:1px solid var(--line)}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.stat,.card{padding:24px;border:1px solid var(--line);border-radius:15px;background:#fffefa}.stat strong{display:block;font-size:32px;letter-spacing:-.03em}.stat span,.muted{color:var(--muted)}table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:14px 10px;border-bottom:1px solid var(--line)}th{font-weight:650}.scroll{overflow:auto}.policy{border-left:3px solid var(--accent);padding-left:18px}.policy span,.policy strong,.policy small{display:block}.policy strong{font-size:30px}.policy span{text-transform:capitalize}details{background:#fffefa;border:1px solid var(--line);border-radius:10px;margin:10px 0}summary{cursor:pointer;padding:14px 18px;font-weight:650}pre{margin:0;overflow:auto;padding:20px;border-top:1px solid var(--line);font:12px/1.6 monospace;max-height:450px}code{font-family:monospace;background:var(--soft);padding:2px 6px;border-radius:4px}.note{padding:18px 22px;border-left:3px solid var(--accent);background:var(--soft)}footer{padding-top:28px;font-size:13px;color:var(--muted);overflow-wrap:anywhere}@media(max-width:650px){main{padding:24px 18px 48px}.grid{grid-template-columns:1fr}th,td{padding:10px 7px}}
+</style></head><body><main>
+<header><div class="eyebrow">AgentMatch / reference release 0.1.0</div><h1>Useful connections.<br>Inspectable decisions.</h1>
+<p class="lead">A working, offline test of the matching and consent rules. Every person and conversation in this report is fictional.</p>
+<span class="badge">R0 · synthetic only</span><span class="badge">No model required</span><span class="badge">No server required</span></header>
+<nav aria-label="Report sections"><a href="#matching">Matching</a><a href="#interview">Interview</a><a href="#introduction">Introduction</a><a href="#scenarios">Scenarios</a><a href="#scope">Release scope</a></nav>
+<section><div class="grid"><div class="stat"><strong>40</strong><span>Fictional owners</span></div><div class="stat"><strong>200</strong><span>Annotated conversations</span></div><div class="stat"><strong>39</strong><span>Candidates scanned for Lumen</span></div></div></section>
+<section id="matching"><div class="eyebrow">01 / evidence before ranking</div><h2>Lumen &amp; Harbor</h2>
+<p>Both want to build a portable learning exhibit. Their current contributions complement one another; their preferred working arrangements are not identical. The engine keeps those differences visible.</p>
+<div class="scroll"><table><thead><tr><th>Direction</th><th>Preference F</th><th>Supported S</th><th>Coverage C</th><th>Decision</th></tr></thead><tbody><tr><th>Lumen → Harbor</th><td>0.85</td><td>0.82</td><td>1</td><td>qualified candidate</td></tr><tr><th>Harbor → Lumen</th><td>0.8</td><td>0.77</td><td>1</td><td>qualified candidate</td></tr></tbody></table></div>
+<p class="muted">F determines whether the owner's chosen preferences are met. S discounts evidence and ranks qualifying pairs. These numbers are not success probabilities.</p>
+<div class="grid"><div class="policy"><span>open</span><strong>0.4</strong><small>Both qualify</small></div><div class="policy"><span>selective</span><strong>0.6</strong><small>Both qualify</small></div><div class="policy"><span>close fit</span><strong>0.85</strong><small>One direction fails</small></div></div><p>At close fit, Lumen's direction passes exactly; Harbor's does not. Neither owner's threshold overrides the other.</p>
+<details><summary>Inspect the exact rational values and atom contributions</summary><pre>{
+  &quot;a_to_b&quot;: {
+    &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+    &quot;atoms&quot;: [
+      {
+        &quot;atom_id&quot;: &quot;cap-1&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;capability_complementarity&quot;,
+        &quot;field&quot;: &quot;offer.capabilities&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-offer&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;reason&quot;: &quot;CURRENT_OFFER_OR_GOAL_PRESENT&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;cap-2&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;capability_complementarity&quot;,
+        &quot;field&quot;: &quot;offer.capabilities&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-offer&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;reason&quot;: &quot;CURRENT_OFFER_OR_GOAL_PRESENT&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;cap-3&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;capability_complementarity&quot;,
+        &quot;field&quot;: &quot;offer.capabilities&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-offer&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;reason&quot;: &quot;CURRENT_OFFER_OR_GOAL_PRESENT&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;cap-4&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;capability_complementarity&quot;,
+        &quot;field&quot;: &quot;offer.capabilities&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-offer&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;reason&quot;: &quot;ABSENT_FROM_COMPLETE_CURRENT_SET&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;goal-1&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.3&quot;,
+          &quot;numerator&quot;: &quot;3&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;goal_problem_alignment&quot;,
+        &quot;field&quot;: &quot;intent.problem_tags&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-goal&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.3&quot;,
+          &quot;numerator&quot;: &quot;3&quot;
+        },
+        &quot;reason&quot;: &quot;CURRENT_OFFER_OR_GOAL_PRESENT&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.3&quot;,
+          &quot;numerator&quot;: &quot;3&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.3&quot;,
+          &quot;numerator&quot;: &quot;3&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;flow-1&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;practical_workflow_fit&quot;,
+        &quot;field&quot;: &quot;workflow.rhythm&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-workflow-rhythm&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;reason&quot;: &quot;ACCEPTED_VALUE&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;flow-2&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;practical_workflow_fit&quot;,
+        &quot;field&quot;: &quot;workflow.cycle&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-workflow-cycle&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;reason&quot;: &quot;ACCEPTED_VALUE&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;flow-3&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;practical_workflow_fit&quot;,
+        &quot;field&quot;: &quot;workflow.artifact&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-workflow-artifact&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;reason&quot;: &quot;ACCEPTED_VALUE&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;flow-4&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;practical_workflow_fit&quot;,
+        &quot;field&quot;: &quot;workflow.venue&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-workflow-venue&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;reason&quot;: &quot;KNOWN_VALUE_OUTSIDE_PREFERENCE&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;comm-1&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.7&quot;,
+          &quot;numerator&quot;: &quot;7&quot;
+        },
+        &quot;family&quot;: &quot;communication_fit&quot;,
+        &quot;field&quot;: &quot;communication.feedback&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-communication&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;reason&quot;: &quot;ACCEPTED_VALUE&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;100&quot;,
+          &quot;display&quot;: &quot;0.07&quot;,
+          &quot;numerator&quot;: &quot;7&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      }
+    ],
+    &quot;candidate_id&quot;: &quot;harbor&quot;,
+    &quot;contract_version&quot;: &quot;0.4.0&quot;,
+    &quot;coverage&quot;: {
+      &quot;denominator&quot;: &quot;1&quot;,
+      &quot;display&quot;: &quot;1&quot;,
+      &quot;numerator&quot;: &quot;1&quot;
+    },
+    &quot;intent_versions&quot;: [
+      1,
+      1
+    ],
+    &quot;mode&quot;: &quot;offline_synthetic_reference&quot;,
+    &quot;preference_fit&quot;: {
+      &quot;denominator&quot;: &quot;20&quot;,
+      &quot;display&quot;: &quot;0.85&quot;,
+      &quot;numerator&quot;: &quot;17&quot;
+    },
+    &quot;preference_fit_upper_bound&quot;: {
+      &quot;denominator&quot;: &quot;20&quot;,
+      &quot;display&quot;: &quot;0.85&quot;,
+      &quot;numerator&quot;: &quot;17&quot;
+    },
+    &quot;reasons&quot;: [
+      &quot;PREFERENCE_THRESHOLD_MET&quot;
+    ],
+    &quot;score_note&quot;: &quot;Experimental policy quantities, not compatibility probabilities.&quot;,
+    &quot;seeker_id&quot;: &quot;lumen&quot;,
+    &quot;status&quot;: &quot;qualified_candidate&quot;,
+    &quot;supported_fit&quot;: {
+      &quot;denominator&quot;: &quot;50&quot;,
+      &quot;display&quot;: &quot;0.82&quot;,
+      &quot;numerator&quot;: &quot;41&quot;
+    },
+    &quot;threshold&quot;: {
+      &quot;denominator&quot;: &quot;5&quot;,
+      &quot;display&quot;: &quot;0.6&quot;,
+      &quot;numerator&quot;: &quot;3&quot;
+    },
+    &quot;visibility&quot;: &quot;local_private_assessment&quot;
+  },
+  &quot;b_to_a&quot;: {
+    &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+    &quot;atoms&quot;: [
+      {
+        &quot;atom_id&quot;: &quot;cap-1&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;5&quot;,
+          &quot;display&quot;: &quot;0.2&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;capability_complementarity&quot;,
+        &quot;field&quot;: &quot;offer.capabilities&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;lumen-offer&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;5&quot;,
+          &quot;display&quot;: &quot;0.2&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;reason&quot;: &quot;CURRENT_OFFER_OR_GOAL_PRESENT&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;5&quot;,
+          &quot;display&quot;: &quot;0.2&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;5&quot;,
+          &quot;display&quot;: &quot;0.2&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;cap-2&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;5&quot;,
+          &quot;display&quot;: &quot;0.2&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;capability_complementarity&quot;,
+        &quot;field&quot;: &quot;offer.capabilities&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;lumen-offer&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;reason&quot;: &quot;ABSENT_FROM_COMPLETE_CURRENT_SET&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;5&quot;,
+          &quot;display&quot;: &quot;0.2&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;goal-1&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.3&quot;,
+          &quot;numerator&quot;: &quot;3&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;goal_problem_alignment&quot;,
+        &quot;field&quot;: &quot;intent.problem_tags&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;lumen-goal&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.3&quot;,
+          &quot;numerator&quot;: &quot;3&quot;
+        },
+        &quot;reason&quot;: &quot;CURRENT_OFFER_OR_GOAL_PRESENT&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.3&quot;,
+          &quot;numerator&quot;: &quot;3&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.3&quot;,
+          &quot;numerator&quot;: &quot;3&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;flow-1&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;5&quot;,
+          &quot;display&quot;: &quot;0.2&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;practical_workflow_fit&quot;,
+        &quot;field&quot;: &quot;workflow.rhythm&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;lumen-workflow-rhythm&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;5&quot;,
+          &quot;display&quot;: &quot;0.2&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;reason&quot;: &quot;ACCEPTED_VALUE&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;5&quot;,
+          &quot;display&quot;: &quot;0.2&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;5&quot;,
+          &quot;display&quot;: &quot;0.2&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;comm-1&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.7&quot;,
+          &quot;numerator&quot;: &quot;7&quot;
+        },
+        &quot;family&quot;: &quot;communication_fit&quot;,
+        &quot;field&quot;: &quot;communication.feedback&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;lumen-communication&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;reason&quot;: &quot;ACCEPTED_VALUE&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;100&quot;,
+          &quot;display&quot;: &quot;0.07&quot;,
+          &quot;numerator&quot;: &quot;7&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      }
+    ],
+    &quot;candidate_id&quot;: &quot;lumen&quot;,
+    &quot;contract_version&quot;: &quot;0.4.0&quot;,
+    &quot;coverage&quot;: {
+      &quot;denominator&quot;: &quot;1&quot;,
+      &quot;display&quot;: &quot;1&quot;,
+      &quot;numerator&quot;: &quot;1&quot;
+    },
+    &quot;intent_versions&quot;: [
+      1,
+      1
+    ],
+    &quot;mode&quot;: &quot;offline_synthetic_reference&quot;,
+    &quot;preference_fit&quot;: {
+      &quot;denominator&quot;: &quot;5&quot;,
+      &quot;display&quot;: &quot;0.8&quot;,
+      &quot;numerator&quot;: &quot;4&quot;
+    },
+    &quot;preference_fit_upper_bound&quot;: {
+      &quot;denominator&quot;: &quot;5&quot;,
+      &quot;display&quot;: &quot;0.8&quot;,
+      &quot;numerator&quot;: &quot;4&quot;
+    },
+    &quot;reasons&quot;: [
+      &quot;PREFERENCE_THRESHOLD_MET&quot;
+    ],
+    &quot;score_note&quot;: &quot;Experimental policy quantities, not compatibility probabilities.&quot;,
+    &quot;seeker_id&quot;: &quot;harbor&quot;,
+    &quot;status&quot;: &quot;qualified_candidate&quot;,
+    &quot;supported_fit&quot;: {
+      &quot;denominator&quot;: &quot;100&quot;,
+      &quot;display&quot;: &quot;0.77&quot;,
+      &quot;numerator&quot;: &quot;77&quot;
+    },
+    &quot;threshold&quot;: {
+      &quot;denominator&quot;: &quot;5&quot;,
+      &quot;display&quot;: &quot;0.6&quot;,
+      &quot;numerator&quot;: &quot;3&quot;
+    },
+    &quot;visibility&quot;: &quot;local_private_assessment&quot;
+  },
+  &quot;qualified_pair&quot;: true,
+  &quot;reciprocal_supported_fit&quot;: {
+    &quot;denominator&quot;: &quot;100&quot;,
+    &quot;display&quot;: &quot;0.77&quot;,
+    &quot;numerator&quot;: &quot;77&quot;
+  },
+  &quot;scope&quot;: &quot;offline_reference_only_not_a_verified_network_joint_score&quot;
+}
+</pre></details></section>
+<section id="interview"><div class="eyebrow">02 / a specific review changes the snapshot</div><h2>A useful gap, one question.</h2>
+<p>The scripted interview fills Harbor's missing feedback preference. Before review, Lumen's coverage is 0.9 and preference fit is 0.75. A summary acknowledgment changes neither. Approving the exact inferred claim brings coverage to 1 and preference fit to 0.85, while retaining its weaker evidence origin.</p>
+<div class="note">Six questions by default. An explicit extension allows twenty in total. A refusal never becomes a personality label.</div>
+<details><summary>Inspect the interview, review and matching change</summary><pre>{
+  &quot;after_exact_review&quot;: {
+    &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+    &quot;atoms&quot;: [
+      {
+        &quot;atom_id&quot;: &quot;cap-1&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;capability_complementarity&quot;,
+        &quot;field&quot;: &quot;offer.capabilities&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-offer&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;reason&quot;: &quot;CURRENT_OFFER_OR_GOAL_PRESENT&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;cap-2&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;capability_complementarity&quot;,
+        &quot;field&quot;: &quot;offer.capabilities&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-offer&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;reason&quot;: &quot;CURRENT_OFFER_OR_GOAL_PRESENT&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;cap-3&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;capability_complementarity&quot;,
+        &quot;field&quot;: &quot;offer.capabilities&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-offer&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;reason&quot;: &quot;CURRENT_OFFER_OR_GOAL_PRESENT&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;cap-4&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;capability_complementarity&quot;,
+        &quot;field&quot;: &quot;offer.capabilities&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-offer&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;reason&quot;: &quot;ABSENT_FROM_COMPLETE_CURRENT_SET&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;goal-1&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.3&quot;,
+          &quot;numerator&quot;: &quot;3&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;goal_problem_alignment&quot;,
+        &quot;field&quot;: &quot;intent.problem_tags&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-goal&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.3&quot;,
+          &quot;numerator&quot;: &quot;3&quot;
+        },
+        &quot;reason&quot;: &quot;CURRENT_OFFER_OR_GOAL_PRESENT&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.3&quot;,
+          &quot;numerator&quot;: &quot;3&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.3&quot;,
+          &quot;numerator&quot;: &quot;3&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;flow-1&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;practical_workflow_fit&quot;,
+        &quot;field&quot;: &quot;workflow.rhythm&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-workflow-rhythm&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;reason&quot;: &quot;ACCEPTED_VALUE&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;flow-2&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;practical_workflow_fit&quot;,
+        &quot;field&quot;: &quot;workflow.cycle&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-workflow-cycle&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;reason&quot;: &quot;ACCEPTED_VALUE&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;flow-3&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;practical_workflow_fit&quot;,
+        &quot;field&quot;: &quot;workflow.artifact&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-workflow-artifact&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;reason&quot;: &quot;ACCEPTED_VALUE&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;flow-4&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;practical_workflow_fit&quot;,
+        &quot;field&quot;: &quot;workflow.venue&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-workflow-venue&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;reason&quot;: &quot;KNOWN_VALUE_OUTSIDE_PREFERENCE&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;comm-1&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.7&quot;,
+          &quot;numerator&quot;: &quot;7&quot;
+        },
+        &quot;family&quot;: &quot;communication_fit&quot;,
+        &quot;field&quot;: &quot;communication.feedback&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-communication&quot;,
+            &quot;version&quot;: 2
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;reason&quot;: &quot;ACCEPTED_VALUE&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;100&quot;,
+          &quot;display&quot;: &quot;0.07&quot;,
+          &quot;numerator&quot;: &quot;7&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      }
+    ],
+    &quot;candidate_id&quot;: &quot;harbor&quot;,
+    &quot;contract_version&quot;: &quot;0.4.0&quot;,
+    &quot;coverage&quot;: {
+      &quot;denominator&quot;: &quot;1&quot;,
+      &quot;display&quot;: &quot;1&quot;,
+      &quot;numerator&quot;: &quot;1&quot;
+    },
+    &quot;intent_versions&quot;: [
+      1,
+      1
+    ],
+    &quot;mode&quot;: &quot;offline_synthetic_reference&quot;,
+    &quot;preference_fit&quot;: {
+      &quot;denominator&quot;: &quot;20&quot;,
+      &quot;display&quot;: &quot;0.85&quot;,
+      &quot;numerator&quot;: &quot;17&quot;
+    },
+    &quot;preference_fit_upper_bound&quot;: {
+      &quot;denominator&quot;: &quot;20&quot;,
+      &quot;display&quot;: &quot;0.85&quot;,
+      &quot;numerator&quot;: &quot;17&quot;
+    },
+    &quot;reasons&quot;: [
+      &quot;PREFERENCE_THRESHOLD_MET&quot;
+    ],
+    &quot;score_note&quot;: &quot;Experimental policy quantities, not compatibility probabilities.&quot;,
+    &quot;seeker_id&quot;: &quot;lumen&quot;,
+    &quot;status&quot;: &quot;qualified_candidate&quot;,
+    &quot;supported_fit&quot;: {
+      &quot;denominator&quot;: &quot;50&quot;,
+      &quot;display&quot;: &quot;0.82&quot;,
+      &quot;numerator&quot;: &quot;41&quot;
+    },
+    &quot;threshold&quot;: {
+      &quot;denominator&quot;: &quot;5&quot;,
+      &quot;display&quot;: &quot;0.6&quot;,
+      &quot;numerator&quot;: &quot;3&quot;
+    },
+    &quot;visibility&quot;: &quot;local_private_assessment&quot;
+  },
+  &quot;after_summary_only&quot;: {
+    &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+    &quot;atoms&quot;: [
+      {
+        &quot;atom_id&quot;: &quot;cap-1&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;capability_complementarity&quot;,
+        &quot;field&quot;: &quot;offer.capabilities&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-offer&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;reason&quot;: &quot;CURRENT_OFFER_OR_GOAL_PRESENT&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;cap-2&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;capability_complementarity&quot;,
+        &quot;field&quot;: &quot;offer.capabilities&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-offer&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;reason&quot;: &quot;CURRENT_OFFER_OR_GOAL_PRESENT&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;cap-3&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;capability_complementarity&quot;,
+        &quot;field&quot;: &quot;offer.capabilities&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-offer&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;reason&quot;: &quot;CURRENT_OFFER_OR_GOAL_PRESENT&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;cap-4&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;capability_complementarity&quot;,
+        &quot;field&quot;: &quot;offer.capabilities&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-offer&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;reason&quot;: &quot;ABSENT_FROM_COMPLETE_CURRENT_SET&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;goal-1&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.3&quot;,
+          &quot;numerator&quot;: &quot;3&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;goal_problem_alignment&quot;,
+        &quot;field&quot;: &quot;intent.problem_tags&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-goal&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.3&quot;,
+          &quot;numerator&quot;: &quot;3&quot;
+        },
+        &quot;reason&quot;: &quot;CURRENT_OFFER_OR_GOAL_PRESENT&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.3&quot;,
+          &quot;numerator&quot;: &quot;3&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.3&quot;,
+          &quot;numerator&quot;: &quot;3&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;flow-1&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;practical_workflow_fit&quot;,
+        &quot;field&quot;: &quot;workflow.rhythm&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-workflow-rhythm&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;reason&quot;: &quot;ACCEPTED_VALUE&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;flow-2&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;practical_workflow_fit&quot;,
+        &quot;field&quot;: &quot;workflow.cycle&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-workflow-cycle&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;reason&quot;: &quot;ACCEPTED_VALUE&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;flow-3&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;practical_workflow_fit&quot;,
+        &quot;field&quot;: &quot;workflow.artifact&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-workflow-artifact&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;reason&quot;: &quot;ACCEPTED_VALUE&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;flow-4&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;practical_workflow_fit&quot;,
+        &quot;field&quot;: &quot;workflow.venue&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-workflow-venue&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;reason&quot;: &quot;KNOWN_VALUE_OUTSIDE_PREFERENCE&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;comm-1&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;family&quot;: &quot;communication_fit&quot;,
+        &quot;field&quot;: &quot;communication.feedback&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;known&quot;: false,
+        &quot;local_claim_refs&quot;: [],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;reason&quot;: &quot;UNKNOWN_OR_UNUSABLE_INPUT&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      }
+    ],
+    &quot;candidate_id&quot;: &quot;harbor&quot;,
+    &quot;contract_version&quot;: &quot;0.4.0&quot;,
+    &quot;coverage&quot;: {
+      &quot;denominator&quot;: &quot;10&quot;,
+      &quot;display&quot;: &quot;0.9&quot;,
+      &quot;numerator&quot;: &quot;9&quot;
+    },
+    &quot;intent_versions&quot;: [
+      1,
+      1
+    ],
+    &quot;mode&quot;: &quot;offline_synthetic_reference&quot;,
+    &quot;preference_fit&quot;: {
+      &quot;denominator&quot;: &quot;4&quot;,
+      &quot;display&quot;: &quot;0.75&quot;,
+      &quot;numerator&quot;: &quot;3&quot;
+    },
+    &quot;preference_fit_upper_bound&quot;: {
+      &quot;denominator&quot;: &quot;20&quot;,
+      &quot;display&quot;: &quot;0.85&quot;,
+      &quot;numerator&quot;: &quot;17&quot;
+    },
+    &quot;reasons&quot;: [
+      &quot;PREFERENCE_THRESHOLD_MET&quot;
+    ],
+    &quot;score_note&quot;: &quot;Experimental policy quantities, not compatibility probabilities.&quot;,
+    &quot;seeker_id&quot;: &quot;lumen&quot;,
+    &quot;status&quot;: &quot;qualified_candidate&quot;,
+    &quot;supported_fit&quot;: {
+      &quot;denominator&quot;: &quot;4&quot;,
+      &quot;display&quot;: &quot;0.75&quot;,
+      &quot;numerator&quot;: &quot;3&quot;
+    },
+    &quot;threshold&quot;: {
+      &quot;denominator&quot;: &quot;5&quot;,
+      &quot;display&quot;: &quot;0.6&quot;,
+      &quot;numerator&quot;: &quot;3&quot;
+    },
+    &quot;visibility&quot;: &quot;local_private_assessment&quot;
+  },
+  &quot;before_review&quot;: {
+    &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+    &quot;atoms&quot;: [
+      {
+        &quot;atom_id&quot;: &quot;cap-1&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;capability_complementarity&quot;,
+        &quot;field&quot;: &quot;offer.capabilities&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-offer&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;reason&quot;: &quot;CURRENT_OFFER_OR_GOAL_PRESENT&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;cap-2&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;capability_complementarity&quot;,
+        &quot;field&quot;: &quot;offer.capabilities&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-offer&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;reason&quot;: &quot;CURRENT_OFFER_OR_GOAL_PRESENT&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;cap-3&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;capability_complementarity&quot;,
+        &quot;field&quot;: &quot;offer.capabilities&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-offer&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;reason&quot;: &quot;CURRENT_OFFER_OR_GOAL_PRESENT&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;cap-4&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;capability_complementarity&quot;,
+        &quot;field&quot;: &quot;offer.capabilities&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-offer&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;reason&quot;: &quot;ABSENT_FROM_COMPLETE_CURRENT_SET&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;goal-1&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.3&quot;,
+          &quot;numerator&quot;: &quot;3&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;goal_problem_alignment&quot;,
+        &quot;field&quot;: &quot;intent.problem_tags&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-goal&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.3&quot;,
+          &quot;numerator&quot;: &quot;3&quot;
+        },
+        &quot;reason&quot;: &quot;CURRENT_OFFER_OR_GOAL_PRESENT&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.3&quot;,
+          &quot;numerator&quot;: &quot;3&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.3&quot;,
+          &quot;numerator&quot;: &quot;3&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;flow-1&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;practical_workflow_fit&quot;,
+        &quot;field&quot;: &quot;workflow.rhythm&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-workflow-rhythm&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;reason&quot;: &quot;ACCEPTED_VALUE&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;flow-2&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;practical_workflow_fit&quot;,
+        &quot;field&quot;: &quot;workflow.cycle&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-workflow-cycle&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;reason&quot;: &quot;ACCEPTED_VALUE&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;flow-3&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;practical_workflow_fit&quot;,
+        &quot;field&quot;: &quot;workflow.artifact&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-workflow-artifact&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;reason&quot;: &quot;ACCEPTED_VALUE&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;flow-4&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        },
+        &quot;family&quot;: &quot;practical_workflow_fit&quot;,
+        &quot;field&quot;: &quot;workflow.venue&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;known&quot;: true,
+        &quot;local_claim_refs&quot;: [
+          {
+            &quot;claim_id&quot;: &quot;harbor-workflow-venue&quot;,
+            &quot;version&quot;: 1
+          }
+        ],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;reason&quot;: &quot;KNOWN_VALUE_OUTSIDE_PREFERENCE&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;20&quot;,
+          &quot;display&quot;: &quot;0.05&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      },
+      {
+        &quot;atom_id&quot;: &quot;comm-1&quot;,
+        &quot;coverage_contribution&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;evidence_factor&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;family&quot;: &quot;communication_fit&quot;,
+        &quot;field&quot;: &quot;communication.feedback&quot;,
+        &quot;fit&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;known&quot;: false,
+        &quot;local_claim_refs&quot;: [],
+        &quot;preference_contribution&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;reason&quot;: &quot;UNKNOWN_OR_UNUSABLE_INPUT&quot;,
+        &quot;supported_contribution&quot;: {
+          &quot;denominator&quot;: &quot;1&quot;,
+          &quot;display&quot;: &quot;0&quot;,
+          &quot;numerator&quot;: &quot;0&quot;
+        },
+        &quot;weight&quot;: {
+          &quot;denominator&quot;: &quot;10&quot;,
+          &quot;display&quot;: &quot;0.1&quot;,
+          &quot;numerator&quot;: &quot;1&quot;
+        }
+      }
+    ],
+    &quot;candidate_id&quot;: &quot;harbor&quot;,
+    &quot;contract_version&quot;: &quot;0.4.0&quot;,
+    &quot;coverage&quot;: {
+      &quot;denominator&quot;: &quot;10&quot;,
+      &quot;display&quot;: &quot;0.9&quot;,
+      &quot;numerator&quot;: &quot;9&quot;
+    },
+    &quot;intent_versions&quot;: [
+      1,
+      1
+    ],
+    &quot;mode&quot;: &quot;offline_synthetic_reference&quot;,
+    &quot;preference_fit&quot;: {
+      &quot;denominator&quot;: &quot;4&quot;,
+      &quot;display&quot;: &quot;0.75&quot;,
+      &quot;numerator&quot;: &quot;3&quot;
+    },
+    &quot;preference_fit_upper_bound&quot;: {
+      &quot;denominator&quot;: &quot;20&quot;,
+      &quot;display&quot;: &quot;0.85&quot;,
+      &quot;numerator&quot;: &quot;17&quot;
+    },
+    &quot;reasons&quot;: [
+      &quot;PREFERENCE_THRESHOLD_MET&quot;
+    ],
+    &quot;score_note&quot;: &quot;Experimental policy quantities, not compatibility probabilities.&quot;,
+    &quot;seeker_id&quot;: &quot;lumen&quot;,
+    &quot;status&quot;: &quot;qualified_candidate&quot;,
+    &quot;supported_fit&quot;: {
+      &quot;denominator&quot;: &quot;4&quot;,
+      &quot;display&quot;: &quot;0.75&quot;,
+      &quot;numerator&quot;: &quot;3&quot;
+    },
+    &quot;threshold&quot;: {
+      &quot;denominator&quot;: &quot;5&quot;,
+      &quot;display&quot;: &quot;0.6&quot;,
+      &quot;numerator&quot;: &quot;3&quot;
+    },
+    &quot;visibility&quot;: &quot;local_private_assessment&quot;
+  },
+  &quot;manual_fixture_annotation&quot;: true,
+  &quot;review&quot;: {
+    &quot;batches&quot;: [
+      [
+        {
+          &quot;approval&quot;: &quot;unreviewed&quot;,
+          &quot;complete&quot;: null,
+          &quot;context&quot;: &quot;Fictional portable learning exhibit: feedback on draft work&quot;,
+          &quot;dimension&quot;: &quot;communication.feedback&quot;,
+          &quot;origin&quot;: &quot;model_inferred&quot;,
+          &quot;proposal_id&quot;: &quot;synthetic-feedback-review-proposal-01&quot;,
+          &quot;source_retainable&quot;: true,
+          &quot;uncertainty&quot;: &quot;One scripted example; approval does not independently verify it.&quot;,
+          &quot;value&quot;: &quot;direct&quot;
+        }
+      ]
+    ],
+    &quot;numeric_confidence&quot;: &quot;not_generated&quot;,
+    &quot;summary&quot;: &quot;This fictional interview produced 1 proposed statements. Each needs a separate review before matching can use it.&quot;,
+    &quot;summary_approves_claims&quot;: false
+  },
+  &quot;reviewed_revision&quot;: {
+    &quot;applied&quot;: true,
+    &quot;approved_claim_count&quot;: 1,
+    &quot;baseline_bound&quot;: true,
+    &quot;confirmation_event_count&quot;: 0,
+    &quot;disclosures_granted&quot;: 0,
+    &quot;invalidated_dimensions&quot;: [
+      &quot;communication.feedback&quot;
+    ],
+    &quot;retained_source_count&quot;: 1,
+    &quot;revision_id&quot;: &quot;synthetic-feedback-review-revision&quot;,
+    &quot;storage&quot;: &quot;in_memory_simulation_only&quot;
+  },
+  &quot;session&quot;: {
+    &quot;budget&quot;: 6,
+    &quot;execution&quot;: &quot;scripted_no_language_model&quot;,
+    &quot;extensions&quot;: 0,
+    &quot;persistent_storage&quot;: false,
+    &quot;presented&quot;: 1,
+    &quot;proposals_pending&quot;: 0,
+    &quot;session_id&quot;: &quot;synthetic-feedback-review&quot;,
+    &quot;state&quot;: &quot;committed&quot;,
+    &quot;synthetic&quot;: true,
+    &quot;trace&quot;: [
+      {
+        &quot;event&quot;: &quot;baseline_bound&quot;
+      },
+      {
+        &quot;budget&quot;: 6,
+        &quot;event&quot;: &quot;question_presented&quot;,
+        &quot;number&quot;: 1,
+        &quot;question_id&quot;: &quot;feedback-gap&quot;,
+        &quot;reason&quot;: &quot;The selected project policy has no approved current feedback preference.&quot;,
+        &quot;text&quot;: &quot;Tell me about feedback that helped you improve something.&quot;
+      },
+      {
+        &quot;event&quot;: &quot;unreviewed_proposal&quot;,
+        &quot;proposal_id&quot;: &quot;synthetic-feedback-review-proposal-01&quot;
+      },
+      {
+        &quot;claims_approved&quot;: 0,
+        &quot;event&quot;: &quot;summary_acknowledged&quot;
+      }
+    ]
+  }
+}
+</pre></details></section>
+<section id="introduction"><div class="eyebrow">03 / humans choose to open the channel</div><h2>Introduction context</h2><div class="card"><h3>Portable learning exhibit</h3><p>What would you test first about portable learning exhibit?</p><ul><li>Lumen currently wants to work on a portable learning exhibit.</li><li>Harbor currently wants to work on a portable learning exhibit.</li></ul><p class="muted">One supported thread. No shared intensity inferred. Opening requires both owners to approve this exact context.</p></div>
+<p>The context panel contains no pretend human messages. The simulation then queues an explicitly scripted human send, loses its acknowledgment, and retries the same ID without displaying it twice. A coaching suggestion remains a private draft.</p>
+<details><summary>Inspect acceptance, queue and retry records</summary><pre>{
+  &quot;after_lost_ack&quot;: {
+    &quot;attempts&quot;: 1,
+    &quot;expires_at&quot;: &quot;2026-11-01T12:00:00Z&quot;,
+    &quot;message_id&quot;: &quot;synthetic-human-message-1&quot;,
+    &quot;receipt_is_read_confirmation&quot;: false,
+    &quot;state&quot;: &quot;sent_unacknowledged&quot;
+  },
+  &quot;authority&quot;: &quot;Every acceptance/send/coach action here is an explicitly scripted fictional event.&quot;,
+  &quot;card&quot;: {
+    &quot;context&quot;: {
+      &quot;context_id&quot;: &quot;synthetic-intro-context&quot;,
+      &quot;display_identities&quot;: [
+        {
+          &quot;alias&quot;: &quot;Lumen&quot;,
+          &quot;identity_verified&quot;: false,
+          &quot;version&quot;: 1
+        },
+        {
+          &quot;alias&quot;: &quot;Harbor&quot;,
+          &quot;identity_verified&quot;: false,
+          &quot;version&quot;: 1
+        }
+      ],
+      &quot;label&quot;: &quot;Introduction context&quot;,
+      &quot;participant_ids&quot;: [
+        &quot;lumen&quot;,
+        &quot;harbor&quot;
+      ],
+      &quot;purpose&quot;: &quot;collaboration&quot;,
+      &quot;topic&quot;: {
+        &quot;kind&quot;: &quot;evidence_supported&quot;,
+        &quot;opening_question&quot;: &quot;What would you test first about portable learning exhibit?&quot;,
+        &quot;relationship&quot;: &quot;shared_topic&quot;,
+        &quot;statements&quot;: [
+          &quot;Lumen currently wants to work on a portable learning exhibit.&quot;,
+          &quot;Harbor currently wants to work on a portable learning exhibit.&quot;
+        ],
+        &quot;title&quot;: &quot;portable learning exhibit&quot;,
+        &quot;topic_id&quot;: &quot;portable-learning-exhibit&quot;,
+        &quot;version&quot;: 1
+      },
+      &quot;version&quot;: 1
+    },
+    &quot;human_messages&quot;: [],
+    &quot;release&quot;: &quot;R0&quot;,
+    &quot;shared_context_digest&quot;: &quot;adea44e1033fe329616d9be6074ea488c0368c209df786068e54c0162dbff4d6&quot;,
+    &quot;supported_thread_count&quot;: 1,
+    &quot;synthetic_only&quot;: true,
+    &quot;topic_note&quot;: &quot;Approved shared topic; no intensity inferred.&quot;
+  },
+  &quot;channel_after_retry&quot;: {
+    &quot;channel_id&quot;: &quot;synthetic-channel-synthetic-intro-1&quot;,
+    &quot;connected&quot;: true,
+    &quot;context_panel&quot;: {
+      &quot;context_id&quot;: &quot;synthetic-intro-context&quot;,
+      &quot;display_identities&quot;: [
+        {
+          &quot;alias&quot;: &quot;Lumen&quot;,
+          &quot;identity_verified&quot;: false,
+          &quot;version&quot;: 1
+        },
+        {
+          &quot;alias&quot;: &quot;Harbor&quot;,
+          &quot;identity_verified&quot;: false,
+          &quot;version&quot;: 1
+        }
+      ],
+      &quot;label&quot;: &quot;Introduction context&quot;,
+      &quot;participant_ids&quot;: [
+        &quot;lumen&quot;,
+        &quot;harbor&quot;
+      ],
+      &quot;purpose&quot;: &quot;collaboration&quot;,
+      &quot;topic&quot;: {
+        &quot;kind&quot;: &quot;evidence_supported&quot;,
+        &quot;opening_question&quot;: &quot;What would you test first about portable learning exhibit?&quot;,
+        &quot;relationship&quot;: &quot;shared_topic&quot;,
+        &quot;statements&quot;: [
+          &quot;Lumen currently wants to work on a portable learning exhibit.&quot;,
+          &quot;Harbor currently wants to work on a portable learning exhibit.&quot;
+        ],
+        &quot;title&quot;: &quot;portable learning exhibit&quot;,
+        &quot;topic_id&quot;: &quot;portable-learning-exhibit&quot;,
+        &quot;version&quot;: 1
+      },
+      &quot;version&quot;: 1
+    },
+    &quot;encrypted&quot;: false,
+    &quot;human_messages&quot;: [
+      {
+        &quot;author_id&quot;: &quot;lumen&quot;,
+        &quot;channel_id&quot;: &quot;synthetic-channel-synthetic-intro-1&quot;,
+        &quot;created_at&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+        &quot;expires_at&quot;: &quot;2026-11-01T12:00:00Z&quot;,
+        &quot;membership_epoch&quot;: 1,
+        &quot;message_id&quot;: &quot;synthetic-human-message-1&quot;,
+        &quot;message_type&quot;: &quot;HUMAN_MESSAGE&quot;,
+        &quot;schema_version&quot;: &quot;r0.1&quot;,
+        &quot;sequence&quot;: 1,
+        &quot;text&quot;: &quot;Could we test a fold-flat exhibit with one replaceable tactile panel?&quot;
+      }
+    ],
+    &quot;membership_epoch&quot;: 1,
+    &quot;outbox&quot;: [
+      {
+        &quot;attempts&quot;: 2,
+        &quot;expires_at&quot;: &quot;2026-11-01T12:00:00Z&quot;,
+        &quot;message_id&quot;: &quot;synthetic-human-message-1&quot;,
+        &quot;receipt_is_read_confirmation&quot;: false,
+        &quot;state&quot;: &quot;acknowledged&quot;
+      }
+    ],
+    &quot;persistent&quot;: false,
+    &quot;simulation_notice&quot;: &quot;Fictional in-memory events; no transport or durable receipt guarantee.&quot;,
+    &quot;status&quot;: &quot;ready&quot;
+  },
+  &quot;one_acceptance_result&quot;: &quot;EXACT_DUAL_ACCEPTANCE_REQUIRED&quot;,
+  &quot;opened_channel_before_first_human_message&quot;: {
+    &quot;channel_id&quot;: &quot;synthetic-channel-synthetic-intro-1&quot;,
+    &quot;connected&quot;: false,
+    &quot;context_panel&quot;: {
+      &quot;context_id&quot;: &quot;synthetic-intro-context&quot;,
+      &quot;display_identities&quot;: [
+        {
+          &quot;alias&quot;: &quot;Lumen&quot;,
+          &quot;identity_verified&quot;: false,
+          &quot;version&quot;: 1
+        },
+        {
+          &quot;alias&quot;: &quot;Harbor&quot;,
+          &quot;identity_verified&quot;: false,
+          &quot;version&quot;: 1
+        }
+      ],
+      &quot;label&quot;: &quot;Introduction context&quot;,
+      &quot;participant_ids&quot;: [
+        &quot;lumen&quot;,
+        &quot;harbor&quot;
+      ],
+      &quot;purpose&quot;: &quot;collaboration&quot;,
+      &quot;topic&quot;: {
+        &quot;kind&quot;: &quot;evidence_supported&quot;,
+        &quot;opening_question&quot;: &quot;What would you test first about portable learning exhibit?&quot;,
+        &quot;relationship&quot;: &quot;shared_topic&quot;,
+        &quot;statements&quot;: [
+          &quot;Lumen currently wants to work on a portable learning exhibit.&quot;,
+          &quot;Harbor currently wants to work on a portable learning exhibit.&quot;
+        ],
+        &quot;title&quot;: &quot;portable learning exhibit&quot;,
+        &quot;topic_id&quot;: &quot;portable-learning-exhibit&quot;,
+        &quot;version&quot;: 1
+      },
+      &quot;version&quot;: 1
+    },
+    &quot;encrypted&quot;: false,
+    &quot;human_messages&quot;: [],
+    &quot;membership_epoch&quot;: 1,
+    &quot;outbox&quot;: [],
+    &quot;persistent&quot;: false,
+    &quot;simulation_notice&quot;: &quot;Fictional in-memory events; no transport or durable receipt guarantee.&quot;,
+    &quot;status&quot;: &quot;ready&quot;
+  },
+  &quot;private_draft&quot;: {
+    &quot;draft_id&quot;: &quot;synthetic-draft-synthetic-kickstart&quot;,
+    &quot;generation&quot;: &quot;scripted_R0_template&quot;,
+    &quot;may_send&quot;: false,
+    &quot;owner_id&quot;: &quot;lumen&quot;,
+    &quot;text&quot;: &quot;What would you test first about portable learning exhibit?&quot;,
+    &quot;visibility&quot;: &quot;owner_only&quot;
+  },
+  &quot;queued_while_offline&quot;: {
+    &quot;attempts&quot;: 0,
+    &quot;expires_at&quot;: &quot;2026-11-01T12:00:00Z&quot;,
+    &quot;message_id&quot;: &quot;synthetic-human-message-1&quot;,
+    &quot;receipt_is_read_confirmation&quot;: false,
+    &quot;state&quot;: &quot;queued_local&quot;
+  },
+  &quot;retry_receipt&quot;: {
+    &quot;application_received&quot;: true,
+    &quot;duplicate&quot;: true,
+    &quot;message_id&quot;: &quot;synthetic-human-message-1&quot;,
+    &quot;read_confirmation&quot;: false
+  }
+}
+</pre></details></section>
+<section id="scenarios"><div class="eyebrow">04 / failure paths are part of the product</div><h2>28 reproducible scenarios</h2><p>These are inspectable in-memory traces. Their policy outcomes are verified by the separate test suite; they are not evidence of real encrypted transport.</p><details><summary>mutual acceptance</summary><pre>{
+  &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+  &quot;card&quot;: {
+    &quot;context&quot;: {
+      &quot;context_id&quot;: &quot;synthetic-context-1&quot;,
+      &quot;display_identities&quot;: [
+        {
+          &quot;alias&quot;: &quot;Lumen&quot;,
+          &quot;identity_verified&quot;: false,
+          &quot;version&quot;: 1
+        },
+        {
+          &quot;alias&quot;: &quot;Harbor&quot;,
+          &quot;identity_verified&quot;: false,
+          &quot;version&quot;: 1
+        }
+      ],
+      &quot;label&quot;: &quot;Introduction context&quot;,
+      &quot;participant_ids&quot;: [
+        &quot;synthetic-lumen&quot;,
+        &quot;synthetic-harbor&quot;
+      ],
+      &quot;purpose&quot;: &quot;collaboration&quot;,
+      &quot;topic&quot;: {
+        &quot;kind&quot;: &quot;evidence_supported&quot;,
+        &quot;opening_question&quot;: &quot;What would you test first about Making a portable learning exhibit usable without reading small print?&quot;,
+        &quot;relationship&quot;: &quot;shared_topic&quot;,
+        &quot;statements&quot;: [
+          &quot;I want to test a portable learning exhibit with visitors who use different reading strategies.&quot;,
+          &quot;I want to review the tactile labels and installation instructions for a portable learning exhibit.&quot;
+        ],
+        &quot;title&quot;: &quot;Making a portable learning exhibit usable without reading small print&quot;,
+        &quot;topic_id&quot;: &quot;portable-learning-exhibit&quot;,
+        &quot;version&quot;: 1
+      },
+      &quot;version&quot;: 1
+    },
+    &quot;human_messages&quot;: [],
+    &quot;release&quot;: &quot;R0&quot;,
+    &quot;shared_context_digest&quot;: &quot;0a99b784bb4e0325fa2b517aab4a11c1dc806f1725b0d31d727f00d02bc89909&quot;,
+    &quot;supported_thread_count&quot;: 1,
+    &quot;synthetic_only&quot;: true,
+    &quot;topic_note&quot;: &quot;Approved shared topic; no intensity inferred.&quot;
+  },
+  &quot;channel&quot;: {
+    &quot;channel_id&quot;: &quot;synthetic-channel-synthetic-proposal-1-1&quot;,
+    &quot;connected&quot;: false,
+    &quot;context_panel&quot;: {
+      &quot;context_id&quot;: &quot;synthetic-context-1&quot;,
+      &quot;display_identities&quot;: [
+        {
+          &quot;alias&quot;: &quot;Lumen&quot;,
+          &quot;identity_verified&quot;: false,
+          &quot;version&quot;: 1
+        },
+        {
+          &quot;alias&quot;: &quot;Harbor&quot;,
+          &quot;identity_verified&quot;: false,
+          &quot;version&quot;: 1
+        }
+      ],
+      &quot;label&quot;: &quot;Introduction context&quot;,
+      &quot;participant_ids&quot;: [
+        &quot;synthetic-lumen&quot;,
+        &quot;synthetic-harbor&quot;
+      ],
+      &quot;purpose&quot;: &quot;collaboration&quot;,
+      &quot;topic&quot;: {
+        &quot;kind&quot;: &quot;evidence_supported&quot;,
+        &quot;opening_question&quot;: &quot;What would you test first about Making a portable learning exhibit usable without reading small print?&quot;,
+        &quot;relationship&quot;: &quot;shared_topic&quot;,
+        &quot;statements&quot;: [
+          &quot;I want to test a portable learning exhibit with visitors who use different reading strategies.&quot;,
+          &quot;I want to review the tactile labels and installation instructions for a portable learning exhibit.&quot;
+        ],
+        &quot;title&quot;: &quot;Making a portable learning exhibit usable without reading small print&quot;,
+        &quot;topic_id&quot;: &quot;portable-learning-exhibit&quot;,
+        &quot;version&quot;: 1
+      },
+      &quot;version&quot;: 1
+    },
+    &quot;encrypted&quot;: false,
+    &quot;human_messages&quot;: [],
+    &quot;membership_epoch&quot;: 1,
+    &quot;outbox&quot;: [],
+    &quot;persistent&quot;: false,
+    &quot;simulation_notice&quot;: &quot;Fictional in-memory events; no transport or durable receipt guarantee.&quot;,
+    &quot;status&quot;: &quot;ready&quot;
+  },
+  &quot;cryptography_verified&quot;: false,
+  &quot;execution_kind&quot;: &quot;in_memory_simulation&quot;,
+  &quot;network_used&quot;: false,
+  &quot;persistent_storage_verified&quot;: false,
+  &quot;release&quot;: &quot;R0&quot;,
+  &quot;scenario_id&quot;: &quot;mutual_acceptance&quot;,
+  &quot;script_completed&quot;: true,
+  &quot;synthetic_only&quot;: true
+}
+</pre></details><details><summary>one sided acceptance</summary><pre>{
+  &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+  &quot;cryptography_verified&quot;: false,
+  &quot;denied&quot;: &quot;EXACT_DUAL_ACCEPTANCE_REQUIRED&quot;,
+  &quot;execution_kind&quot;: &quot;in_memory_simulation&quot;,
+  &quot;network_used&quot;: false,
+  &quot;persistent_storage_verified&quot;: false,
+  &quot;release&quot;: &quot;R0&quot;,
+  &quot;scenario_id&quot;: &quot;one_sided_acceptance&quot;,
+  &quot;script_completed&quot;: true,
+  &quot;synthetic_only&quot;: true
+}
+</pre></details><details><summary>changed context</summary><pre>{
+  &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+  &quot;cryptography_verified&quot;: false,
+  &quot;denied&quot;: &quot;EXACT_DUAL_ACCEPTANCE_REQUIRED&quot;,
+  &quot;execution_kind&quot;: &quot;in_memory_simulation&quot;,
+  &quot;network_used&quot;: false,
+  &quot;persistent_storage_verified&quot;: false,
+  &quot;release&quot;: &quot;R0&quot;,
+  &quot;scenario_id&quot;: &quot;changed_context&quot;,
+  &quot;script_completed&quot;: true,
+  &quot;synthetic_only&quot;: true
+}
+</pre></details><details><summary>withdrawn acceptance</summary><pre>{
+  &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+  &quot;cryptography_verified&quot;: false,
+  &quot;denied&quot;: &quot;EXACT_DUAL_ACCEPTANCE_REQUIRED&quot;,
+  &quot;execution_kind&quot;: &quot;in_memory_simulation&quot;,
+  &quot;network_used&quot;: false,
+  &quot;persistent_storage_verified&quot;: false,
+  &quot;release&quot;: &quot;R0&quot;,
+  &quot;scenario_id&quot;: &quot;withdrawn_acceptance&quot;,
+  &quot;script_completed&quot;: true,
+  &quot;synthetic_only&quot;: true
+}
+</pre></details><details><summary>neutral invitation</summary><pre>{
+  &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+  &quot;card&quot;: {
+    &quot;context&quot;: {
+      &quot;context_id&quot;: &quot;synthetic-context-1&quot;,
+      &quot;display_identities&quot;: [
+        {
+          &quot;alias&quot;: &quot;Lumen&quot;,
+          &quot;identity_verified&quot;: false,
+          &quot;version&quot;: 1
+        },
+        {
+          &quot;alias&quot;: &quot;Harbor&quot;,
+          &quot;identity_verified&quot;: false,
+          &quot;version&quot;: 1
+        }
+      ],
+      &quot;label&quot;: &quot;Introduction context&quot;,
+      &quot;participant_ids&quot;: [
+        &quot;synthetic-lumen&quot;,
+        &quot;synthetic-harbor&quot;
+      ],
+      &quot;purpose&quot;: &quot;collaboration&quot;,
+      &quot;topic&quot;: {
+        &quot;kind&quot;: &quot;owner_proposed&quot;,
+        &quot;opening_question&quot;: &quot;What small project would you enjoy comparing notes on?&quot;,
+        &quot;relationship&quot;: &quot;not_claimed&quot;,
+        &quot;statements&quot;: [],
+        &quot;title&quot;: &quot;An invitation to compare current projects&quot;,
+        &quot;topic_id&quot;: &quot;owner-invitation&quot;,
+        &quot;version&quot;: 1
+      },
+      &quot;version&quot;: 1
+    },
+    &quot;human_messages&quot;: [],
+    &quot;release&quot;: &quot;R0&quot;,
+    &quot;shared_context_digest&quot;: &quot;e95dc269e6bcfd27ce9d9fc20336cc3f4b33fcffd743b269a3e5fb0a665cc9a6&quot;,
+    &quot;supported_thread_count&quot;: 0,
+    &quot;synthetic_only&quot;: true,
+    &quot;topic_note&quot;: &quot;No supported common thread found. Owner-proposed invitation.&quot;
+  },
+  &quot;channel&quot;: {
+    &quot;channel_id&quot;: &quot;synthetic-channel-synthetic-proposal-1-1&quot;,
+    &quot;connected&quot;: false,
+    &quot;context_panel&quot;: {
+      &quot;context_id&quot;: &quot;synthetic-context-1&quot;,
+      &quot;display_identities&quot;: [
+        {
+          &quot;alias&quot;: &quot;Lumen&quot;,
+          &quot;identity_verified&quot;: false,
+          &quot;version&quot;: 1
+        },
+        {
+          &quot;alias&quot;: &quot;Harbor&quot;,
+          &quot;identity_verified&quot;: false,
+          &quot;version&quot;: 1
+        }
+      ],
+      &quot;label&quot;: &quot;Introduction context&quot;,
+      &quot;participant_ids&quot;: [
+        &quot;synthetic-lumen&quot;,
+        &quot;synthetic-harbor&quot;
+      ],
+      &quot;purpose&quot;: &quot;collaboration&quot;,
+      &quot;topic&quot;: {
+        &quot;kind&quot;: &quot;owner_proposed&quot;,
+        &quot;opening_question&quot;: &quot;What small project would you enjoy comparing notes on?&quot;,
+        &quot;relationship&quot;: &quot;not_claimed&quot;,
+        &quot;statements&quot;: [],
+        &quot;title&quot;: &quot;An invitation to compare current projects&quot;,
+        &quot;topic_id&quot;: &quot;owner-invitation&quot;,
+        &quot;version&quot;: 1
+      },
+      &quot;version&quot;: 1
+    },
+    &quot;encrypted&quot;: false,
+    &quot;human_messages&quot;: [],
+    &quot;membership_epoch&quot;: 1,
+    &quot;outbox&quot;: [],
+    &quot;persistent&quot;: false,
+    &quot;simulation_notice&quot;: &quot;Fictional in-memory events; no transport or durable receipt guarantee.&quot;,
+    &quot;status&quot;: &quot;ready&quot;
+  },
+  &quot;cryptography_verified&quot;: false,
+  &quot;execution_kind&quot;: &quot;in_memory_simulation&quot;,
+  &quot;network_used&quot;: false,
+  &quot;persistent_storage_verified&quot;: false,
+  &quot;release&quot;: &quot;R0&quot;,
+  &quot;scenario_id&quot;: &quot;neutral_invitation&quot;,
+  &quot;script_completed&quot;: true,
+  &quot;synthetic_only&quot;: true
+}
+</pre></details><details><summary>ungranted display</summary><pre>{
+  &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+  &quot;cryptography_verified&quot;: false,
+  &quot;denied&quot;: &quot;DISPLAY_NOT_AUTHORISED&quot;,
+  &quot;execution_kind&quot;: &quot;in_memory_simulation&quot;,
+  &quot;network_used&quot;: false,
+  &quot;persistent_storage_verified&quot;: false,
+  &quot;release&quot;: &quot;R0&quot;,
+  &quot;scenario_id&quot;: &quot;ungranted_display&quot;,
+  &quot;script_completed&quot;: true,
+  &quot;synthetic_only&quot;: true
+}
+</pre></details><details><summary>offline queue resume</summary><pre>{
+  &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+  &quot;channel&quot;: {
+    &quot;channel_id&quot;: &quot;synthetic-channel-synthetic-proposal-1-1&quot;,
+    &quot;connected&quot;: true,
+    &quot;context_panel&quot;: {
+      &quot;context_id&quot;: &quot;synthetic-context-1&quot;,
+      &quot;display_identities&quot;: [
+        {
+          &quot;alias&quot;: &quot;Lumen&quot;,
+          &quot;identity_verified&quot;: false,
+          &quot;version&quot;: 1
+        },
+        {
+          &quot;alias&quot;: &quot;Harbor&quot;,
+          &quot;identity_verified&quot;: false,
+          &quot;version&quot;: 1
+        }
+      ],
+      &quot;label&quot;: &quot;Introduction context&quot;,
+      &quot;participant_ids&quot;: [
+        &quot;synthetic-lumen&quot;,
+        &quot;synthetic-harbor&quot;
+      ],
+      &quot;purpose&quot;: &quot;collaboration&quot;,
+      &quot;topic&quot;: {
+        &quot;kind&quot;: &quot;evidence_supported&quot;,
+        &quot;opening_question&quot;: &quot;What would you test first about Making a portable learning exhibit usable without reading small print?&quot;,
+        &quot;relationship&quot;: &quot;shared_topic&quot;,
+        &quot;statements&quot;: [
+          &quot;I want to test a portable learning exhibit with visitors who use different reading strategies.&quot;,
+          &quot;I want to review the tactile labels and installation instructions for a portable learning exhibit.&quot;
+        ],
+        &quot;title&quot;: &quot;Making a portable learning exhibit usable without reading small print&quot;,
+        &quot;topic_id&quot;: &quot;portable-learning-exhibit&quot;,
+        &quot;version&quot;: 1
+      },
+      &quot;version&quot;: 1
+    },
+    &quot;encrypted&quot;: false,
+    &quot;human_messages&quot;: [
+      {
+        &quot;author_id&quot;: &quot;synthetic-lumen&quot;,
+        &quot;channel_id&quot;: &quot;synthetic-channel-synthetic-proposal-1-1&quot;,
+        &quot;created_at&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+        &quot;expires_at&quot;: &quot;2026-11-01T12:00:00Z&quot;,
+        &quot;membership_epoch&quot;: 1,
+        &quot;message_id&quot;: &quot;synthetic-message-1&quot;,
+        &quot;message_type&quot;: &quot;HUMAN_MESSAGE&quot;,
+        &quot;schema_version&quot;: &quot;r0.1&quot;,
+        &quot;sequence&quot;: 1,
+        &quot;text&quot;: &quot;Could we begin by testing a tactile label on the smallest exhibit panel?&quot;
+      }
+    ],
+    &quot;membership_epoch&quot;: 1,
+    &quot;outbox&quot;: [
+      {
+        &quot;attempts&quot;: 1,
+        &quot;expires_at&quot;: &quot;2026-11-01T12:00:00Z&quot;,
+        &quot;message_id&quot;: &quot;synthetic-message-1&quot;,
+        &quot;receipt_is_read_confirmation&quot;: false,
+        &quot;state&quot;: &quot;acknowledged&quot;
+      }
+    ],
+    &quot;persistent&quot;: false,
+    &quot;simulation_notice&quot;: &quot;Fictional in-memory events; no transport or durable receipt guarantee.&quot;,
+    &quot;status&quot;: &quot;ready&quot;
+  },
+  &quot;cryptography_verified&quot;: false,
+  &quot;execution_kind&quot;: &quot;in_memory_simulation&quot;,
+  &quot;initial_delivery_state&quot;: &quot;queued_local&quot;,
+  &quot;network_used&quot;: false,
+  &quot;persistent_storage_verified&quot;: false,
+  &quot;receipt&quot;: {
+    &quot;application_received&quot;: true,
+    &quot;duplicate&quot;: false,
+    &quot;message_id&quot;: &quot;synthetic-message-1&quot;,
+    &quot;read_confirmation&quot;: false
+  },
+  &quot;release&quot;: &quot;R0&quot;,
+  &quot;scenario_id&quot;: &quot;offline_queue_resume&quot;,
+  &quot;script_completed&quot;: true,
+  &quot;synthetic_only&quot;: true
+}
+</pre></details><details><summary>lost ack deduplication</summary><pre>{
+  &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+  &quot;channel&quot;: {
+    &quot;channel_id&quot;: &quot;synthetic-channel-synthetic-proposal-1-1&quot;,
+    &quot;connected&quot;: true,
+    &quot;context_panel&quot;: {
+      &quot;context_id&quot;: &quot;synthetic-context-1&quot;,
+      &quot;display_identities&quot;: [
+        {
+          &quot;alias&quot;: &quot;Lumen&quot;,
+          &quot;identity_verified&quot;: false,
+          &quot;version&quot;: 1
+        },
+        {
+          &quot;alias&quot;: &quot;Harbor&quot;,
+          &quot;identity_verified&quot;: false,
+          &quot;version&quot;: 1
+        }
+      ],
+      &quot;label&quot;: &quot;Introduction context&quot;,
+      &quot;participant_ids&quot;: [
+        &quot;synthetic-lumen&quot;,
+        &quot;synthetic-harbor&quot;
+      ],
+      &quot;purpose&quot;: &quot;collaboration&quot;,
+      &quot;topic&quot;: {
+        &quot;kind&quot;: &quot;evidence_supported&quot;,
+        &quot;opening_question&quot;: &quot;What would you test first about Making a portable learning exhibit usable without reading small print?&quot;,
+        &quot;relationship&quot;: &quot;shared_topic&quot;,
+        &quot;statements&quot;: [
+          &quot;I want to test a portable learning exhibit with visitors who use different reading strategies.&quot;,
+          &quot;I want to review the tactile labels and installation instructions for a portable learning exhibit.&quot;
+        ],
+        &quot;title&quot;: &quot;Making a portable learning exhibit usable without reading small print&quot;,
+        &quot;topic_id&quot;: &quot;portable-learning-exhibit&quot;,
+        &quot;version&quot;: 1
+      },
+      &quot;version&quot;: 1
+    },
+    &quot;encrypted&quot;: false,
+    &quot;human_messages&quot;: [
+      {
+        &quot;author_id&quot;: &quot;synthetic-lumen&quot;,
+        &quot;channel_id&quot;: &quot;synthetic-channel-synthetic-proposal-1-1&quot;,
+        &quot;created_at&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+        &quot;expires_at&quot;: &quot;2026-11-01T12:00:00Z&quot;,
+        &quot;membership_epoch&quot;: 1,
+        &quot;message_id&quot;: &quot;synthetic-message-1&quot;,
+        &quot;message_type&quot;: &quot;HUMAN_MESSAGE&quot;,
+        &quot;schema_version&quot;: &quot;r0.1&quot;,
+        &quot;sequence&quot;: 1,
+        &quot;text&quot;: &quot;Could we begin by testing a tactile label on the smallest exhibit panel?&quot;
+      }
+    ],
+    &quot;membership_epoch&quot;: 1,
+    &quot;outbox&quot;: [
+      {
+        &quot;attempts&quot;: 2,
+        &quot;expires_at&quot;: &quot;2026-11-01T12:00:00Z&quot;,
+        &quot;message_id&quot;: &quot;synthetic-message-1&quot;,
+        &quot;receipt_is_read_confirmation&quot;: false,
+        &quot;state&quot;: &quot;acknowledged&quot;
+      }
+    ],
+    &quot;persistent&quot;: false,
+    &quot;simulation_notice&quot;: &quot;Fictional in-memory events; no transport or durable receipt guarantee.&quot;,
+    &quot;status&quot;: &quot;ready&quot;
+  },
+  &quot;cryptography_verified&quot;: false,
+  &quot;execution_kind&quot;: &quot;in_memory_simulation&quot;,
+  &quot;initial_delivery_state&quot;: &quot;queued_local&quot;,
+  &quot;network_used&quot;: false,
+  &quot;persistent_storage_verified&quot;: false,
+  &quot;receipt&quot;: {
+    &quot;application_received&quot;: true,
+    &quot;duplicate&quot;: false,
+    &quot;message_id&quot;: &quot;synthetic-message-1&quot;,
+    &quot;read_confirmation&quot;: false
+  },
+  &quot;release&quot;: &quot;R0&quot;,
+  &quot;retry_receipt&quot;: {
+    &quot;application_received&quot;: true,
+    &quot;duplicate&quot;: true,
+    &quot;message_id&quot;: &quot;synthetic-message-1&quot;,
+    &quot;read_confirmation&quot;: false
+  },
+  &quot;scenario_id&quot;: &quot;lost_ack_deduplication&quot;,
+  &quot;script_completed&quot;: true,
+  &quot;state_after_lost_ack&quot;: &quot;sent_unacknowledged&quot;,
+  &quot;synthetic_only&quot;: true
+}
+</pre></details><details><summary>expired outbox</summary><pre>{
+  &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+  &quot;channel&quot;: {
+    &quot;channel_id&quot;: &quot;synthetic-channel-synthetic-proposal-1-1&quot;,
+    &quot;connected&quot;: true,
+    &quot;context_panel&quot;: {
+      &quot;context_id&quot;: &quot;synthetic-context-1&quot;,
+      &quot;display_identities&quot;: [
+        {
+          &quot;alias&quot;: &quot;Lumen&quot;,
+          &quot;identity_verified&quot;: false,
+          &quot;version&quot;: 1
+        },
+        {
+          &quot;alias&quot;: &quot;Harbor&quot;,
+          &quot;identity_verified&quot;: false,
+          &quot;version&quot;: 1
+        }
+      ],
+      &quot;label&quot;: &quot;Introduction context&quot;,
+      &quot;participant_ids&quot;: [
+        &quot;synthetic-lumen&quot;,
+        &quot;synthetic-harbor&quot;
+      ],
+      &quot;purpose&quot;: &quot;collaboration&quot;,
+      &quot;topic&quot;: {
+        &quot;kind&quot;: &quot;evidence_supported&quot;,
+        &quot;opening_question&quot;: &quot;What would you test first about Making a portable learning exhibit usable without reading small print?&quot;,
+        &quot;relationship&quot;: &quot;shared_topic&quot;,
+        &quot;statements&quot;: [
+          &quot;I want to test a portable learning exhibit with visitors who use different reading strategies.&quot;,
+          &quot;I want to review the tactile labels and installation instructions for a portable learning exhibit.&quot;
+        ],
+        &quot;title&quot;: &quot;Making a portable learning exhibit usable without reading small print&quot;,
+        &quot;topic_id&quot;: &quot;portable-learning-exhibit&quot;,
+        &quot;version&quot;: 1
+      },
+      &quot;version&quot;: 1
+    },
+    &quot;encrypted&quot;: false,
+    &quot;human_messages&quot;: [],
+    &quot;membership_epoch&quot;: 1,
+    &quot;outbox&quot;: [
+      {
+        &quot;attempts&quot;: 0,
+        &quot;expires_at&quot;: &quot;2026-11-01T12:00:00Z&quot;,
+        &quot;message_id&quot;: &quot;synthetic-message-1&quot;,
+        &quot;receipt_is_read_confirmation&quot;: false,
+        &quot;state&quot;: &quot;expired&quot;
+      }
+    ],
+    &quot;persistent&quot;: false,
+    &quot;simulation_notice&quot;: &quot;Fictional in-memory events; no transport or durable receipt guarantee.&quot;,
+    &quot;status&quot;: &quot;ready&quot;
+  },
+  &quot;cryptography_verified&quot;: false,
+  &quot;denied&quot;: &quot;MESSAGE_NO_LONGER_SENDABLE&quot;,
+  &quot;execution_kind&quot;: &quot;in_memory_simulation&quot;,
+  &quot;initial_delivery_state&quot;: &quot;queued_local&quot;,
+  &quot;network_used&quot;: false,
+  &quot;persistent_storage_verified&quot;: false,
+  &quot;release&quot;: &quot;R0&quot;,
+  &quot;scenario_id&quot;: &quot;expired_outbox&quot;,
+  &quot;script_completed&quot;: true,
+  &quot;synthetic_only&quot;: true
+}
+</pre></details><details><summary>block then unblock</summary><pre>{
+  &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+  &quot;channel&quot;: {
+    &quot;channel_id&quot;: &quot;synthetic-channel-synthetic-proposal-1-1&quot;,
+    &quot;connected&quot;: false,
+    &quot;context_panel&quot;: {
+      &quot;context_id&quot;: &quot;synthetic-context-1&quot;,
+      &quot;display_identities&quot;: [
+        {
+          &quot;alias&quot;: &quot;Lumen&quot;,
+          &quot;identity_verified&quot;: false,
+          &quot;version&quot;: 1
+        },
+        {
+          &quot;alias&quot;: &quot;Harbor&quot;,
+          &quot;identity_verified&quot;: false,
+          &quot;version&quot;: 1
+        }
+      ],
+      &quot;label&quot;: &quot;Introduction context&quot;,
+      &quot;participant_ids&quot;: [
+        &quot;synthetic-lumen&quot;,
+        &quot;synthetic-harbor&quot;
+      ],
+      &quot;purpose&quot;: &quot;collaboration&quot;,
+      &quot;topic&quot;: {
+        &quot;kind&quot;: &quot;evidence_supported&quot;,
+        &quot;opening_question&quot;: &quot;What would you test first about Making a portable learning exhibit usable without reading small print?&quot;,
+        &quot;relationship&quot;: &quot;shared_topic&quot;,
+        &quot;statements&quot;: [
+          &quot;I want to test a portable learning exhibit with visitors who use different reading strategies.&quot;,
+          &quot;I want to review the tactile labels and installation instructions for a portable learning exhibit.&quot;
+        ],
+        &quot;title&quot;: &quot;Making a portable learning exhibit usable without reading small print&quot;,
+        &quot;topic_id&quot;: &quot;portable-learning-exhibit&quot;,
+        &quot;version&quot;: 1
+      },
+      &quot;version&quot;: 1
+    },
+    &quot;encrypted&quot;: false,
+    &quot;human_messages&quot;: [],
+    &quot;membership_epoch&quot;: 2,
+    &quot;outbox&quot;: [
+      {
+        &quot;attempts&quot;: 0,
+        &quot;expires_at&quot;: &quot;2026-11-01T12:00:00Z&quot;,
+        &quot;message_id&quot;: &quot;synthetic-message-1&quot;,
+        &quot;receipt_is_read_confirmation&quot;: false,
+        &quot;state&quot;: &quot;cancelled&quot;
+      }
+    ],
+    &quot;persistent&quot;: false,
+    &quot;simulation_notice&quot;: &quot;Fictional in-memory events; no transport or durable receipt guarantee.&quot;,
+    &quot;status&quot;: &quot;closed&quot;
+  },
+  &quot;cryptography_verified&quot;: false,
+  &quot;denied&quot;: &quot;CHANNEL_CLOSED_OR_BLOCKED&quot;,
+  &quot;execution_kind&quot;: &quot;in_memory_simulation&quot;,
+  &quot;initial_delivery_state&quot;: &quot;queued_local&quot;,
+  &quot;network_used&quot;: false,
+  &quot;persistent_storage_verified&quot;: false,
+  &quot;release&quot;: &quot;R0&quot;,
+  &quot;scenario_id&quot;: &quot;block_then_unblock&quot;,
+  &quot;script_completed&quot;: true,
+  &quot;synthetic_only&quot;: true
+}
+</pre></details><details><summary>private coach</summary><pre>{
+  &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+  &quot;cryptography_verified&quot;: false,
+  &quot;disabled_result&quot;: &quot;COACH_DISABLED_OR_NOT_REQUESTED&quot;,
+  &quot;draft&quot;: {
+    &quot;draft_id&quot;: &quot;synthetic-draft-request-1&quot;,
+    &quot;generation&quot;: &quot;scripted_R0_template&quot;,
+    &quot;may_send&quot;: false,
+    &quot;owner_id&quot;: &quot;synthetic-lumen&quot;,
+    &quot;text&quot;: &quot;What would you test first about Making a portable learning exhibit usable without reading small print?&quot;,
+    &quot;visibility&quot;: &quot;owner_only&quot;
+  },
+  &quot;execution_kind&quot;: &quot;in_memory_simulation&quot;,
+  &quot;human_message_count&quot;: 0,
+  &quot;network_used&quot;: false,
+  &quot;persistent_storage_verified&quot;: false,
+  &quot;publish_result&quot;: &quot;PRIVATE_DRAFT_HAS_NO_SEND_CAPABILITY&quot;,
+  &quot;release&quot;: &quot;R0&quot;,
+  &quot;scenario_id&quot;: &quot;private_coach&quot;,
+  &quot;script_completed&quot;: true,
+  &quot;synthetic_only&quot;: true
+}
+</pre></details><details><summary>chat coach policy</summary><pre>{
+  &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+  &quot;chat_result&quot;: &quot;MUTUAL_CHAT_COACHING_POLICY_REQUIRED&quot;,
+  &quot;cryptography_verified&quot;: false,
+  &quot;disabled_result&quot;: &quot;COACH_DISABLED_OR_NOT_REQUESTED&quot;,
+  &quot;draft&quot;: {
+    &quot;draft_id&quot;: &quot;synthetic-draft-request-1&quot;,
+    &quot;generation&quot;: &quot;scripted_R0_template&quot;,
+    &quot;may_send&quot;: false,
+    &quot;owner_id&quot;: &quot;synthetic-lumen&quot;,
+    &quot;text&quot;: &quot;What would you test first about Making a portable learning exhibit usable without reading small print?&quot;,
+    &quot;visibility&quot;: &quot;owner_only&quot;
+  },
+  &quot;execution_kind&quot;: &quot;in_memory_simulation&quot;,
+  &quot;human_message_count&quot;: 0,
+  &quot;network_used&quot;: false,
+  &quot;persistent_storage_verified&quot;: false,
+  &quot;publish_result&quot;: &quot;PRIVATE_DRAFT_HAS_NO_SEND_CAPABILITY&quot;,
+  &quot;release&quot;: &quot;R0&quot;,
+  &quot;scenario_id&quot;: &quot;chat_coach_policy&quot;,
+  &quot;script_completed&quot;: true,
+  &quot;synthetic_only&quot;: true
+}
+</pre></details><details><summary>finite repeating decimal</summary><pre>{
+  &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+  &quot;cryptography_verified&quot;: false,
+  &quot;execution_kind&quot;: &quot;in_memory_simulation&quot;,
+  &quot;network_used&quot;: false,
+  &quot;persistent_storage_verified&quot;: false,
+  &quot;release&quot;: &quot;R0&quot;,
+  &quot;scenario_id&quot;: &quot;finite_repeating_decimal&quot;,
+  &quot;script_completed&quot;: true,
+  &quot;synthetic_only&quot;: true,
+  &quot;topic&quot;: {
+    &quot;claims_a_shared_disagreement&quot;: false,
+    &quot;kind&quot;: &quot;owner_proposed&quot;,
+    &quot;opening_question&quot;: &quot;How would you explain why finite 0.999 is below 1, while repeating 0.999… equals 1?&quot;,
+    &quot;title&quot;: &quot;Finite and repeating decimals&quot;
+  }
+}
+</pre></details><details><summary>simultaneous start</summary><pre>{
+  &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+  &quot;coordinator&quot;: &quot;fixture-key-a&quot;,
+  &quot;cryptography_verified&quot;: false,
+  &quot;execution_kind&quot;: &quot;in_memory_simulation&quot;,
+  &quot;logical_sessions&quot;: 1,
+  &quot;network_used&quot;: false,
+  &quot;owner_budget_ledger&quot;: [
+    {
+      &quot;counter&quot;: &quot;sessions&quot;,
+      &quot;owner_id&quot;: &quot;fixture-key-a&quot;,
+      &quot;utc_day&quot;: &quot;2026-10-25&quot;,
+      &quot;value&quot;: 1
+    },
+    {
+      &quot;counter&quot;: &quot;sessions&quot;,
+      &quot;owner_id&quot;: &quot;fixture-key-b&quot;,
+      &quot;utc_day&quot;: &quot;2026-10-25&quot;,
+      &quot;value&quot;: 1
+    }
+  ],
+  &quot;persistent_storage_verified&quot;: false,
+  &quot;protocol_status&quot;: &quot;EVALUATING&quot;,
+  &quot;release&quot;: &quot;R0&quot;,
+  &quot;scenario_id&quot;: &quot;simultaneous_start&quot;,
+  &quot;script_completed&quot;: true,
+  &quot;second_session_result&quot;: &quot;PAIR_SESSION_ALREADY_ACTIVE&quot;,
+  &quot;synthetic_only&quot;: true,
+  &quot;trace&quot;: [
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-1&quot;,
+      &quot;event_type&quot;: &quot;PAIR&quot;,
+      &quot;status&quot;: &quot;PAIRED_IDLE&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-2&quot;,
+      &quot;event_type&quot;: &quot;HELLO&quot;,
+      &quot;status&quot;: &quot;OPENING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-3&quot;,
+      &quot;event_type&quot;: &quot;HELLO&quot;,
+      &quot;status&quot;: &quot;OPENING&quot;
+    },
+    {
+      &quot;effects&quot;: [
+        {
+          &quot;kind&quot;: &quot;reserve_session&quot;,
+          &quot;session_id&quot;: &quot;episode-1&quot;
+        }
+      ],
+      &quot;event_id&quot;: &quot;event-4&quot;,
+      &quot;event_type&quot;: &quot;SESSION_OPEN&quot;,
+      &quot;status&quot;: &quot;OPENING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-5&quot;,
+      &quot;event_type&quot;: &quot;SESSION_ACK&quot;,
+      &quot;status&quot;: &quot;OPENING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-6&quot;,
+      &quot;event_type&quot;: &quot;SESSION_ACK&quot;,
+      &quot;status&quot;: &quot;EVALUATING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-7&quot;,
+      &quot;event_type&quot;: &quot;POLICY_OFFER&quot;,
+      &quot;status&quot;: &quot;EVALUATING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-8&quot;,
+      &quot;event_type&quot;: &quot;POLICY_OFFER&quot;,
+      &quot;status&quot;: &quot;EVALUATING&quot;
+    }
+  ]
+}
+</pre></details><details><summary>protocol replay</summary><pre>{
+  &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+  &quot;changed_duplicate_effects&quot;: [
+    {
+      &quot;kind&quot;: &quot;generic_stop&quot;
+    }
+  ],
+  &quot;cryptography_verified&quot;: false,
+  &quot;duplicate_effects&quot;: [
+    {
+      &quot;kind&quot;: &quot;duplicate_ignored&quot;
+    }
+  ],
+  &quot;execution_kind&quot;: &quot;in_memory_simulation&quot;,
+  &quot;network_used&quot;: false,
+  &quot;owner_budget_ledger&quot;: [
+    {
+      &quot;counter&quot;: &quot;outbound_questions&quot;,
+      &quot;owner_id&quot;: &quot;fixture-key-a&quot;,
+      &quot;utc_day&quot;: &quot;2026-10-25&quot;,
+      &quot;value&quot;: 1
+    },
+    {
+      &quot;counter&quot;: &quot;sessions&quot;,
+      &quot;owner_id&quot;: &quot;fixture-key-a&quot;,
+      &quot;utc_day&quot;: &quot;2026-10-25&quot;,
+      &quot;value&quot;: 1
+    },
+    {
+      &quot;counter&quot;: &quot;inbound_answers&quot;,
+      &quot;owner_id&quot;: &quot;fixture-key-b&quot;,
+      &quot;utc_day&quot;: &quot;2026-10-25&quot;,
+      &quot;value&quot;: 1
+    },
+    {
+      &quot;counter&quot;: &quot;sessions&quot;,
+      &quot;owner_id&quot;: &quot;fixture-key-b&quot;,
+      &quot;utc_day&quot;: &quot;2026-10-25&quot;,
+      &quot;value&quot;: 1
+    }
+  ],
+  &quot;persistent_storage_verified&quot;: false,
+  &quot;protocol_status&quot;: &quot;ABORTED&quot;,
+  &quot;release&quot;: &quot;R0&quot;,
+  &quot;scenario_id&quot;: &quot;protocol_replay&quot;,
+  &quot;script_completed&quot;: true,
+  &quot;synthetic_only&quot;: true,
+  &quot;trace&quot;: [
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-1&quot;,
+      &quot;event_type&quot;: &quot;PAIR&quot;,
+      &quot;status&quot;: &quot;PAIRED_IDLE&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-2&quot;,
+      &quot;event_type&quot;: &quot;HELLO&quot;,
+      &quot;status&quot;: &quot;OPENING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-3&quot;,
+      &quot;event_type&quot;: &quot;HELLO&quot;,
+      &quot;status&quot;: &quot;OPENING&quot;
+    },
+    {
+      &quot;effects&quot;: [
+        {
+          &quot;kind&quot;: &quot;reserve_session&quot;,
+          &quot;session_id&quot;: &quot;episode-1&quot;
+        }
+      ],
+      &quot;event_id&quot;: &quot;event-4&quot;,
+      &quot;event_type&quot;: &quot;SESSION_OPEN&quot;,
+      &quot;status&quot;: &quot;OPENING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-5&quot;,
+      &quot;event_type&quot;: &quot;SESSION_ACK&quot;,
+      &quot;status&quot;: &quot;OPENING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-6&quot;,
+      &quot;event_type&quot;: &quot;SESSION_ACK&quot;,
+      &quot;status&quot;: &quot;EVALUATING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-7&quot;,
+      &quot;event_type&quot;: &quot;POLICY_OFFER&quot;,
+      &quot;status&quot;: &quot;EVALUATING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-8&quot;,
+      &quot;event_type&quot;: &quot;POLICY_OFFER&quot;,
+      &quot;status&quot;: &quot;EVALUATING&quot;
+    },
+    {
+      &quot;effects&quot;: [
+        {
+          &quot;count&quot;: 1,
+          &quot;kind&quot;: &quot;reserve_questions&quot;,
+          &quot;receiver&quot;: &quot;fixture-key-b&quot;,
+          &quot;sender&quot;: &quot;fixture-key-a&quot;
+        }
+      ],
+      &quot;event_id&quot;: &quot;event-9&quot;,
+      &quot;event_type&quot;: &quot;QUESTION&quot;,
+      &quot;status&quot;: &quot;EVALUATING&quot;
+    },
+    {
+      &quot;effects&quot;: [
+        {
+          &quot;kind&quot;: &quot;duplicate_ignored&quot;
+        }
+      ],
+      &quot;event_id&quot;: &quot;event-9&quot;,
+      &quot;event_type&quot;: &quot;QUESTION&quot;,
+      &quot;status&quot;: &quot;EVALUATING&quot;
+    },
+    {
+      &quot;effects&quot;: [
+        {
+          &quot;kind&quot;: &quot;generic_stop&quot;
+        }
+      ],
+      &quot;event_id&quot;: &quot;event-9&quot;,
+      &quot;event_type&quot;: &quot;QUESTION&quot;,
+      &quot;status&quot;: &quot;ABORTED&quot;
+    }
+  ]
+}
+</pre></details><details><summary>protocol budgets</summary><pre>{
+  &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+  &quot;cryptography_verified&quot;: false,
+  &quot;denied&quot;: &quot;OWNER_DAILY_QUESTION_LIMIT&quot;,
+  &quot;execution_kind&quot;: &quot;in_memory_simulation&quot;,
+  &quot;network_used&quot;: false,
+  &quot;owner_budget_ledger&quot;: [
+    {
+      &quot;counter&quot;: &quot;outbound_questions&quot;,
+      &quot;owner_id&quot;: &quot;fixture-key-a&quot;,
+      &quot;utc_day&quot;: &quot;2026-10-25&quot;,
+      &quot;value&quot;: 30
+    },
+    {
+      &quot;counter&quot;: &quot;sessions&quot;,
+      &quot;owner_id&quot;: &quot;fixture-key-a&quot;,
+      &quot;utc_day&quot;: &quot;2026-10-25&quot;,
+      &quot;value&quot;: 1
+    },
+    {
+      &quot;counter&quot;: &quot;inbound_answers&quot;,
+      &quot;owner_id&quot;: &quot;fixture-key-b&quot;,
+      &quot;utc_day&quot;: &quot;2026-10-25&quot;,
+      &quot;value&quot;: 30
+    },
+    {
+      &quot;counter&quot;: &quot;sessions&quot;,
+      &quot;owner_id&quot;: &quot;fixture-key-b&quot;,
+      &quot;utc_day&quot;: &quot;2026-10-25&quot;,
+      &quot;value&quot;: 1
+    }
+  ],
+  &quot;persistent_storage_verified&quot;: false,
+  &quot;protocol_status&quot;: &quot;EVALUATING&quot;,
+  &quot;release&quot;: &quot;R0&quot;,
+  &quot;scenario_id&quot;: &quot;protocol_budgets&quot;,
+  &quot;script_completed&quot;: true,
+  &quot;synthetic_only&quot;: true,
+  &quot;trace&quot;: [
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-1&quot;,
+      &quot;event_type&quot;: &quot;PAIR&quot;,
+      &quot;status&quot;: &quot;PAIRED_IDLE&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-2&quot;,
+      &quot;event_type&quot;: &quot;HELLO&quot;,
+      &quot;status&quot;: &quot;OPENING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-3&quot;,
+      &quot;event_type&quot;: &quot;HELLO&quot;,
+      &quot;status&quot;: &quot;OPENING&quot;
+    },
+    {
+      &quot;effects&quot;: [
+        {
+          &quot;kind&quot;: &quot;reserve_session&quot;,
+          &quot;session_id&quot;: &quot;episode-1&quot;
+        }
+      ],
+      &quot;event_id&quot;: &quot;event-4&quot;,
+      &quot;event_type&quot;: &quot;SESSION_OPEN&quot;,
+      &quot;status&quot;: &quot;OPENING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-5&quot;,
+      &quot;event_type&quot;: &quot;SESSION_ACK&quot;,
+      &quot;status&quot;: &quot;OPENING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-6&quot;,
+      &quot;event_type&quot;: &quot;SESSION_ACK&quot;,
+      &quot;status&quot;: &quot;EVALUATING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-7&quot;,
+      &quot;event_type&quot;: &quot;POLICY_OFFER&quot;,
+      &quot;status&quot;: &quot;EVALUATING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-8&quot;,
+      &quot;event_type&quot;: &quot;POLICY_OFFER&quot;,
+      &quot;status&quot;: &quot;EVALUATING&quot;
+    }
+  ]
+}
+</pre></details><details><summary>generic private stop</summary><pre>{
+  &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+  &quot;cryptography_verified&quot;: false,
+  &quot;execution_kind&quot;: &quot;in_memory_simulation&quot;,
+  &quot;network_used&quot;: false,
+  &quot;owner_budget_ledger&quot;: [
+    {
+      &quot;counter&quot;: &quot;sessions&quot;,
+      &quot;owner_id&quot;: &quot;fixture-key-a&quot;,
+      &quot;utc_day&quot;: &quot;2026-10-25&quot;,
+      &quot;value&quot;: 1
+    },
+    {
+      &quot;counter&quot;: &quot;sessions&quot;,
+      &quot;owner_id&quot;: &quot;fixture-key-b&quot;,
+      &quot;utc_day&quot;: &quot;2026-10-25&quot;,
+      &quot;value&quot;: 1
+    }
+  ],
+  &quot;persistent_storage_verified&quot;: false,
+  &quot;private_reason_not_in_wire_stop&quot;: true,
+  &quot;protocol_status&quot;: &quot;DECLINED&quot;,
+  &quot;release&quot;: &quot;R0&quot;,
+  &quot;scenario_id&quot;: &quot;generic_private_stop&quot;,
+  &quot;script_completed&quot;: true,
+  &quot;synthetic_only&quot;: true,
+  &quot;trace&quot;: [
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-1&quot;,
+      &quot;event_type&quot;: &quot;PAIR&quot;,
+      &quot;status&quot;: &quot;PAIRED_IDLE&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-2&quot;,
+      &quot;event_type&quot;: &quot;HELLO&quot;,
+      &quot;status&quot;: &quot;OPENING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-3&quot;,
+      &quot;event_type&quot;: &quot;HELLO&quot;,
+      &quot;status&quot;: &quot;OPENING&quot;
+    },
+    {
+      &quot;effects&quot;: [
+        {
+          &quot;kind&quot;: &quot;reserve_session&quot;,
+          &quot;session_id&quot;: &quot;episode-1&quot;
+        }
+      ],
+      &quot;event_id&quot;: &quot;event-4&quot;,
+      &quot;event_type&quot;: &quot;SESSION_OPEN&quot;,
+      &quot;status&quot;: &quot;OPENING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-5&quot;,
+      &quot;event_type&quot;: &quot;SESSION_ACK&quot;,
+      &quot;status&quot;: &quot;OPENING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-6&quot;,
+      &quot;event_type&quot;: &quot;SESSION_ACK&quot;,
+      &quot;status&quot;: &quot;EVALUATING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-7&quot;,
+      &quot;event_type&quot;: &quot;POLICY_OFFER&quot;,
+      &quot;status&quot;: &quot;EVALUATING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-8&quot;,
+      &quot;event_type&quot;: &quot;POLICY_OFFER&quot;,
+      &quot;status&quot;: &quot;EVALUATING&quot;
+    },
+    {
+      &quot;effects&quot;: [
+        {
+          &quot;kind&quot;: &quot;generic_stop&quot;
+        }
+      ],
+      &quot;event_id&quot;: &quot;event-9&quot;,
+      &quot;event_type&quot;: &quot;DECLINE&quot;,
+      &quot;status&quot;: &quot;DECLINED&quot;
+    }
+  ],
+  &quot;wire_stop&quot;: [
+    {
+      &quot;kind&quot;: &quot;generic_stop&quot;
+    }
+  ]
+}
+</pre></details><details><summary>contact release</summary><pre>{
+  &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+  &quot;cryptography_verified&quot;: false,
+  &quot;delivery_before_ack&quot;: &quot;SENT_UNACKNOWLEDGED&quot;,
+  &quot;execution_kind&quot;: &quot;in_memory_simulation&quot;,
+  &quot;network_used&quot;: false,
+  &quot;owner_budget_ledger&quot;: [
+    {
+      &quot;counter&quot;: &quot;contact_releases&quot;,
+      &quot;owner_id&quot;: &quot;fixture-key-a&quot;,
+      &quot;utc_day&quot;: &quot;2026-10-25&quot;,
+      &quot;value&quot;: 1
+    },
+    {
+      &quot;counter&quot;: &quot;sessions&quot;,
+      &quot;owner_id&quot;: &quot;fixture-key-a&quot;,
+      &quot;utc_day&quot;: &quot;2026-10-25&quot;,
+      &quot;value&quot;: 1
+    },
+    {
+      &quot;counter&quot;: &quot;sessions&quot;,
+      &quot;owner_id&quot;: &quot;fixture-key-b&quot;,
+      &quot;utc_day&quot;: &quot;2026-10-25&quot;,
+      &quot;value&quot;: 1
+    }
+  ],
+  &quot;persistent_storage_verified&quot;: false,
+  &quot;protocol_status&quot;: &quot;COMPLETE&quot;,
+  &quot;release&quot;: &quot;R0&quot;,
+  &quot;scenario_id&quot;: &quot;contact_release&quot;,
+  &quot;script_completed&quot;: true,
+  &quot;synthetic_only&quot;: true,
+  &quot;trace&quot;: [
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-1&quot;,
+      &quot;event_type&quot;: &quot;PAIR&quot;,
+      &quot;status&quot;: &quot;PAIRED_IDLE&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-2&quot;,
+      &quot;event_type&quot;: &quot;HELLO&quot;,
+      &quot;status&quot;: &quot;OPENING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-3&quot;,
+      &quot;event_type&quot;: &quot;HELLO&quot;,
+      &quot;status&quot;: &quot;OPENING&quot;
+    },
+    {
+      &quot;effects&quot;: [
+        {
+          &quot;kind&quot;: &quot;reserve_session&quot;,
+          &quot;session_id&quot;: &quot;episode-1&quot;
+        }
+      ],
+      &quot;event_id&quot;: &quot;event-4&quot;,
+      &quot;event_type&quot;: &quot;SESSION_OPEN&quot;,
+      &quot;status&quot;: &quot;OPENING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-5&quot;,
+      &quot;event_type&quot;: &quot;SESSION_ACK&quot;,
+      &quot;status&quot;: &quot;OPENING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-6&quot;,
+      &quot;event_type&quot;: &quot;SESSION_ACK&quot;,
+      &quot;status&quot;: &quot;EVALUATING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-7&quot;,
+      &quot;event_type&quot;: &quot;POLICY_OFFER&quot;,
+      &quot;status&quot;: &quot;EVALUATING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-8&quot;,
+      &quot;event_type&quot;: &quot;POLICY_OFFER&quot;,
+      &quot;status&quot;: &quot;EVALUATING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-9&quot;,
+      &quot;event_type&quot;: &quot;PROPOSAL&quot;,
+      &quot;status&quot;: &quot;PROPOSAL_PENDING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-10&quot;,
+      &quot;event_type&quot;: &quot;OWNER_ACCEPT&quot;,
+      &quot;status&quot;: &quot;LOCAL_ACCEPTED&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-11&quot;,
+      &quot;event_type&quot;: &quot;OWNER_ACCEPT&quot;,
+      &quot;status&quot;: &quot;MUTUAL_ACCEPTED&quot;
+    },
+    {
+      &quot;effects&quot;: [
+        {
+          &quot;kind&quot;: &quot;would_release&quot;,
+          &quot;owner&quot;: &quot;fixture-key-a&quot;,
+          &quot;release_id&quot;: &quot;synthetic-release-1&quot;,
+          &quot;reserve&quot;: true,
+          &quot;transmission_performed&quot;: false
+        }
+      ],
+      &quot;event_id&quot;: &quot;event-12&quot;,
+      &quot;event_type&quot;: &quot;CONTACT_RELEASE&quot;,
+      &quot;status&quot;: &quot;SENT_UNACKNOWLEDGED&quot;
+    },
+    {
+      &quot;effects&quot;: [
+        {
+          &quot;kind&quot;: &quot;fictional_receipt&quot;,
+          &quot;read_confirmation&quot;: false
+        }
+      ],
+      &quot;event_id&quot;: &quot;event-13&quot;,
+      &quot;event_type&quot;: &quot;RELEASE_ACK&quot;,
+      &quot;status&quot;: &quot;COMPLETE&quot;
+    }
+  ]
+}
+</pre></details><details><summary>contact asymmetric delivery</summary><pre>{
+  &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+  &quot;bilateral_delivery_atomic&quot;: false,
+  &quot;cryptography_verified&quot;: false,
+  &quot;delivery_before_ack&quot;: &quot;SENT_UNACKNOWLEDGED&quot;,
+  &quot;delivery_note&quot;: &quot;Fictional separate endpoint states; no process crash, durable storage or real send is asserted.&quot;,
+  &quot;execution_kind&quot;: &quot;in_memory_simulation&quot;,
+  &quot;network_used&quot;: false,
+  &quot;owner_budget_ledger&quot;: [
+    {
+      &quot;counter&quot;: &quot;contact_releases&quot;,
+      &quot;owner_id&quot;: &quot;fixture-key-a&quot;,
+      &quot;utc_day&quot;: &quot;2026-10-25&quot;,
+      &quot;value&quot;: 1
+    },
+    {
+      &quot;counter&quot;: &quot;sessions&quot;,
+      &quot;owner_id&quot;: &quot;fixture-key-a&quot;,
+      &quot;utc_day&quot;: &quot;2026-10-25&quot;,
+      &quot;value&quot;: 1
+    },
+    {
+      &quot;counter&quot;: &quot;sessions&quot;,
+      &quot;owner_id&quot;: &quot;fixture-key-b&quot;,
+      &quot;utc_day&quot;: &quot;2026-10-25&quot;,
+      &quot;value&quot;: 1
+    }
+  ],
+  &quot;persistent_storage_verified&quot;: false,
+  &quot;protocol_status&quot;: &quot;COMPLETE&quot;,
+  &quot;receiver_before_ack&quot;: {
+    &quot;application_received&quot;: true,
+    &quot;duplicate&quot;: false,
+    &quot;durable&quot;: false,
+    &quot;read_confirmation&quot;: false,
+    &quot;receiver_id&quot;: &quot;fixture-key-b&quot;,
+    &quot;release_id&quot;: &quot;synthetic-release-1&quot;
+  },
+  &quot;receiver_distinct_release_count&quot;: 1,
+  &quot;receiver_own_contact_release&quot;: &quot;not_sent&quot;,
+  &quot;release&quot;: &quot;R0&quot;,
+  &quot;retry_receipt&quot;: {
+    &quot;application_received&quot;: true,
+    &quot;duplicate&quot;: true,
+    &quot;durable&quot;: false,
+    &quot;read_confirmation&quot;: false,
+    &quot;receiver_id&quot;: &quot;fixture-key-b&quot;,
+    &quot;release_id&quot;: &quot;synthetic-release-1&quot;
+  },
+  &quot;scenario_id&quot;: &quot;contact_asymmetric_delivery&quot;,
+  &quot;script_completed&quot;: true,
+  &quot;sender_before_lost_ack&quot;: &quot;SENT_UNACKNOWLEDGED&quot;,
+  &quot;synthetic_only&quot;: true,
+  &quot;trace&quot;: [
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-1&quot;,
+      &quot;event_type&quot;: &quot;PAIR&quot;,
+      &quot;status&quot;: &quot;PAIRED_IDLE&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-2&quot;,
+      &quot;event_type&quot;: &quot;HELLO&quot;,
+      &quot;status&quot;: &quot;OPENING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-3&quot;,
+      &quot;event_type&quot;: &quot;HELLO&quot;,
+      &quot;status&quot;: &quot;OPENING&quot;
+    },
+    {
+      &quot;effects&quot;: [
+        {
+          &quot;kind&quot;: &quot;reserve_session&quot;,
+          &quot;session_id&quot;: &quot;episode-1&quot;
+        }
+      ],
+      &quot;event_id&quot;: &quot;event-4&quot;,
+      &quot;event_type&quot;: &quot;SESSION_OPEN&quot;,
+      &quot;status&quot;: &quot;OPENING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-5&quot;,
+      &quot;event_type&quot;: &quot;SESSION_ACK&quot;,
+      &quot;status&quot;: &quot;OPENING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-6&quot;,
+      &quot;event_type&quot;: &quot;SESSION_ACK&quot;,
+      &quot;status&quot;: &quot;EVALUATING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-7&quot;,
+      &quot;event_type&quot;: &quot;POLICY_OFFER&quot;,
+      &quot;status&quot;: &quot;EVALUATING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-8&quot;,
+      &quot;event_type&quot;: &quot;POLICY_OFFER&quot;,
+      &quot;status&quot;: &quot;EVALUATING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-9&quot;,
+      &quot;event_type&quot;: &quot;PROPOSAL&quot;,
+      &quot;status&quot;: &quot;PROPOSAL_PENDING&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-10&quot;,
+      &quot;event_type&quot;: &quot;OWNER_ACCEPT&quot;,
+      &quot;status&quot;: &quot;LOCAL_ACCEPTED&quot;
+    },
+    {
+      &quot;effects&quot;: [],
+      &quot;event_id&quot;: &quot;event-11&quot;,
+      &quot;event_type&quot;: &quot;OWNER_ACCEPT&quot;,
+      &quot;status&quot;: &quot;MUTUAL_ACCEPTED&quot;
+    },
+    {
+      &quot;effects&quot;: [
+        {
+          &quot;kind&quot;: &quot;would_release&quot;,
+          &quot;owner&quot;: &quot;fixture-key-a&quot;,
+          &quot;release_id&quot;: &quot;synthetic-release-1&quot;,
+          &quot;reserve&quot;: true,
+          &quot;transmission_performed&quot;: false
+        }
+      ],
+      &quot;event_id&quot;: &quot;event-12&quot;,
+      &quot;event_type&quot;: &quot;CONTACT_RELEASE&quot;,
+      &quot;status&quot;: &quot;SENT_UNACKNOWLEDGED&quot;
+    },
+    {
+      &quot;effects&quot;: [
+        {
+          &quot;kind&quot;: &quot;would_release&quot;,
+          &quot;owner&quot;: &quot;fixture-key-a&quot;,
+          &quot;release_id&quot;: &quot;synthetic-release-1&quot;,
+          &quot;reserve&quot;: false,
+          &quot;transmission_performed&quot;: false
+        }
+      ],
+      &quot;event_id&quot;: &quot;event-13&quot;,
+      &quot;event_type&quot;: &quot;CONTACT_RELEASE&quot;,
+      &quot;status&quot;: &quot;SENT_UNACKNOWLEDGED&quot;
+    },
+    {
+      &quot;effects&quot;: [
+        {
+          &quot;kind&quot;: &quot;fictional_receipt&quot;,
+          &quot;read_confirmation&quot;: false
+        }
+      ],
+      &quot;event_id&quot;: &quot;event-14&quot;,
+      &quot;event_type&quot;: &quot;RELEASE_ACK&quot;,
+      &quot;status&quot;: &quot;COMPLETE&quot;
+    }
+  ]
+}
+</pre></details><details><summary>contact kind separation</summary><pre>{
+  &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+  &quot;cryptography_verified&quot;: false,
+  &quot;denied&quot;: &quot;EXACT_DUAL_ACCEPTANCE_REQUIRED&quot;,
+  &quot;execution_kind&quot;: &quot;in_memory_simulation&quot;,
+  &quot;network_used&quot;: false,
+  &quot;persistent_storage_verified&quot;: false,
+  &quot;release&quot;: &quot;R0&quot;,
+  &quot;scenario_id&quot;: &quot;contact_kind_separation&quot;,
+  &quot;script_completed&quot;: true,
+  &quot;synthetic_only&quot;: true
+}
+</pre></details><details><summary>session expiry</summary><pre>{
+  &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+  &quot;channel&quot;: {
+    &quot;channel_id&quot;: &quot;synthetic-channel-synthetic-proposal-1-1&quot;,
+    &quot;connected&quot;: true,
+    &quot;context_panel&quot;: {
+      &quot;context_id&quot;: &quot;synthetic-context-1&quot;,
+      &quot;display_identities&quot;: [
+        {
+          &quot;alias&quot;: &quot;Lumen&quot;,
+          &quot;identity_verified&quot;: false,
+          &quot;version&quot;: 1
+        },
+        {
+          &quot;alias&quot;: &quot;Harbor&quot;,
+          &quot;identity_verified&quot;: false,
+          &quot;version&quot;: 1
+        }
+      ],
+      &quot;label&quot;: &quot;Introduction context&quot;,
+      &quot;participant_ids&quot;: [
+        &quot;synthetic-lumen&quot;,
+        &quot;synthetic-harbor&quot;
+      ],
+      &quot;purpose&quot;: &quot;collaboration&quot;,
+      &quot;topic&quot;: {
+        &quot;kind&quot;: &quot;evidence_supported&quot;,
+        &quot;opening_question&quot;: &quot;What would you test first about Making a portable learning exhibit usable without reading small print?&quot;,
+        &quot;relationship&quot;: &quot;shared_topic&quot;,
+        &quot;statements&quot;: [
+          &quot;I want to test a portable learning exhibit with visitors who use different reading strategies.&quot;,
+          &quot;I want to review the tactile labels and installation instructions for a portable learning exhibit.&quot;
+        ],
+        &quot;title&quot;: &quot;Making a portable learning exhibit usable without reading small print&quot;,
+        &quot;topic_id&quot;: &quot;portable-learning-exhibit&quot;,
+        &quot;version&quot;: 1
+      },
+      &quot;version&quot;: 1
+    },
+    &quot;encrypted&quot;: false,
+    &quot;human_messages&quot;: [
+      {
+        &quot;author_id&quot;: &quot;synthetic-lumen&quot;,
+        &quot;channel_id&quot;: &quot;synthetic-channel-synthetic-proposal-1-1&quot;,
+        &quot;created_at&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+        &quot;expires_at&quot;: &quot;2026-11-01T12:00:00Z&quot;,
+        &quot;membership_epoch&quot;: 1,
+        &quot;message_id&quot;: &quot;synthetic-message-1&quot;,
+        &quot;message_type&quot;: &quot;HUMAN_MESSAGE&quot;,
+        &quot;schema_version&quot;: &quot;r0.1&quot;,
+        &quot;sequence&quot;: 1,
+        &quot;text&quot;: &quot;Could we begin by testing a tactile label on the smallest exhibit panel?&quot;
+      }
+    ],
+    &quot;membership_epoch&quot;: 1,
+    &quot;outbox&quot;: [
+      {
+        &quot;attempts&quot;: 1,
+        &quot;expires_at&quot;: &quot;2026-11-01T12:00:00Z&quot;,
+        &quot;message_id&quot;: &quot;synthetic-message-1&quot;,
+        &quot;receipt_is_read_confirmation&quot;: false,
+        &quot;state&quot;: &quot;acknowledged&quot;
+      }
+    ],
+    &quot;persistent&quot;: false,
+    &quot;simulation_notice&quot;: &quot;Fictional in-memory events; no transport or durable receipt guarantee.&quot;,
+    &quot;status&quot;: &quot;ready&quot;
+  },
+  &quot;cryptography_verified&quot;: false,
+  &quot;execution_kind&quot;: &quot;in_memory_simulation&quot;,
+  &quot;initial_delivery_state&quot;: &quot;queued_local&quot;,
+  &quot;network_used&quot;: false,
+  &quot;persistent_storage_verified&quot;: false,
+  &quot;receipt&quot;: {
+    &quot;application_received&quot;: true,
+    &quot;duplicate&quot;: false,
+    &quot;message_id&quot;: &quot;synthetic-message-1&quot;,
+    &quot;read_confirmation&quot;: false
+  },
+  &quot;release&quot;: &quot;R0&quot;,
+  &quot;scenario_id&quot;: &quot;session_expiry&quot;,
+  &quot;script_completed&quot;: true,
+  &quot;synthetic_only&quot;: true
+}
+</pre></details><details><summary>interview default budget</summary><pre>{
+  &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+  &quot;budget&quot;: 6,
+  &quot;execution&quot;: &quot;scripted_no_language_model&quot;,
+  &quot;extensions&quot;: 0,
+  &quot;persistent_storage&quot;: false,
+  &quot;presented&quot;: 6,
+  &quot;proposals_pending&quot;: 0,
+  &quot;scenario_id&quot;: &quot;interview-default-budget&quot;,
+  &quot;session_id&quot;: &quot;interview-default-budget&quot;,
+  &quot;state&quot;: &quot;review_pending&quot;,
+  &quot;statement&quot;: &quot;Scripted fictional controls; not a natural-language extraction test.&quot;,
+  &quot;synthetic&quot;: true,
+  &quot;trace&quot;: [
+    {
+      &quot;budget&quot;: 6,
+      &quot;event&quot;: &quot;question_presented&quot;,
+      &quot;number&quot;: 1,
+      &quot;question_id&quot;: &quot;q01&quot;,
+      &quot;reason&quot;: &quot;A permitted current project fact is missing.&quot;,
+      &quot;text&quot;: &quot;What time could you comfortably give this project?&quot;
+    },
+    {
+      &quot;event&quot;: &quot;question_skipped&quot;,
+      &quot;question_id&quot;: &quot;q01&quot;
+    },
+    {
+      &quot;budget&quot;: 6,
+      &quot;event&quot;: &quot;question_presented&quot;,
+      &quot;number&quot;: 2,
+      &quot;question_id&quot;: &quot;q02&quot;,
+      &quot;reason&quot;: &quot;A permitted current project fact is missing.&quot;,
+      &quot;text&quot;: &quot;What part of a project would you like to take responsibility for?&quot;
+    },
+    {
+      &quot;event&quot;: &quot;question_skipped&quot;,
+      &quot;question_id&quot;: &quot;q02&quot;
+    },
+    {
+      &quot;budget&quot;: 6,
+      &quot;event&quot;: &quot;question_presented&quot;,
+      &quot;number&quot;: 3,
+      &quot;question_id&quot;: &quot;q03&quot;,
+      &quot;reason&quot;: &quot;A permitted current project fact is missing.&quot;,
+      &quot;text&quot;: &quot;What would you like a collaborator to help you finish?&quot;
+    },
+    {
+      &quot;event&quot;: &quot;question_skipped&quot;,
+      &quot;question_id&quot;: &quot;q03&quot;
+    },
+    {
+      &quot;budget&quot;: 6,
+      &quot;event&quot;: &quot;question_presented&quot;,
+      &quot;number&quot;: 4,
+      &quot;question_id&quot;: &quot;q04&quot;,
+      &quot;reason&quot;: &quot;A permitted current project fact is missing.&quot;,
+      &quot;text&quot;: &quot;Tell me about feedback that helped you improve something.&quot;
+    },
+    {
+      &quot;event&quot;: &quot;question_skipped&quot;,
+      &quot;question_id&quot;: &quot;q04&quot;
+    },
+    {
+      &quot;budget&quot;: 6,
+      &quot;event&quot;: &quot;question_presented&quot;,
+      &quot;number&quot;: 5,
+      &quot;question_id&quot;: &quot;q05&quot;,
+      &quot;reason&quot;: &quot;A permitted current project fact is missing.&quot;,
+      &quot;text&quot;: &quot;How do you like to decide what happens next on a project?&quot;
+    },
+    {
+      &quot;event&quot;: &quot;question_skipped&quot;,
+      &quot;question_id&quot;: &quot;q05&quot;
+    },
+    {
+      &quot;budget&quot;: 6,
+      &quot;event&quot;: &quot;question_presented&quot;,
+      &quot;number&quot;: 6,
+      &quot;question_id&quot;: &quot;q06&quot;,
+      &quot;reason&quot;: &quot;A permitted current project fact is missing.&quot;,
+      &quot;text&quot;: &quot;When a project disagreement went well, what helped?&quot;
+    },
+    {
+      &quot;event&quot;: &quot;question_skipped&quot;,
+      &quot;question_id&quot;: &quot;q06&quot;
+    }
+  ]
+}
+</pre></details><details><summary>interview extension</summary><pre>{
+  &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+  &quot;budget&quot;: 20,
+  &quot;execution&quot;: &quot;scripted_no_language_model&quot;,
+  &quot;extensions&quot;: 1,
+  &quot;persistent_storage&quot;: false,
+  &quot;presented&quot;: 20,
+  &quot;proposals_pending&quot;: 0,
+  &quot;scenario_id&quot;: &quot;interview-extension&quot;,
+  &quot;session_id&quot;: &quot;interview-extension&quot;,
+  &quot;state&quot;: &quot;review_pending&quot;,
+  &quot;statement&quot;: &quot;Scripted fictional controls; not a natural-language extraction test.&quot;,
+  &quot;synthetic&quot;: true,
+  &quot;trace&quot;: [
+    {
+      &quot;budget&quot;: 6,
+      &quot;event&quot;: &quot;question_presented&quot;,
+      &quot;number&quot;: 1,
+      &quot;question_id&quot;: &quot;q01&quot;,
+      &quot;reason&quot;: &quot;A permitted current project fact is missing.&quot;,
+      &quot;text&quot;: &quot;What time could you comfortably give this project?&quot;
+    },
+    {
+      &quot;event&quot;: &quot;question_skipped&quot;,
+      &quot;question_id&quot;: &quot;q01&quot;
+    },
+    {
+      &quot;budget&quot;: 6,
+      &quot;event&quot;: &quot;question_presented&quot;,
+      &quot;number&quot;: 2,
+      &quot;question_id&quot;: &quot;q02&quot;,
+      &quot;reason&quot;: &quot;A permitted current project fact is missing.&quot;,
+      &quot;text&quot;: &quot;What part of a project would you like to take responsibility for?&quot;
+    },
+    {
+      &quot;event&quot;: &quot;question_skipped&quot;,
+      &quot;question_id&quot;: &quot;q02&quot;
+    },
+    {
+      &quot;budget&quot;: 6,
+      &quot;event&quot;: &quot;question_presented&quot;,
+      &quot;number&quot;: 3,
+      &quot;question_id&quot;: &quot;q03&quot;,
+      &quot;reason&quot;: &quot;A permitted current project fact is missing.&quot;,
+      &quot;text&quot;: &quot;What would you like a collaborator to help you finish?&quot;
+    },
+    {
+      &quot;event&quot;: &quot;question_skipped&quot;,
+      &quot;question_id&quot;: &quot;q03&quot;
+    },
+    {
+      &quot;budget&quot;: 6,
+      &quot;event&quot;: &quot;question_presented&quot;,
+      &quot;number&quot;: 4,
+      &quot;question_id&quot;: &quot;q04&quot;,
+      &quot;reason&quot;: &quot;A permitted current project fact is missing.&quot;,
+      &quot;text&quot;: &quot;Tell me about feedback that helped you improve something.&quot;
+    },
+    {
+      &quot;event&quot;: &quot;question_skipped&quot;,
+      &quot;question_id&quot;: &quot;q04&quot;
+    },
+    {
+      &quot;budget&quot;: 6,
+      &quot;event&quot;: &quot;question_presented&quot;,
+      &quot;number&quot;: 5,
+      &quot;question_id&quot;: &quot;q05&quot;,
+      &quot;reason&quot;: &quot;A permitted current project fact is missing.&quot;,
+      &quot;text&quot;: &quot;How do you like to decide what happens next on a project?&quot;
+    },
+    {
+      &quot;event&quot;: &quot;question_skipped&quot;,
+      &quot;question_id&quot;: &quot;q05&quot;
+    },
+    {
+      &quot;budget&quot;: 6,
+      &quot;event&quot;: &quot;question_presented&quot;,
+      &quot;number&quot;: 6,
+      &quot;question_id&quot;: &quot;q06&quot;,
+      &quot;reason&quot;: &quot;A permitted current project fact is missing.&quot;,
+      &quot;text&quot;: &quot;When a project disagreement went well, what helped?&quot;
+    },
+    {
+      &quot;event&quot;: &quot;question_skipped&quot;,
+      &quot;question_id&quot;: &quot;q06&quot;
+    },
+    {
+      &quot;event&quot;: &quot;owner_extended&quot;,
+      &quot;total_budget&quot;: 20
+    },
+    {
+      &quot;budget&quot;: 20,
+      &quot;event&quot;: &quot;question_presented&quot;,
+      &quot;number&quot;: 7,
+      &quot;question_id&quot;: &quot;q07&quot;,
+      &quot;reason&quot;: &quot;A permitted current project fact is missing.&quot;,
+      &quot;text&quot;: &quot;How much of the plan do you like to settle before starting?&quot;
+    },
+    {
+      &quot;event&quot;: &quot;question_skipped&quot;,
+      &quot;question_id&quot;: &quot;q07&quot;
+    },
+    {
+      &quot;budget&quot;: 20,
+      &quot;event&quot;: &quot;question_presented&quot;,
+      &quot;number&quot;: 8,
+      &quot;question_id&quot;: &quot;q08&quot;,
+      &quot;reason&quot;: &quot;A permitted current project fact is missing.&quot;,
+      &quot;text&quot;: &quot;What makes a small milestone feel finished to you?&quot;
+    },
+    {
+      &quot;event&quot;: &quot;question_skipped&quot;,
+      &quot;question_id&quot;: &quot;q08&quot;
+    },
+    {
+      &quot;budget&quot;: 20,
+      &quot;event&quot;: &quot;question_presented&quot;,
+      &quot;number&quot;: 9,
+      &quot;question_id&quot;: &quot;q09&quot;,
+      &quot;reason&quot;: &quot;A permitted current project fact is missing.&quot;,
+      &quot;text&quot;: &quot;What makes a discussion easiest for you to follow?&quot;
+    },
+    {
+      &quot;event&quot;: &quot;question_skipped&quot;,
+      &quot;question_id&quot;: &quot;q09&quot;
+    },
+    {
+      &quot;budget&quot;: 20,
+      &quot;event&quot;: &quot;question_presented&quot;,
+      &quot;number&quot;: 10,
+      &quot;question_id&quot;: &quot;q10&quot;,
+      &quot;reason&quot;: &quot;A permitted current project fact is missing.&quot;,
+      &quot;text&quot;: &quot;What do you usually try first when an idea is uncertain?&quot;
+    },
+    {
+      &quot;event&quot;: &quot;question_skipped&quot;,
+      &quot;question_id&quot;: &quot;q10&quot;
+    },
+    {
+      &quot;budget&quot;: 20,
+      &quot;event&quot;: &quot;question_presented&quot;,
+      &quot;number&quot;: 11,
+      &quot;question_id&quot;: &quot;q11&quot;,
+      &quot;reason&quot;: &quot;A permitted current project fact is missing.&quot;,
+      &quot;text&quot;: &quot;What is something you have enjoyed thinking about lately?&quot;
+    },
+    {
+      &quot;event&quot;: &quot;question_skipped&quot;,
+      &quot;question_id&quot;: &quot;q11&quot;
+    },
+    {
+      &quot;budget&quot;: 20,
+      &quot;event&quot;: &quot;question_presented&quot;,
+      &quot;number&quot;: 12,
+      &quot;question_id&quot;: &quot;q12&quot;,
+      &quot;reason&quot;: &quot;A permitted current project fact is missing.&quot;,
+      &quot;text&quot;: &quot;What question in that subject keeps pulling you back?&quot;
+    },
+    {
+      &quot;event&quot;: &quot;question_skipped&quot;,
+      &quot;question_id&quot;: &quot;q12&quot;
+    },
+    {
+      &quot;budget&quot;: 20,
+      &quot;event&quot;: &quot;question_presented&quot;,
+      &quot;number&quot;: 13,
+      &quot;question_id&quot;: &quot;q13&quot;,
+      &quot;reason&quot;: &quot;A permitted current project fact is missing.&quot;,
+      &quot;text&quot;: &quot;What kinds of examples make a new idea click for you?&quot;
+    },
+    {
+      &quot;event&quot;: &quot;question_skipped&quot;,
+      &quot;question_id&quot;: &quot;q13&quot;
+    },
+    {
+      &quot;budget&quot;: 20,
+      &quot;event&quot;: &quot;question_presented&quot;,
+      &quot;number&quot;: 14,
+      &quot;question_id&quot;: &quot;q14&quot;,
+      &quot;reason&quot;: &quot;A permitted current project fact is missing.&quot;,
+      &quot;text&quot;: &quot;What makes it easy to pick up someone else&#x27;s work?&quot;
+    },
+    {
+      &quot;event&quot;: &quot;question_skipped&quot;,
+      &quot;question_id&quot;: &quot;q14&quot;
+    },
+    {
+      &quot;budget&quot;: 20,
+      &quot;event&quot;: &quot;question_presented&quot;,
+      &quot;number&quot;: 15,
+      &quot;question_id&quot;: &quot;q15&quot;,
+      &quot;reason&quot;: &quot;A permitted current project fact is missing.&quot;,
+      &quot;text&quot;: &quot;When do you prefer to work on one thing for a while?&quot;
+    },
+    {
+      &quot;event&quot;: &quot;question_skipped&quot;,
+      &quot;question_id&quot;: &quot;q15&quot;
+    },
+    {
+      &quot;budget&quot;: 20,
+      &quot;event&quot;: &quot;question_presented&quot;,
+      &quot;number&quot;: 16,
+      &quot;question_id&quot;: &quot;q16&quot;,
+      &quot;reason&quot;: &quot;A permitted current project fact is missing.&quot;,
+      &quot;text&quot;: &quot;What would a useful project check-in look like?&quot;
+    },
+    {
+      &quot;event&quot;: &quot;question_skipped&quot;,
+      &quot;question_id&quot;: &quot;q16&quot;
+    },
+    {
+      &quot;budget&quot;: 20,
+      &quot;event&quot;: &quot;question_presented&quot;,
+      &quot;number&quot;: 17,
+      &quot;question_id&quot;: &quot;q17&quot;,
+      &quot;reason&quot;: &quot;A permitted current project fact is missing.&quot;,
+      &quot;text&quot;: &quot;How do you decide which tempting extra idea to leave for later?&quot;
+    },
+    {
+      &quot;event&quot;: &quot;question_skipped&quot;,
+      &quot;question_id&quot;: &quot;q17&quot;
+    },
+    {
+      &quot;budget&quot;: 20,
+      &quot;event&quot;: &quot;question_presented&quot;,
+      &quot;number&quot;: 18,
+      &quot;question_id&quot;: &quot;q18&quot;,
+      &quot;reason&quot;: &quot;A permitted current project fact is missing.&quot;,
+      &quot;text&quot;: &quot;What kind of question helps when you are stuck?&quot;
+    },
+    {
+      &quot;event&quot;: &quot;question_skipped&quot;,
+      &quot;question_id&quot;: &quot;q18&quot;
+    },
+    {
+      &quot;budget&quot;: 20,
+      &quot;event&quot;: &quot;question_presented&quot;,
+      &quot;number&quot;: 19,
+      &quot;question_id&quot;: &quot;q19&quot;,
+      &quot;reason&quot;: &quot;A permitted current project fact is missing.&quot;,
+      &quot;text&quot;: &quot;When explaining your work, where do you start?&quot;
+    },
+    {
+      &quot;event&quot;: &quot;question_skipped&quot;,
+      &quot;question_id&quot;: &quot;q19&quot;
+    },
+    {
+      &quot;budget&quot;: 20,
+      &quot;event&quot;: &quot;question_presented&quot;,
+      &quot;number&quot;: 20,
+      &quot;question_id&quot;: &quot;q20&quot;,
+      &quot;reason&quot;: &quot;A permitted current project fact is missing.&quot;,
+      &quot;text&quot;: &quot;What would you want written down for a collaborator?&quot;
+    },
+    {
+      &quot;event&quot;: &quot;question_skipped&quot;,
+      &quot;question_id&quot;: &quot;q20&quot;
+    }
+  ]
+}
+</pre></details><details><summary>interview refusal</summary><pre>{
+  &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+  &quot;budget&quot;: 6,
+  &quot;execution&quot;: &quot;scripted_no_language_model&quot;,
+  &quot;extensions&quot;: 0,
+  &quot;persistent_storage&quot;: false,
+  &quot;presented&quot;: 1,
+  &quot;proposals_pending&quot;: 0,
+  &quot;scenario_id&quot;: &quot;interview-refusal&quot;,
+  &quot;session_id&quot;: &quot;interview-refusal&quot;,
+  &quot;state&quot;: &quot;review_pending&quot;,
+  &quot;statement&quot;: &quot;Scripted fictional controls; not a natural-language extraction test.&quot;,
+  &quot;synthetic&quot;: true,
+  &quot;trace&quot;: [
+    {
+      &quot;budget&quot;: 6,
+      &quot;event&quot;: &quot;question_presented&quot;,
+      &quot;number&quot;: 1,
+      &quot;question_id&quot;: &quot;q01&quot;,
+      &quot;reason&quot;: &quot;A permitted current project fact is missing.&quot;,
+      &quot;text&quot;: &quot;What time could you comfortably give this project?&quot;
+    },
+    {
+      &quot;event&quot;: &quot;question_skipped&quot;,
+      &quot;question_id&quot;: &quot;q01&quot;
+    }
+  ]
+}
+</pre></details><details><summary>interview review</summary><pre>{
+  &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+  &quot;budget&quot;: 6,
+  &quot;execution&quot;: &quot;scripted_no_language_model&quot;,
+  &quot;extensions&quot;: 0,
+  &quot;origin_preserved&quot;: &quot;model_inferred&quot;,
+  &quot;persistent_storage&quot;: false,
+  &quot;presented&quot;: 1,
+  &quot;proposals_pending&quot;: 0,
+  &quot;revision&quot;: {
+    &quot;applied&quot;: false,
+    &quot;approved_claim_count&quot;: 1,
+    &quot;baseline_bound&quot;: false,
+    &quot;confirmation_event_count&quot;: 0,
+    &quot;disclosures_granted&quot;: 0,
+    &quot;invalidated_dimensions&quot;: [
+      &quot;workflow.availability&quot;
+    ],
+    &quot;retained_source_count&quot;: 1,
+    &quot;revision_id&quot;: &quot;interview-review-revision&quot;,
+    &quot;storage&quot;: &quot;in_memory_simulation_only&quot;
+  },
+  &quot;scenario_id&quot;: &quot;interview-review&quot;,
+  &quot;session_id&quot;: &quot;interview-review&quot;,
+  &quot;state&quot;: &quot;committed&quot;,
+  &quot;statement&quot;: &quot;Scripted fictional controls; not a natural-language extraction test.&quot;,
+  &quot;synthetic&quot;: true,
+  &quot;trace&quot;: [
+    {
+      &quot;budget&quot;: 6,
+      &quot;event&quot;: &quot;question_presented&quot;,
+      &quot;number&quot;: 1,
+      &quot;question_id&quot;: &quot;q01&quot;,
+      &quot;reason&quot;: &quot;A permitted current project fact is missing.&quot;,
+      &quot;text&quot;: &quot;What time could you comfortably give this project?&quot;
+    },
+    {
+      &quot;event&quot;: &quot;unreviewed_proposal&quot;,
+      &quot;proposal_id&quot;: &quot;interview-review-proposal-01&quot;
+    },
+    {
+      &quot;claims_approved&quot;: 0,
+      &quot;event&quot;: &quot;summary_acknowledged&quot;
+    }
+  ]
+}
+</pre></details><details><summary>interview sensitive</summary><pre>{
+  &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+  &quot;budget&quot;: 6,
+  &quot;execution&quot;: &quot;scripted_no_language_model&quot;,
+  &quot;extensions&quot;: 0,
+  &quot;persistent_storage&quot;: false,
+  &quot;presented&quot;: 0,
+  &quot;proposals_pending&quot;: 0,
+  &quot;scenario_id&quot;: &quot;interview-sensitive&quot;,
+  &quot;session_id&quot;: &quot;interview-sensitive&quot;,
+  &quot;state&quot;: &quot;review_pending&quot;,
+  &quot;statement&quot;: &quot;Scripted fictional controls; not a natural-language extraction test.&quot;,
+  &quot;synthetic&quot;: true,
+  &quot;trace&quot;: []
+}
+</pre></details><details><summary>interview injection</summary><pre>{
+  &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+  &quot;budget&quot;: 6,
+  &quot;execution&quot;: &quot;scripted_no_language_model&quot;,
+  &quot;extensions&quot;: 0,
+  &quot;persistent_storage&quot;: false,
+  &quot;presented&quot;: 1,
+  &quot;proposals_pending&quot;: 1,
+  &quot;scenario_id&quot;: &quot;interview-injection&quot;,
+  &quot;session_id&quot;: &quot;interview-injection&quot;,
+  &quot;state&quot;: &quot;review_pending&quot;,
+  &quot;statement&quot;: &quot;Scripted fictional controls; not a natural-language extraction test.&quot;,
+  &quot;synthetic&quot;: true,
+  &quot;trace&quot;: [
+    {
+      &quot;budget&quot;: 6,
+      &quot;event&quot;: &quot;question_presented&quot;,
+      &quot;number&quot;: 1,
+      &quot;question_id&quot;: &quot;q01&quot;,
+      &quot;reason&quot;: &quot;A permitted current project fact is missing.&quot;,
+      &quot;text&quot;: &quot;What time could you comfortably give this project?&quot;
+    },
+    {
+      &quot;event&quot;: &quot;unreviewed_proposal&quot;,
+      &quot;proposal_id&quot;: &quot;interview-injection-proposal-01&quot;
+    },
+    {
+      &quot;claims_approved&quot;: 0,
+      &quot;event&quot;: &quot;summary_acknowledged&quot;
+    }
+  ]
+}
+</pre></details><details><summary>interview stop</summary><pre>{
+  &quot;as_of&quot;: &quot;2026-10-25T12:00:00Z&quot;,
+  &quot;budget&quot;: 6,
+  &quot;execution&quot;: &quot;scripted_no_language_model&quot;,
+  &quot;extensions&quot;: 0,
+  &quot;persistent_storage&quot;: false,
+  &quot;presented&quot;: 1,
+  &quot;proposals_pending&quot;: 0,
+  &quot;scenario_id&quot;: &quot;interview-stop&quot;,
+  &quot;session_id&quot;: &quot;interview-stop&quot;,
+  &quot;state&quot;: &quot;discarded&quot;,
+  &quot;statement&quot;: &quot;Scripted fictional controls; not a natural-language extraction test.&quot;,
+  &quot;synthetic&quot;: true,
+  &quot;trace&quot;: [
+    {
+      &quot;budget&quot;: 6,
+      &quot;event&quot;: &quot;question_presented&quot;,
+      &quot;number&quot;: 1,
+      &quot;question_id&quot;: &quot;q01&quot;,
+      &quot;reason&quot;: &quot;A permitted current project fact is missing.&quot;,
+      &quot;text&quot;: &quot;What time could you comfortably give this project?&quot;
+    }
+  ]
+}
+</pre></details></section>
+<section id="scope"><div class="eyebrow">05 / the next release has a separate gate</div><h2>What this build establishes</h2><p>Executable matching arithmetic, claim review, disclosure projections and consent state machines. The next release adds encrypted local storage and owner-device inference after its own validation.</p><ul><li>Synthetic people and manually annotated conversations only.</li><li>No real interview, model, private-data ingestion, keys or network transport.</li><li>Match scores are policy calculations, not compatibility probabilities.</li><li>Memory-only queues do not establish encrypted persistence or crash recovery.</li></ul>
+<p>Run <code>python3 run_agentmatch.py verify --offline</code> from the source package. The flag selects the suite; the supplied Linux isolation harness separately proves socket denial.</p></section>
+<footer>Frozen scenario clock: 2026-10-25T12:00:00Z · Contract 0.4.0<br>Package fingerprint: 76d1f34f7b7c3e5348c25dd2bb99a0728120e1f6b71c5a3bcf686c5225925491<br>Self-contained report. No external assets, scripts, tracking or requests.</footer>
+</main></body></html>

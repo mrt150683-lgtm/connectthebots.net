@@ -1,0 +1,8 @@
+{% extends "auth_base.html" %}
+{% block title %}{{ title }} · Connect the Bots{% endblock %}
+{% block content %}
+<h1>{{ title }}</h1>
+<p role="alert">{{ message }}</p>
+{% if signin %}<p><a class="btn btn-primary" href="/signin">Back to sign-in</a></p>{% else %}<p><a class="btn btn-primary" href="/app">Back to your dashboard</a></p>{% endif %}
+<p class="fine-print"><a href="/">Connect the Bots home</a> · <a href="/contact">Contact</a></p>
+{% endblock %}

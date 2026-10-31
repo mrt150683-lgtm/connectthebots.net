@@ -1,0 +1,95 @@
+{
+  "date": "2026-10-26",
+  "base_revision": "7eea3fb3ea8f10480ee6485afbc4e4cd47c37535",
+  "branch": "codex/workbench-lifecycle",
+  "audited_revision": "implementation commit 3757194; subsequent changes update verification documentation only",
+  "depth": "focused",
+  "scope": "fictional workbench capacity, normal closure, clarification, portability and browser journeys",
+  "verdict": "PASS",
+  "environment": {
+    "platform": "Windows 11",
+    "python": "3.14.3",
+    "typescript": "5.9.3",
+    "playwright": "1.64.1",
+    "storage": "isolated in-memory fictional seed",
+    "browser": "Chromium",
+    "desktop_viewport": [1440, 1000],
+    "mobile_viewport": [390, 844],
+    "external_model_calls": 0
+  },
+  "verification": {
+    "baseline_tests": 179,
+    "final_tests": 200,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "comparison_helper_tests": 3,
+    "mutations_detected": 2,
+    "demo_manifest_equal": true,
+    "demo_semantic_equal": true,
+    "demo_canonical_lf_equal": true,
+    "demo_raw_windows_bytes_equal": false,
+    "frozen_core_changed": false,
+    "browser_journeys": ["desktop", "mobile"],
+    "fresh_windows_clone_autocrlf_true": {"tests_passed": 200, "source_bytes_lf": true, "clean_ui_install_and_build": true}
+  },
+  "flows": [
+    {
+      "goal": "Full capacity prevents additional offers to either participant",
+      "source": "docs/COLLABORATION_ROADMAP.md section 9",
+      "classification": "DOCUMENTED",
+      "verdict": "PASS",
+      "finding_ids": ["AM-CAP-01"],
+      "evidence": ["tests/test_workbench_lifecycle.py:49", "tests/test_workbench_lifecycle.py:61"]
+    },
+    {
+      "goal": "Close a connection normally without blocking or inventing success",
+      "source": "docs/COLLABORATION_ROADMAP.md section 4 and owner build request",
+      "classification": "USER-STATED",
+      "verdict": "PASS",
+      "finding_ids": ["AM-CLOSE-02"],
+      "evidence": ["tests/test_workbench_lifecycle.py:82", "artifacts/build-final/browser.log", "examples/workbench/lifecycle/desktop-10-closed-outcomes.png"]
+    },
+    {
+      "goal": "Ask for missing public information and reassess only after explicit revised publication",
+      "source": "baseline docs/STATUS.md next milestone and owner build request",
+      "classification": "USER-STATED",
+      "verdict": "PASS",
+      "finding_ids": ["AM-INFO-03"],
+      "evidence": ["tests/test_workbench_lifecycle.py:137", "tests/test_workbench_lifecycle.py:206", "artifacts/build-final/browser.log"]
+    },
+    {
+      "goal": "Preserve R0 byte integrity on Windows and distinguish native output newlines",
+      "source": "status review portability finding",
+      "classification": "USER-STATED",
+      "verdict": "PASS",
+      "finding_ids": ["AM-WIN-04"],
+      "evidence": [".gitattributes", "tools/test_verify_demo.py", "artifacts/build-final/reproducibility/verification.json"]
+    },
+    {
+      "goal": "Owner perspective cannot switch before an outstanding response is applied",
+      "source": "demo perspective boundary",
+      "classification": "INFERRED",
+      "verdict": "PASS",
+      "finding_ids": ["AM-UI-05"],
+      "evidence": ["workbench/ui/e2e/journey.mjs", "artifacts/build-final/browser.log"]
+    },
+    {
+      "goal": "Complete both viewport journeys with visible, stable result evidence",
+      "source": "workbench implementation prompt",
+      "classification": "DOCUMENTED",
+      "verdict": "PASS",
+      "finding_ids": ["AM-VIS-06"],
+      "evidence": ["artifacts/build-final/browser.log", "examples/workbench/lifecycle/mobile-06-explanation-both-meet.png"]
+    }
+  ],
+  "unverified": [
+    "Hosted CI execution",
+    "Expanded suite under Linux socket denial",
+    "New installed-wheel verification",
+    "macOS, Firefox, Safari, screen readers and physical mobile devices",
+    "R1 authentication, encrypted persistence, deletion and recovery",
+    "R2 remote discovery and private peer transport",
+    "R3 human usefulness and pilot analysis"
+  ]
+}

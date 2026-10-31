@@ -1,0 +1,9 @@
+{% extends "report_base.html" %}
+{% from "report_card.html" import card %}
+{% block title %}Review this report · Connect the Bots{% endblock %}
+{% block content %}
+<h1>Review this report.</h1><p>Nothing has been saved. Check the details below, then confirm if they match your assistant's report. This preview expires after ten minutes.</p>
+<article class="conn-card">{{ card(payload) }}</article>
+<form method="post" action="/app/reports/confirm"><input type="hidden" name="csrf" value="{{ session.csrf }}"><input type="hidden" name="preview_token" value="{{ preview_token }}"><button class="btn btn-primary" type="submit">Confirm and save report</button></form>
+<p><a href="/app/reports/paste">Start again without saving</a></p>
+{% endblock %}

@@ -1,0 +1,85 @@
+/* Home: the film fills the screen and one action sits under it.
+   The ground matches the film's own paper (#eae7e0), so the letterbox around the
+   16:9 film disappears on any screen shape and nothing in the film is cropped. */
+html.home,body.home{background:#eae7e0;min-height:100%}
+body.home{display:block}
+.stage{min-height:100vh;min-height:100svh;display:grid;grid-template-rows:minmax(0,1fr) auto}
+
+.screen{position:relative;margin:0;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.screen video{display:block;width:100%;height:100%;max-height:calc(100svh - 112px);object-fit:contain;background:#eae7e0;cursor:pointer;
+  /* Feather the film's edges into the page so the 16:9 frame never reads as a box. */
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 2.5%,#000 97.5%,transparent),linear-gradient(transparent,#000 3%,#000 97%,transparent);
+  -webkit-mask-composite:source-in;
+  mask-image:linear-gradient(90deg,transparent,#000 2.5%,#000 97.5%,transparent),linear-gradient(transparent,#000 3%,#000 97%,transparent);
+  mask-composite:intersect}
+
+/* Shown only when the film is not playing by itself (reduced motion, Save-Data, or autoplay refused). */
+.screen-play{position:absolute;inset:auto;display:inline-flex;align-items:center;gap:14px;padding:14px 22px 14px 14px;min-height:56px;border:1.5px solid var(--ink);border-radius:3px;background:var(--paper);color:var(--ink);font-weight:600;font-size:17px}
+.screen-play:hover{background:#fff}
+.screen-play .mono{color:var(--muted);font-weight:400}
+.screen-play-disc{position:relative;width:28px;height:28px;border-radius:50%;background:var(--cobalt)}
+.screen-play-disc::after{content:"";position:absolute;left:11px;top:8px;border-left:9px solid #fff;border-top:6px solid transparent;border-bottom:6px solid transparent}
+
+.bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:24px;padding:16px max(32px,env(safe-area-inset-right,0px)) max(18px,env(safe-area-inset-bottom,0px)) max(32px,env(safe-area-inset-left,0px));opacity:0;transform:translateY(6px);animation:home-arrive var(--calm) var(--ease) .5s forwards}
+.bar-side{display:flex;align-items:center;gap:8px;min-width:0}
+.bar-links{flex-direction:column;align-items:flex-end;gap:4px;text-align:right}
+.bar-main{display:flex;flex-direction:column;align-items:center;gap:8px}
+
+.signin-cta{min-height:56px;padding:0 28px 0 22px;font-size:18px;gap:14px}
+.mark-light b{background:#fff}
+.mark-light i{background:#fff}
+.mark-light s{border-color:#fff}
+.signin-cta .mark b{width:6px;transition:width var(--draw) var(--ease)}
+.signin-cta:hover .mark b,.signin-cta:focus-visible .mark b{width:18px}
+.signin-sub{font-size:14px;color:var(--ink-2)}
+
+.chip{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 14px;border:1.5px solid var(--rule-2);border-radius:3px;background:transparent;font-size:14px;font-weight:500;color:var(--ink)}
+.chip:hover{border-color:var(--ink)}
+.chip[data-on=true]{border-color:var(--ink)}
+.chip-icon{width:16px;height:16px;flex:none}
+.chip[data-on=false] .wave,.chip[data-on=true] .cross{display:none}
+
+.bar-links nav{display:flex;gap:16px;font-size:14px}
+.bar-links nav a{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px;color:var(--ink-2)}
+.bar-links nav a:hover{color:var(--cobalt-ink)}
+.credit{font-family:var(--mono);font-size:11px;letter-spacing:.02em;color:var(--muted)}
+.credit a{color:inherit;white-space:nowrap}
+
+/* Dark home: the film keeps its own paper, so it sits on the near-black page as
+   one lit screen with rounded corners and a soft cobalt glow, never cropped. */
+html.home.theme-dark,html.theme-dark body.home{background:#08090c}
+html.theme-dark body.home{background-image:radial-gradient(900px 480px at 50% 42%,rgba(59,91,255,.16),transparent 70%)}
+html.theme-dark .screen{padding:24px max(24px,env(safe-area-inset-left,0px)) 0;overflow:visible}
+html.theme-dark .screen video{width:auto;height:auto;max-width:100%;max-height:calc(100svh - 160px);aspect-ratio:16/9;object-fit:cover;background:#eae7e0;
+  border-radius:20px;-webkit-mask-image:none;mask-image:none;
+  box-shadow:0 0 0 1px rgba(255,255,255,.08),0 40px 120px -30px rgba(59,91,255,.45),0 30px 60px -30px rgba(0,0,0,.9)}
+html.theme-dark .screen-play{background:var(--panel-2);border:1px solid var(--edge-hi);border-radius:999px;color:var(--ink)}
+html.theme-dark .screen-play:hover{background:#1b1f28}
+html.theme-dark .chip{border:1px solid var(--edge-hi);border-radius:999px}
+html.theme-dark .chip:hover,html.theme-dark .chip[data-on=true]{border-color:var(--ink-2)}
+html.theme-dark .signin-cta{border-radius:14px}
+html.theme-dark .bar-links nav a{color:var(--ink-2)}
+
+@keyframes home-arrive{to{opacity:1;transform:none}}
+
+/* Phones and tall windows: film on top, the action straight under it, links last. */
+@media (max-aspect-ratio: 1/1), (max-width: 760px){
+  .stage{grid-template-rows:minmax(0,1fr) auto auto minmax(0,1.2fr)}
+  .stage::before,.stage::after{content:""}
+  .stage::before{grid-row:1}
+  .stage::after{grid-row:4}
+  .screen{grid-row:2}
+  .screen video{height:auto;max-height:none;aspect-ratio:16/9}
+  html.theme-dark .screen{padding:0 16px}
+  html.theme-dark .screen video{width:100%;border-radius:14px}
+  .bar{grid-row:3;grid-template-columns:1fr;justify-items:center;gap:20px;padding-top:28px}
+  .bar-main{order:1}
+  .bar-film{order:2;justify-content:center}
+  .bar-links{order:3;align-items:center;text-align:center}
+  .signin-cta{width:min(100%,360px)}
+}
+
+@media (prefers-reduced-motion: reduce){
+  .bar{animation:none;opacity:1;transform:none}
+  .signin-cta .mark b{transition:none}
+}

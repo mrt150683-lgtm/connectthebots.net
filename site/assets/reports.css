@@ -1,0 +1,27 @@
+/* Hosted report pages share the site's type, paper and cobalt palette. */
+.reports-app .app-main{max-width:960px}
+.reports-app h1{font-size:clamp(32px,5vw,48px);line-height:1.1;margin:24px 0}
+.reports-app p{margin:14px 0;max-width:72ch}
+.reports-app li{margin:8px 0}
+.reports-app h3{font-size:24px;line-height:1.2}
+.report-nav{display:flex;flex-wrap:wrap;gap:12px 24px;padding-bottom:20px;border-bottom:1px solid var(--rule)}
+.report-form{display:grid;gap:12px;max-width:720px;margin:20px 0}
+.reports-app label{display:block;font-weight:600;margin-top:16px}
+.reports-app input:not([type=hidden]),.reports-app textarea,.reports-app select{display:block;min-width:0;width:100%;max-width:100%;font:inherit;color:var(--ink);background:var(--sheet);border:1px solid var(--rule-2);padding:12px;border-radius:3px}
+.reports-app textarea{resize:vertical;line-height:1.5;font-size:15px}
+.reports-app input:focus-visible,.reports-app textarea:focus-visible,.reports-app select:focus-visible{outline:2px solid var(--cobalt);outline-offset:3px}
+.reports-app .btn{width:fit-content;max-width:100%;white-space:normal;text-align:left}
+.reports-app form{margin:16px 0}
+.reports-app code,.reports-app dd,.reports-app a,.report-content,.report-key{overflow-wrap:anywhere}
+.report-facts{display:grid;grid-template-columns:minmax(120px,1fr) 3fr;gap:16px;margin:24px 0}
+.report-facts dt{font-weight:600}.report-facts dd{margin:0;white-space:pre-wrap}
+.report-facts ul{padding-left:18px;margin:0}
+.report-history,.report-key{padding:20px 0;border-bottom:1px solid var(--rule)}
+.report-history summary{cursor:pointer;font-weight:500;line-height:1.5}
+.report-history .report-content{padding-top:20px}
+.report-footer{border-top:1px solid var(--rule);padding-top:24px;margin-top:48px}
+@media(max-width:600px){.report-facts{grid-template-columns:1fr;gap:8px}.report-facts dd{margin-bottom:12px}.report-nav{gap:12px 20px}.reports-app .conn-card{padding:20px}}
+
+/* Agent network summary on the dashboard */
+[data-agent-network] h3{font-size:15px;font-weight:600;letter-spacing:0;margin:var(--s5) 0 var(--s2)}
+[data-agent-network] .taste-list,[data-agent-network] .rank-list{padding-left:1.2em}

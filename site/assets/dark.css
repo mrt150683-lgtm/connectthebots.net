@@ -1,0 +1,48 @@
+/* Dark theme: the home page, sign-in, share links, leaderboard, legal pages,
+   the public board and every signed-in page (html.theme-dark). The same three
+   typefaces and the one-accent rule as the paper site, set on a near-black
+   ground. Cobalt still means two things only: you, and the primary action.
+   Status colours always come with words. */
+
+html.theme-dark{
+  color-scheme:dark;
+  --paper:#08090c;--paper-2:#111318;--sheet:#0f1116;
+  --ink:#eef0f4;--ink-2:#c3c8d1;--muted:#8d94a1;--faint:#5f6672;
+  --rule:#1d2029;--rule-2:#323743;
+  --cobalt:#8ea0ff;--cobalt-ink:#b4c0ff;--cobalt-wash:#18204a;
+  --fill:#3b5bff;--fill-hover:#5571ff;
+  --warn:#f2b864;--warn-wash:#2a1f0f;--bad:#ff9384;--bad-wash:#2d1512;--good:#5fd394;--good-wash:#0f2a1d;
+  --panel:#0e1015;--panel-2:#13161c;--edge:#1c1f27;--edge-hi:#2a2e38;
+  --radius:20px;
+}
+html.theme-dark,html.theme-dark body{background:var(--paper)}
+html.theme-dark body{background-image:radial-gradient(1100px 520px at 50% -260px,rgba(59,91,255,.20),transparent 70%);background-repeat:no-repeat;color:var(--ink)}
+html.theme-dark ::selection{background:#2b3a8f;color:#fff}
+html.theme-dark .site-head{border-bottom-color:var(--edge);background:rgba(8,9,12,.72);backdrop-filter:saturate(1.4) blur(14px);-webkit-backdrop-filter:saturate(1.4) blur(14px);position:sticky;top:0;z-index:20}
+html.theme-dark .mark:not(.mark-light) i{background:var(--fill)}
+html.theme-dark .preview-tag{border-radius:999px;padding:3px 10px}
+html.theme-dark .btn-primary{background:var(--fill);color:#fff;box-shadow:0 0 0 1px rgba(255,255,255,.06) inset,0 8px 24px -10px rgba(59,91,255,.8)}
+html.theme-dark .btn-primary:hover{background:var(--fill-hover)}
+html.theme-dark .btn{border-radius:12px;transition:background var(--quick) var(--ease),color var(--quick) var(--ease),border-color var(--quick) var(--ease),transform var(--quick) var(--ease)}
+html.theme-dark .btn:active{transform:translateY(1px)}
+html.theme-dark .btn-line{border-color:var(--edge-hi);border-width:1px;background:var(--panel-2)}
+html.theme-dark .btn-line:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+html.theme-dark a:hover{color:var(--cobalt-ink)}
+html.theme-dark .block-head{border-top-color:var(--edge-hi)}
+html.theme-dark .conn-card,html.theme-dark .notification-row[data-notification-read="false"]{background:var(--panel);border:1px solid var(--edge);border-top:2px solid var(--fill);border-radius:16px}
+html.theme-dark input:not([type=hidden]),html.theme-dark textarea,html.theme-dark select,html.theme-dark .reports-app input:not([type=hidden]),html.theme-dark .reports-app textarea,html.theme-dark .reports-app select{background:var(--panel-2);border-color:var(--edge-hi);border-radius:10px;color:var(--ink)}
+
+html.theme-dark code{color:var(--ink)}
+html.theme-dark .signin-card{background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1px solid var(--edge);border-radius:var(--radius);box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 30px 60px -40px rgba(0,0,0,.9);padding:32px}
+@media (max-width:600px){html.theme-dark .signin-card{padding:24px 20px}}
+html.theme-dark .signin-card>*+*{margin-top:14px}
+html.theme-dark .signin-card h2{font-size:22px;letter-spacing:-.02em;margin-top:28px}
+html.theme-dark .signin-card ol,html.theme-dark .signin-card ul{padding-left:1.4em}
+/* Legal pages: one readable column */
+.legal{max-width:760px;padding-top:48px;padding-bottom:96px}
+.legal h1{font-size:clamp(36px,5vw,52px);letter-spacing:-.04em;line-height:1.05;margin:24px 0 16px}
+.legal h2{font-size:24px;letter-spacing:-.02em;line-height:1.2;margin:40px 0 12px}
+.legal h3{font-size:18px;margin:24px 0 8px}
+.legal p,.legal li{color:var(--ink-2);line-height:1.65}
+.legal p+p,.legal ul,.legal ol{margin-top:12px}
+.legal .preview-tag{display:inline-block;margin-bottom:8px}

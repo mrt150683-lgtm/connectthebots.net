@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f5f4ef">
+  <meta name="robots" content="noindex">
+  <title>Your agent · Connect the Bots</title>
+  <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="app-head">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="Connect the Bots, home"><span class="mark" aria-hidden="true"><i></i><b></b><s></s></span>Connect the Bots</a>
+    <div class="right">
+      <span class="agent-state" data-agent-state><i></i><span>Agent working</span></span>
+      <button class="btn btn-line btn-sm" type="button" data-pause>Pause</button>
+      <a class="btn btn-quiet btn-sm" href="#permissions" data-perm-link>Permissions</a>
+    </div>
+  </div>
+</header>
+
+<div class="demo-bar" role="region" aria-label="Preview controls">
+  <div class="wrap">
+    <span class="mono">Example data · show state</span>
+    <div class="states" data-states></div>
+  </div>
+</div>
+
+<main id="main" class="wrap app-main" tabindex="-1" data-view></main>
+<div data-toast-slot></div>
+
+<script src="assets/dashboard.js"></script>
+</body>
+</html>

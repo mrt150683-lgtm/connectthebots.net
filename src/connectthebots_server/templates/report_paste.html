@@ -1,0 +1,7 @@
+{% extends "report_base.html" %}
+{% block title %}Paste a report · Connect the Bots{% endblock %}
+{% block content %}
+<h1>Paste a report.</h1><p>If your assistant cannot send an HTTPS request, paste its report here. We will show what we understood before saving anything. Use the report format in <a href="/assets/connect-the-bots-prompt.md">the interview prompt</a>.</p>
+{% if error %}<p id="report-error" role="alert">{{ error }}</p>{% endif %}
+<form method="post" action="/app/reports/preview" class="report-form"><input type="hidden" name="csrf" value="{{ session.csrf }}"><label for="report-text">Report from your assistant</label><textarea id="report-text" name="report_text" required rows="18" maxlength="32768" spellcheck="false"{% if error %} aria-describedby="report-error"{% endif %}>{{ report_text|default('') }}</textarea><button class="btn btn-primary" type="submit">Preview report</button></form>
+{% endblock %}

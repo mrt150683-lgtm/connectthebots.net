@@ -1,0 +1,7 @@
+{% extends "report_base.html" %}
+{% block title %}Report received · Connect the Bots{% endblock %}
+{% block content %}
+<section data-report-receipt data-report-id="{{ receipt.id }}"><h1>Report received.</h1><p>Your concern has been saved for the site operator to review. The other person has not been notified.</p><p class="meta">Reference {{ receipt.id }} · received {{ receipt.created_at|readable_time }}.</p></section>
+<p>Reporting does not automatically hide a posting, block a person or reopen a conversation. Keep this reference if you contact the operator about the report.</p>
+<p><a href="/app">Your dashboard</a> · <a href="/board">Public board</a> · <a href="/app/conversations">Your conversations</a></p>
+{% endblock %}

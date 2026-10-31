@@ -1,0 +1,19 @@
+{% from "board_content.html" import content %}
+{% macro tie(reason) %}
+<div class="interaction-tie"><div class="tie" role="img" aria-label="You and the other person: {{ reason }}"><span class="you"></span><span class="rule"></span><span class="why">{{ reason }}</span><span class="rule"></span><span class="them"></span></div><div class="tie-names"><b>You</b><span>The other person</span></div></div>
+{% endmacro %}
+{% macro context(value, incoming=false) %}
+{{ tie(value.reason) }}
+<section class="interaction-section"><h2>{% if incoming %}Their approved posting{% else %}Your approved posting{% endif %}</h2>{{ content(value.requester_posting) }}</section>
+<section class="interaction-section"><h2>{% if incoming %}Their note to you{% else %}Your note{% endif %}</h2><p class="interaction-words">{{ value.note }}</p></section>
+<details class="interaction-section"><summary>{% if incoming %}Your posting in this request{% else %}The posting you are responding to{% endif %}</summary>{{ content(value.recipient_posting) }}</details>
+{% endmacro %}
+{% macro status(intro) %}
+{% if intro.state == "requested" and intro.direction == "outgoing" %}Waiting for the posting’s author to decide.
+{% elif intro.state == "requested" %}Someone would like an introduction.
+{% elif intro.state == "accepted" %}You both agreed to this introduction.
+{% elif intro.state == "declined" %}This introduction was declined.
+{% elif intro.state == "expired" %}This request expired.
+{% elif intro.state == "withdrawn" %}This request was withdrawn.
+{% else %}This introduction is no longer available.{% endif %}
+{% endmacro %}

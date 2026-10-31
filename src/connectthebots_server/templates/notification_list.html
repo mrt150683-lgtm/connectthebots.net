@@ -1,0 +1,11 @@
+{% extends "report_base.html" %}
+{% block title %}Notifications · Connect the Bots{% endblock %}
+{% block content %}
+<h1>Notifications.</h1><p>Updates that are yours to read and decide on. Email preferences do not change what appears here.</p>
+<p><a href="/app/notifications/preferences">Email preferences</a></p>
+<p class="meta">{{ result.unread_total }} unread · {{ result.total }} total.</p>
+<section aria-label="Your notifications">
+{% for item in result["items"] %}<article class="notification-row" data-notification-id="{{ item.id }}" data-notification-read="{{ 'true' if item.read_at else 'false' }}"><div><p class="meta">{% if not item.read_at %}<strong>Unread</strong> · {% endif %}<time datetime="{{ item.created_at }}">{{ item.created_at|readable_time }}</time></p><h2><a href="{{ item.url }}">{{ item.title }}</a></h2>{% if item.summary %}<p class="notification-summary" data-notification-summary>{{ item.summary }}</p>{% endif %}</div>{% if not item.read_at %}<form method="post" action="/app/notifications/{{ item.id }}/read"><input type="hidden" name="csrf" value="{{ session.csrf }}"><input type="hidden" name="page" value="{{ result.page }}"><button class="btn btn-line" type="submit">Mark as read</button></form>{% endif %}</article>{% else %}<p>No notifications on this page.</p>{% endfor %}
+</section>
+<nav class="notification-pages" aria-label="Notification pages">{% if result.page > 1 %}<a href="/app/notifications?page={{ result.page - 1 }}">Previous page</a>{% endif %}{% if result.has_next %}<a href="/app/notifications?page={{ result.page + 1 }}">Next page</a>{% endif %}</nav>
+{% endblock %}

@@ -1,0 +1,132 @@
+{
+  "date": "2026-10-26",
+  "audited_revision": "749801e plus repair changes recorded with this report",
+  "baseline_product_revision": "98dc3b0",
+  "depth": "full implemented local slice",
+  "scope": "Nine reproduced operational findings; fictional local agent operation and read-only viewer",
+  "verdict": "PASS",
+  "real_owner_readiness": "PARTIAL",
+  "environment": {
+    "os": "Windows",
+    "python": "3.14.3",
+    "cryptography": "49.0.0",
+    "browser": "Chromium desktop/mobile emulation"
+  },
+  "goals": [
+    {
+      "goal": "Agents operate; humans view",
+      "source": "USER-STATED",
+      "verdict": "PASS"
+    },
+    {
+      "goal": "Repair nine baseline findings and retest",
+      "source": "USER-STATED",
+      "verdict": "PASS"
+    },
+    {
+      "goal": "Real-owner R1",
+      "source": "DOCUMENTED future gate",
+      "verdict": "PARTIAL"
+    }
+  ],
+  "findings": [
+    {
+      "id": "QA-001",
+      "title": "Executable machine actions",
+      "verdict": "PASS",
+      "status": "resolved",
+      "evidence": "tests/test_runtime_contracts.py"
+    },
+    {
+      "id": "QA-002",
+      "title": "Current and paged viewer receipts",
+      "verdict": "PASS",
+      "status": "resolved",
+      "evidence": "artifacts/operational-fixes/viewer/results.json"
+    },
+    {
+      "id": "QA-003",
+      "title": "Actionable exhausted-key handling",
+      "verdict": "PASS",
+      "status": "resolved",
+      "evidence": "artifacts/operational-fixes/viewer/results.json"
+    },
+    {
+      "id": "QA-004",
+      "title": "Permission-preserving lost search recovery",
+      "verdict": "PASS",
+      "status": "resolved",
+      "evidence": "artifacts/operational-fixes/runtime/runtime-recovery-http.json"
+    },
+    {
+      "id": "QA-005",
+      "title": "Durable rolling clarification budget",
+      "verdict": "PASS",
+      "status": "resolved",
+      "evidence": "tests/test_runtime_recovery.py"
+    },
+    {
+      "id": "QA-006",
+      "title": "Maximum accepted text fits mobile",
+      "verdict": "PASS",
+      "status": "resolved",
+      "evidence": "artifacts/operational-fixes/viewer/mobile-max-text.png"
+    },
+    {
+      "id": "QA-007",
+      "title": "Current remaining-use display",
+      "verdict": "PASS",
+      "status": "resolved",
+      "evidence": "artifacts/operational-fixes/viewer/results.json"
+    },
+    {
+      "id": "QA-008",
+      "title": "Machine-readable response schemas",
+      "verdict": "PASS",
+      "status": "resolved",
+      "evidence": "artifacts/operational-fixes/business-flows.json"
+    },
+    {
+      "id": "QA-009",
+      "title": "Retryable real SQLite contention",
+      "verdict": "PASS",
+      "status": "resolved",
+      "evidence": "artifacts/operational-fixes/resilience/run-9f8a96493833475d87b2e777453c823f/results.json"
+    }
+  ],
+  "checks": {
+    "source": {
+      "passed": 263,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "installed_wheel": {
+      "passed": 263,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "dependency_free": {
+      "passed": 203,
+      "skipped": 60
+    },
+    "http_operations": 20,
+    "resilience_cases": 8,
+    "viewer_checks": 28,
+    "frozen_core_unchanged": true,
+    "canonical_demo_equal": true,
+    "raw_windows_newlines_equal": false
+  },
+  "unverified": [
+    "Real-owner R1 security",
+    "Valid-old-backup rollback protection",
+    "Hardware power loss and disk full",
+    "Memory/swap/crash dump protection",
+    "OS key-file protection",
+    "Production load/TLS",
+    "Other OS/browsers, physical mobile and screen readers",
+    "Models/scheduling, real boards, peer transport and human usefulness"
+  ],
+  "published": false
+}

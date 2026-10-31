@@ -1,0 +1,614 @@
+[
+  {
+    "case_id": "T-MATCH-001",
+    "scenario_id": "worked_reciprocal",
+    "passed": true,
+    "status": "passed",
+    "expected": {
+      "F": "17/20",
+      "S": "41/50",
+      "C": "1/1",
+      "reverse_F": "4/5",
+      "reverse_S": "77/100",
+      "offline_rank": "77/100",
+      "status": "qualified_candidate"
+    },
+    "details": {
+      "expectation_checks": {
+        "F": true,
+        "S": true,
+        "C": true,
+        "reverse_F": true,
+        "reverse_S": true,
+        "offline_rank": true,
+        "status": true
+      },
+      "additional_checks": {
+        "bilateral_qualification": true
+      },
+      "reasoning": "Four equally weighted capabilities give 3/4; four workflow atoms give 3/4; goal fits fully; approved communication inference has q=7/10. Reverse capability is 1/2; other fits are one. Hand calculation appears in DATA_AND_MATCHING.md.",
+      "observed": {
+        "F": "17/20",
+        "S": "41/50",
+        "C": "1/1",
+        "U": "17/20",
+        "status": "qualified_candidate",
+        "reverse_F": "4/5",
+        "reverse_S": "77/100",
+        "offline_rank": "77/100"
+      }
+    },
+    "execution_kind": "synthetic_in_memory"
+  },
+  {
+    "case_id": "T-MATCH-002",
+    "scenario_id": "hard_veto",
+    "passed": true,
+    "status": "passed",
+    "expected": {
+      "status": "not_eligible"
+    },
+    "details": {
+      "expectation_checks": {
+        "status": true
+      },
+      "additional_checks": {},
+      "reasoning": "Aster explicitly requires paid work; Birch requires volunteer work. A known hard compensation failure overrides any soft overlap.",
+      "observed": {
+        "F": "0/1",
+        "S": "0/1",
+        "C": "0/1",
+        "U": "1/1",
+        "status": "not_eligible"
+      }
+    },
+    "execution_kind": "synthetic_in_memory"
+  },
+  {
+    "case_id": "T-MATCH-003",
+    "scenario_id": "unknown_mandatory",
+    "passed": true,
+    "status": "passed",
+    "expected": {
+      "status": "needs_information"
+    },
+    "details": {
+      "expectation_checks": {
+        "status": true
+      },
+      "additional_checks": {},
+      "reasoning": "Dune availability is unreviewed. It cannot satisfy Cobalt\u2019s hard availability condition.",
+      "observed": {
+        "F": "0/1",
+        "S": "0/1",
+        "C": "0/1",
+        "U": "1/1",
+        "status": "needs_information"
+      }
+    },
+    "execution_kind": "synthetic_in_memory"
+  },
+  {
+    "case_id": "T-MATCH-004",
+    "scenario_id": "sparse_profile",
+    "passed": true,
+    "status": "passed",
+    "expected": {
+      "F": "2/5",
+      "S": "2/5",
+      "C": "2/5",
+      "status": "insufficient_evidence"
+    },
+    "details": {
+      "expectation_checks": {
+        "F": true,
+        "S": true,
+        "C": true,
+        "status": true
+      },
+      "additional_checks": {},
+      "reasoning": "Scenario renews Xenon intent only. Willow has usable soft evidence only for the 0.4 capability family; other soft claims remain unreviewed.",
+      "observed": {
+        "F": "2/5",
+        "S": "2/5",
+        "C": "2/5",
+        "U": "1/1",
+        "status": "insufficient_evidence"
+      }
+    },
+    "execution_kind": "synthetic_in_memory"
+  },
+  {
+    "case_id": "T-MATCH-005",
+    "scenario_id": "known_negative",
+    "passed": true,
+    "status": "passed",
+    "expected": {
+      "F": "0/1",
+      "S": "0/1",
+      "C": "1/1",
+      "status": "not_recommended"
+    },
+    "details": {
+      "expectation_checks": {
+        "F": true,
+        "S": true,
+        "C": true,
+        "status": true
+      },
+      "additional_checks": {},
+      "reasoning": "Scenario supplies complete empty capability/goal sets and explicit nonmatching workflow and communication values while keeping hard gates passing. Known negatives count as covered.",
+      "observed": {
+        "F": "0/1",
+        "S": "0/1",
+        "C": "1/1",
+        "U": "0/1",
+        "status": "not_recommended"
+      }
+    },
+    "execution_kind": "synthetic_in_memory"
+  },
+  {
+    "case_id": "T-MATCH-006",
+    "scenario_id": "inference_discount",
+    "passed": true,
+    "status": "passed",
+    "expected": {
+      "F": "1/1",
+      "S": "7/10",
+      "C": "1/1",
+      "status": "qualified_candidate"
+    },
+    "details": {
+      "expectation_checks": {
+        "F": true,
+        "S": true,
+        "C": true,
+        "status": true
+      },
+      "additional_checks": {},
+      "reasoning": "Scenario changes required usable soft origins to approved contextual inference without changing values. All weighted fits are one; evidence factor is 0.7.",
+      "observed": {
+        "F": "1/1",
+        "S": "7/10",
+        "C": "1/1",
+        "U": "1/1",
+        "status": "qualified_candidate"
+      }
+    },
+    "execution_kind": "synthetic_in_memory"
+  },
+  {
+    "case_id": "T-MATCH-007",
+    "scenario_id": "one_sided_benefit",
+    "passed": true,
+    "status": "passed",
+    "expected": {
+      "F": "17/20",
+      "S": "41/50",
+      "reverse_F": "11/20",
+      "reverse_S": "11/20",
+      "pair_qualified": false
+    },
+    "details": {
+      "expectation_checks": {
+        "F": true,
+        "S": true,
+        "reverse_F": true,
+        "reverse_S": true,
+        "pair_qualified": true
+      },
+      "additional_checks": {},
+      "reasoning": "Scenario uses reverse family fits (1/4,1,1/2,1/2), q=1. Reverse total is 0.4/4+0.3+0.2/2+0.1/2=0.55.",
+      "observed": {
+        "F": "17/20",
+        "S": "41/50",
+        "C": "1/1",
+        "U": "17/20",
+        "status": "qualified_candidate",
+        "reverse_F": "11/20",
+        "reverse_S": "11/20",
+        "pair_qualified": false
+      }
+    },
+    "execution_kind": "synthetic_in_memory"
+  },
+  {
+    "case_id": "T-MATCH-008",
+    "scenario_id": "lexical_decoy",
+    "passed": true,
+    "status": "passed",
+    "expected": {
+      "status": "not_eligible"
+    },
+    "details": {
+      "expectation_checks": {
+        "status": true
+      },
+      "additional_checks": {},
+      "reasoning": "Scenario adds an explicit hard current-project requirement and a known mismatching candidate value. Repeated shared words in source text never satisfy a typed requirement.",
+      "observed": {
+        "F": "0/1",
+        "S": "0/1",
+        "C": "0/1",
+        "U": "1/1",
+        "status": "not_eligible"
+      }
+    },
+    "execution_kind": "synthetic_in_memory"
+  },
+  {
+    "case_id": "T-MATCH-009",
+    "scenario_id": "speaker_and_repetition",
+    "passed": true,
+    "status": "passed",
+    "expected": {
+      "assistant_claim_allowed": false,
+      "duplicated_event_changes_score": false
+    },
+    "details": {
+      "expectation_checks": {
+        "assistant_claim_allowed": true,
+        "duplicated_event_changes_score": true
+      },
+      "additional_checks": {},
+      "reasoning": "An agent utterance is not owner evidence; repeated references to one originating event do not create additional weight.",
+      "observed": {
+        "assistant_claim_allowed": false,
+        "duplicated_event_changes_score": false
+      }
+    },
+    "execution_kind": "synthetic_in_memory"
+  },
+  {
+    "case_id": "T-MATCH-010",
+    "scenario_id": "contradiction",
+    "passed": true,
+    "status": "passed",
+    "expected": {
+      "C": "7/10",
+      "status": "insufficient_evidence"
+    },
+    "details": {
+      "expectation_checks": {
+        "C": true,
+        "status": true
+      },
+      "additional_checks": {
+        "new_version_unapproved": true,
+        "approved_correction_has_new_version": true,
+        "old_grant_cannot_authorize_correction": true
+      },
+      "reasoning": "Yarrow\u2019s goal claim has an unresolved contradiction. The 0.3 goal family is unknown while capability, workflow and communication are known.",
+      "observed": {
+        "F": "7/10",
+        "S": "7/10",
+        "C": "7/10",
+        "U": "1/1",
+        "status": "insufficient_evidence"
+      }
+    },
+    "execution_kind": "synthetic_in_memory"
+  },
+  {
+    "case_id": "T-MATCH-011",
+    "scenario_id": "expired_intent",
+    "passed": true,
+    "status": "passed",
+    "expected": {
+      "status": "invalid_intent"
+    },
+    "details": {
+      "expectation_checks": {
+        "status": true
+      },
+      "additional_checks": {
+        "withdrawn_source_removes_capability_evidence": true
+      },
+      "reasoning": "Xenon intent expires before the frozen evaluation clock; old conversation text cannot renew it.",
+      "observed": {
+        "F": "0/1",
+        "S": "0/1",
+        "C": "0/1",
+        "U": "1/1",
+        "status": "invalid_intent"
+      }
+    },
+    "execution_kind": "synthetic_in_memory"
+  },
+  {
+    "case_id": "T-MATCH-012",
+    "scenario_id": "prestige_invariance",
+    "passed": true,
+    "status": "passed",
+    "expected": {
+      "score_changes": false
+    },
+    "details": {
+      "expectation_checks": {
+        "score_changes": true
+      },
+      "additional_checks": {},
+      "reasoning": "Changing an alias alone never changes declared evidence, intent atoms, weights, gates or score.",
+      "observed": {
+        "score_changes": false
+      }
+    },
+    "execution_kind": "synthetic_in_memory"
+  },
+  {
+    "case_id": "T-MATCH-013",
+    "scenario_id": "rare_failure",
+    "passed": true,
+    "status": "passed",
+    "expected": {
+      "status": "not_recommended"
+    },
+    "details": {
+      "expectation_checks": {
+        "status": true
+      },
+      "additional_checks": {},
+      "reasoning": "Kelp offers a complete empty capability set. The remaining 0.6 soft fit is below Loam\u2019s explicit 0.85 threshold. Rarity cannot rescue it.",
+      "observed": {
+        "F": "3/5",
+        "S": "3/5",
+        "C": "1/1",
+        "U": "3/5",
+        "status": "not_recommended"
+      }
+    },
+    "execution_kind": "synthetic_in_memory"
+  },
+  {
+    "case_id": "T-MATCH-014",
+    "scenario_id": "sensitive_projection",
+    "passed": true,
+    "status": "passed",
+    "expected": {
+      "sensitive_canary_outbound": false,
+      "sensitive_changes_score": false
+    },
+    "details": {
+      "expectation_checks": {
+        "sensitive_canary_outbound": true,
+        "sensitive_changes_score": true
+      },
+      "additional_checks": {
+        "sensitive_projection_denied": true,
+        "private_source_fields_absent": true
+      },
+      "reasoning": "The disabled politics canary is outside the active purpose policy and has no disclosure grant. Changing it must not affect any fit or outbound record.",
+      "observed": {
+        "sensitive_canary_outbound": false,
+        "sensitive_changes_score": false
+      }
+    },
+    "execution_kind": "synthetic_in_memory"
+  },
+  {
+    "case_id": "T-MATCH-015",
+    "scenario_id": "no_qualifying_candidate",
+    "passed": true,
+    "status": "passed",
+    "expected": {
+      "offers": []
+    },
+    "details": {
+      "expectation_checks": {
+        "offers": true
+      },
+      "additional_checks": {},
+      "reasoning": "Flint has capacity zero. A successful abstention must remain empty; the program cannot fill cards with a weak replacement.",
+      "observed": {
+        "offers": []
+      }
+    },
+    "execution_kind": "synthetic_in_memory"
+  },
+  {
+    "case_id": "T-MATCH-016",
+    "scenario_id": "network_honesty",
+    "passed": true,
+    "status": "passed",
+    "expected": {
+      "verified_remote_joint_score": false
+    },
+    "details": {
+      "expectation_checks": {
+        "verified_remote_joint_score": true
+      },
+      "additional_checks": {
+        "directional_reports_explicitly_offline": true
+      },
+      "reasoning": "R0 can inspect both synthetic owners offline. Any simulated network willingness must not pretend to verify the remote private score.",
+      "observed": {
+        "verified_remote_joint_score": false
+      }
+    },
+    "execution_kind": "synthetic_in_memory"
+  },
+  {
+    "case_id": "T-MATCH-017",
+    "scenario_id": "boundary_and_permutation",
+    "passed": true,
+    "status": "passed",
+    "expected": {
+      "gate_exact": "3/4",
+      "permutation_changes_result": false
+    },
+    "details": {
+      "expectation_checks": {
+        "gate_exact": true,
+        "permutation_changes_result": true
+      },
+      "additional_checks": {
+        "exact_preference_gate": true,
+        "just_below_fit_cannot_qualify": true,
+        "just_below_coverage_cannot_qualify": true
+      },
+      "reasoning": "The independent component fixture uses exact F=0.6 and C=0.75. Exact equality passes; candidate and atom order do not change arithmetic.",
+      "observed": {
+        "gate_exact": "3/4",
+        "permutation_changes_result": false
+      }
+    },
+    "execution_kind": "synthetic_in_memory"
+  },
+  {
+    "case_id": "T-MATCH-018",
+    "scenario_id": "frozen_applicability",
+    "passed": true,
+    "status": "passed",
+    "expected": {
+      "missing_candidate_renormalizes": false
+    },
+    "details": {
+      "expectation_checks": {
+        "missing_candidate_renormalizes": true
+      },
+      "additional_checks": {
+        "coverage_lost_exactly_missing_weight": true
+      },
+      "reasoning": "Removing optional candidate evidence leaves the intent\u2019s fixed weights intact; no remaining family gains weight.",
+      "observed": {
+        "missing_candidate_renormalizes": false
+      }
+    },
+    "execution_kind": "synthetic_in_memory"
+  },
+  {
+    "case_id": "T-MATCH-019",
+    "scenario_id": "self_and_block",
+    "passed": true,
+    "status": "passed",
+    "expected": {
+      "offer_allowed": false
+    },
+    "details": {
+      "expectation_checks": {
+        "offer_allowed": true
+      },
+      "additional_checks": {
+        "self_not_offered": true,
+        "full_scan": true,
+        "population_order_invariant": true
+      },
+      "reasoning": "Hazel blocks Grove. Self and blocked IDs are excluded before proposals regardless of score.",
+      "observed": {
+        "offer_allowed": false
+      }
+    },
+    "execution_kind": "synthetic_in_memory"
+  },
+  {
+    "case_id": "T-MATCH-020",
+    "scenario_id": "recurring_fractions",
+    "passed": true,
+    "status": "passed",
+    "expected": {
+      "F": "3/4",
+      "S": "3/4",
+      "C": "3/4",
+      "communication_unknown_C": "7/10"
+    },
+    "details": {
+      "expectation_checks": {
+        "F": true,
+        "S": true,
+        "C": true,
+        "communication_unknown_C": true
+      },
+      "additional_checks": {
+        "exact_boundary_passes": true,
+        "below_coverage_abstains": true
+      },
+      "reasoning": "Independent weighted known fractions are 0.4*(2/3)+0.3*1+0.2*(2/3)+0.1*(1/2)=3/4. Removing the final 1/2 contribution gives 7/10.",
+      "observed": {
+        "F": "3/4",
+        "S": "3/4",
+        "C": "3/4",
+        "U": "1/1",
+        "status": "qualified_candidate",
+        "communication_unknown_C": "7/10"
+      }
+    },
+    "execution_kind": "synthetic_in_memory"
+  },
+  {
+    "case_id": "T-SELECTIVITY-003",
+    "scenario_id": "close_fit_bilateral",
+    "passed": true,
+    "status": "passed",
+    "expected": {
+      "thresholds": [
+        "0.85",
+        "0.85"
+      ],
+      "pair_qualified": false,
+      "independent_thresholds": [
+        "0.85",
+        "0.80"
+      ],
+      "independent_pair_qualified": true
+    },
+    "details": {
+      "expectation_checks": {
+        "thresholds": true,
+        "pair_qualified": true,
+        "independent_thresholds": true,
+        "independent_pair_qualified": true
+      },
+      "additional_checks": {},
+      "reasoning": "Lumen F=0.85 passes either case; Harbor F=0.80 fails 0.85 and passes 0.80 exactly.",
+      "observed": {
+        "thresholds": [
+          "0.85",
+          "0.85"
+        ],
+        "pair_qualified": false,
+        "independent_thresholds": [
+          "0.85",
+          "0.80"
+        ],
+        "independent_pair_qualified": true
+      }
+    },
+    "execution_kind": "synthetic_in_memory"
+  },
+  {
+    "case_id": "T-SELECTIVITY-004",
+    "scenario_id": "unknown_not_mismatch",
+    "passed": true,
+    "status": "passed",
+    "expected": {
+      "F": "3/4",
+      "S": "3/4",
+      "C": "9/10",
+      "U": "17/20",
+      "threshold": "0.85",
+      "status": "insufficient_evidence"
+    },
+    "details": {
+      "expectation_checks": {
+        "F": true,
+        "S": true,
+        "C": true,
+        "U": true,
+        "threshold": true,
+        "status": true
+      },
+      "additional_checks": {},
+      "reasoning": "Scenario makes Harbor communication unknown only. Lumen loses F=0.10 and S=0.07. Unknown weight 0.10 gives U=0.85, so strict selectivity is unresolved, not a known mismatch.",
+      "observed": {
+        "F": "3/4",
+        "S": "3/4",
+        "C": "9/10",
+        "U": "17/20",
+        "status": "insufficient_evidence",
+        "threshold": "0.85"
+      }
+    },
+    "execution_kind": "synthetic_in_memory"
+  }
+]

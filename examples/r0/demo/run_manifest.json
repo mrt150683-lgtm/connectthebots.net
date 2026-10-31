@@ -1,0 +1,14 @@
+{
+  "as_of": "2026-10-25T12:00:00Z",
+  "code_and_data_sha256": "76d1f34f7b7c3e5348c25dd2bb99a0728120e1f6b71c5a3bcf686c5225925491",
+  "contract_version": "0.4.0",
+  "encrypted_storage_implemented": false,
+  "network_transport_implemented": false,
+  "plan_version": "3.1.0",
+  "real_inference_performed": false,
+  "release": "R0",
+  "reproducibility": "Fixed inputs and clock determine semantic output. Measurements are separate.",
+  "seed": 1729,
+  "software_version": "0.1.0",
+  "synthetic_only": true
+}

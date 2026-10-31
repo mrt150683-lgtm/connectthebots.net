@@ -1,0 +1,41 @@
+{
+  "audited_revision": "98dc3b0",
+  "date": "2026-10-26",
+  "depth": "full",
+  "scope": "Implemented local fictional agent runtime, deterministic collaboration workflows, persistence/authorization failure paths, API contracts and human viewer",
+  "overall_verdict": "PARTIAL",
+  "environment": {"os": "Windows", "python": "3.14.3", "cryptography": "49.0.0", "browsers": ["Chromium desktop 1440x1000", "Chromium mobile viewport 390x844", "Codex in-app browser"]},
+  "product_behavior_changed": false,
+  "fictional_only": true,
+  "baseline": {"tests": 240, "passed": 240, "failures": 0, "errors": 0, "skipped": 0},
+  "canonical_operations_observed": 20,
+  "resilience_cases_passed": 8,
+  "viewer_positive_checks_passed": 17,
+  "flows": [
+    {"id":"business", "goal":"Agents execute every supported collaboration operation", "source":"USER-STATED and docs/AGENT_API.md", "verdict":"PASS", "evidence":["artifacts/operational-qa/business-flows.json"], "finding_ids":[]},
+    {"id":"next_actions", "goal":"Returned resource actions are usable agent commands", "source":"USER-STATED agent-friendly operation", "verdict":"FAIL", "evidence":["artifacts/operational-qa/contracts/results.json"], "finding_ids":["QA-001"]},
+    {"id":"standing_mission", "goal":"Approved bounded work requires no repeated administrator calls", "source":"docs/AGENT_API.md", "verdict":"PASS", "evidence":["artifacts/operational-qa/live_server.py", "artifacts/operational-qa/live-agreement.png"], "finding_ids":[]},
+    {"id":"durable_effects", "goal":"Retries, interrupted commits and concurrent actors preserve authorization and one effect", "source":"docs/AGENT_API.md", "verdict":"PASS", "evidence":["artifacts/operational-qa/resilience/run-bc1d0f2740ca4c7aaedec5dbd641bfee/results.json"], "finding_ids":[]},
+    {"id":"temporary_storage_failure", "goal":"Agent can identify actionable transient storage failure", "source":"INFERRED operational recovery", "verdict":"PARTIAL", "evidence":["artifacts/operational-qa/resilience/README.md"], "finding_ids":["QA-009"]},
+    {"id":"query_recovery", "goal":"Recover interrupted search output within declared authority", "source":"INFERRED unattended operation", "verdict":"PARTIAL", "evidence":["artifacts/operational-qa/contracts/results.json"], "finding_ids":["QA-004"]},
+    {"id":"sustained_clarification", "goal":"Clarification budget has an explicit sustainable lifecycle", "source":"INFERRED sustained operation", "verdict":"PARTIAL", "evidence":["artifacts/operational-qa/contracts/results.json"], "finding_ids":["QA-005"]},
+    {"id":"receipt_api", "goal":"Agents traverse authorized activity without duplicates or gaps", "source":"docs/AGENT_API.md", "verdict":"PASS", "evidence":["artifacts/operational-qa/contracts/results.json"], "finding_ids":[]},
+    {"id":"human_viewer", "goal":"Humans inspect current progress and actionable errors safely", "source":"USER-STATED viewing role", "verdict":"PARTIAL", "evidence":["artifacts/operational-qa/viewer/results.json", "artifacts/operational-qa/viewer/FINDINGS.md"], "finding_ids":["QA-002","QA-003","QA-006","QA-007"]},
+    {"id":"machine_contract", "goal":"Machine clients can validate output and error shapes", "source":"INFERRED agent-friendly contract", "verdict":"PARTIAL", "evidence":["artifacts/operational-qa/contracts/results.json"], "finding_ids":["QA-008"]},
+    {"id":"real_owner_release", "goal":"Real identity/private input/recovery and autonomous runtime", "source":"docs/STATUS.md future R1 gates", "verdict":"PARTIAL", "evidence":["docs/AGENT_API.md", "docs/security/THREAT_MODEL.md"], "finding_ids":[]}
+  ],
+  "findings": [
+    {"id":"QA-001","impact":"P2","title":"Advertised actions do not match executable command names","reproduced":true},
+    {"id":"QA-002","impact":"P2","title":"Viewer cannot reach newer receipts beyond first50","reproduced":true},
+    {"id":"QA-003","impact":"P2","title":"Exhausted viewer permission gets impossible refresh advice","reproduced":true},
+    {"id":"QA-004","impact":"P2","title":"Lost one-use search output requires renewed administrator authority","reproduced":true},
+    {"id":"QA-005","impact":"P2","title":"Persisted clarification session cap becomes lifetime allowance","reproduced":true},
+    {"id":"QA-006","impact":"P2","title":"Accepted80-character title creates709px width on390px mobile","reproduced":true},
+    {"id":"QA-007","impact":"P3","title":"Remaining viewer uses is one read behind","reproduced":true},
+    {"id":"QA-008","impact":"P3","title":"OpenAPI has no response schemas","reproduced":true},
+    {"id":"QA-009","impact":"P3","title":"SQLite contention returns generic internal error","reproduced":true}
+  ],
+  "unverified_conditions": ["hardware power loss", "disk full", "memory/swap/crash dumps", "OS key-file security", "safe backup rollback/revocation", "production load", "remote TLS service", "other OS/browser/physical device/screen reader", "model reasoning and confinement", "autonomous scheduler", "real discovery/peer transport", "human usefulness"],
+  "hosted_ci_executed": false,
+  "remote_published": false
+}

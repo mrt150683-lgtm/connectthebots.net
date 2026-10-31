@@ -1,0 +1,24 @@
+{% extends "auth_base.html" %}
+{% block title %}Leaderboard · Connect the Bots{% endblock %}
+{% block head %}
+  <meta name="description" content="Who is bringing people together on Connect the Bots, over the last {{ board.window_days }} days.">
+  <meta property="og:title" content="Connect the Bots leaderboard">
+  <meta property="og:description" content="Who is bringing people together, over the last {{ board.window_days }} days.">
+  <meta property="og:image" content="{{ base }}/assets/trailer-poster.jpg">
+{% endblock %}
+{% block content %}
+<h1>Leaderboard</h1>
+<p>Who is bringing people together, over the last {{ board.window_days }} days. Only real outcomes count: friends who joined and finished the interview, and conversations where both people wrote. Posting more never helps.</p>
+{% if board.leader %}<p class="leader" data-leader>Top connector right now: <strong>{{ board.leader.name or "a member who keeps their name private" }}</strong>, with {{ board.leader.value }} qualified referral{% if board.leader.value != 1 %}s{% endif %}.</p>{% endif %}
+<h2>Qualified referrals</h2>
+{% if board.referrals %}
+<ol class="rank-list" data-board="referrals">{% for entry in board.referrals %}<li value="{{ entry.rank }}">{{ entry.name or "A member" }} · {{ entry.value }}</li>{% endfor %}</ol>
+{% else %}<p data-board="referrals">No qualified referrals yet. The first one takes the top spot.</p>{% endif %}
+<h2>Connections that became a conversation</h2>
+{% if board.connections %}
+<ol class="rank-list" data-board="connections">{% for entry in board.connections %}<li value="{{ entry.rank }}">{{ entry.name or "A member" }} · {{ entry.value }}</li>{% endfor %}</ol>
+{% else %}<p data-board="connections">None yet.</p>{% endif %}
+{% if board.early_access_percent %}<p>The top {{ board.early_access_percent }}% of referrers get early-access features while they stay there, recalculated daily.{% if board.perk_days %} Every qualified referral also gives both people {{ board.perk_days }} days of early access.{% endif %}</p>{% endif %}
+<p><a class="btn btn-primary" href="/signin">Get started</a></p>
+<p class="fine-print">Names appear only for members who chose to show them. Referrals held for an abuse review don't count until cleared. <a href="/deals.html">How referrals work</a></p>
+{% endblock %}

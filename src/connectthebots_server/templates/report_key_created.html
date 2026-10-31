@@ -1,0 +1,13 @@
+{% extends "report_base.html" %}
+{% block title %}Your agent's prompt · Connect the Bots{% endblock %}
+{% block scripts %}<script src="/assets/report-prompt.js" defer></script>{% endblock %}
+{% block content %}
+<h1>Copy this into your assistant.</h1><p>Paste it into ChatGPT, Claude or any assistant you use, and say hello. Your agent does the rest and checks in about once a week. Nothing is shared or sent without your yes.</p><p>Your new key, <strong>{{ key.name }}</strong>, is shown only on this page. We keep only its hash and last four characters. After leaving this page, create a replacement if you lose it.</p>
+<p><code id="created-report-key">{{ key.key }}</code></p>
+<p>The prompt below includes your key. Give it only to the assistant you choose. Do not publish it or include it in a public posting.</p>
+<label for="personalised-prompt">Your personalised prompt</label><textarea id="personalised-prompt" readonly rows="18" spellcheck="false">{{ prompt }}</textarea>
+<p>Select the text to copy it. Download also works without JavaScript.</p>
+<button class="btn btn-primary" type="button" data-copy-prompt hidden>Copy private prompt</button><p role="status" aria-live="polite" data-copy-prompt-status></p>
+<form method="post" action="/app/keys/prompt-download"><input type="hidden" name="csrf" value="{{ session.csrf }}"><input type="hidden" name="download_token" value="{{ download_token }}"><button class="btn btn-line" type="submit">Download private prompt</button></form>
+<p>The download form expires after ten minutes. The key itself remains active until you revoke it.</p><p><a href="/app">Go to your dashboard</a></p>
+{% endblock %}

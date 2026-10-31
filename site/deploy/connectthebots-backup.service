@@ -1,0 +1,29 @@
+[Unit]
+Description=Connect the Bots encrypted local backup
+After=connectthebots-app.service
+ConditionPathExists=/var/lib/connectthebots/app.db
+
+[Service]
+Type=oneshot
+User=ctb
+Group=ctb
+WorkingDirectory=/var/lib/connectthebots
+EnvironmentFile=/etc/connectthebots/app.env
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/connectthebots/venv/bin/python -m connectthebots_server.admin backup
+TimeoutStartSec=10min
+UMask=0077
+NoNewPrivileges=yes
+ProtectSystem=strict
+ReadWritePaths=/var/lib/connectthebots /var/backups/connectthebots
+ProtectHome=yes
+PrivateTmp=yes
+PrivateNetwork=yes
+CapabilityBoundingSet=
+RestrictSUIDSGID=yes
+LockPersonality=yes
+RestrictAddressFamilies=AF_UNIX
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes

@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:connectthebots:board:v1",
+  "title": "Connect the Bots public board, version 1",
+  "description": "Public feed or single approved posting. Only explicitly approved posting fields are public; account profiles, emails, identifiers and grant metadata are never copied into this contract.",
+  "oneOf": [
+    { "$ref": "#/$defs/feed" },
+    { "$ref": "#/$defs/posting" }
+  ],
+  "$defs": {
+    "timestamp": {
+      "type": "string",
+      "minLength": 27,
+      "maxLength": 27,
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{6}Z$",
+      "description": "UTC timestamp with exactly six fractional-second digits. Validation must enable date-time format checks."
+    },
+    "posting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["slug", "text", "tags", "looking_for", "offering", "published_at", "updated_at"],
+      "properties": {
+        "slug": { "type": "string", "minLength": 32, "maxLength": 32, "pattern": "^[0-9a-f]{32}$" },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 800,
+          "description": "The exact approved plain text. The application also enforces three to five sentences. Text is never HTML or Markdown."
+        },
+        "tags": {
+          "type": "array",
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 30 }
+        },
+        "looking_for": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "offering": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "published_at": { "$ref": "#/$defs/timestamp" },
+        "updated_at": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "feed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "updated_at", "page", "page_size", "total", "has_next", "items"],
+      "properties": {
+        "schema_version": { "type": "integer", "const": 1 },
+        "updated_at": { "$ref": "#/$defs/timestamp" },
+        "page": { "type": "integer", "minimum": 1, "maximum": 10000 },
+        "page_size": { "type": "integer", "minimum": 1, "maximum": 50 },
+        "total": { "type": "integer", "minimum": 0 },
+        "has_next": { "type": "boolean" },
+        "items": { "type": "array", "maxItems": 50, "items": { "$ref": "#/$defs/posting" } }
+      }
+    }
+  }
+}

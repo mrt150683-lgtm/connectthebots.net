@@ -1,0 +1,11 @@
+{% extends "interaction_base.html" %}{% from "interaction_content.html" import status %}
+{% block title %}Introductions · Connect the Bots{% endblock %}
+{% block content %}
+<h1>Introductions.</h1><p>You choose who to talk to. A request opens a conversation only after both people agree.</p>
+{% for key, title in [("pending_incoming", "Your choice"), ("pending_outgoing", "Requests you sent"), ("history", "Earlier requests")] %}
+<section class="interaction-section"><h2>{{ title }} <span class="meta">({{ result.totals[key] }})</span></h2>
+{% for intro in result[key] %}<article class="interaction-row" data-introduction-id="{{ intro.id }}" data-introduction-status="{{ intro.state }}"><h3><a href="/app/introductions/{{ intro.id }}">{{ status(intro) }}</a></h3>{% if intro.reason %}<p class="serif">{{ intro.reason }}</p>{% endif %}<p class="meta">Requested {{ intro.created_at|readable_time }}{% if intro.state == "requested" %}. Expires {{ intro.expires_at|readable_time }}{% endif %}.</p></article>{% else %}<p>No requests on this page.</p>{% endfor %}
+</section>{% endfor %}
+<nav class="board-pages" aria-label="Introduction pages">{% if result.page > 1 %}<a href="/app/introductions?page={{ result.page - 1 }}">Previous page</a>{% endif %}{% if result.has_next %}<a href="/app/introductions?page={{ result.page + 1 }}">Next page</a>{% endif %}</nav>
+<p><a href="/board">Read the public board</a> · <a href="/app/conversations">Your conversations</a></p>
+{% endblock %}

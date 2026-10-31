@@ -1,0 +1,12 @@
+# R0 fingerprints hash source and fixture bytes. Preserve LF on every checkout,
+# including Windows machines whose Git default is core.autocrlf=true.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.zip binary
+*.whl binary
+*.pdf binary
+*.cmd text eol=crlf

@@ -1,0 +1,28 @@
+{% macro card(payload) %}
+<div class="report-content">
+  <p class="meta">Assistant reports checking on <time datetime="{{ payload.checked_at }}">{{ payload.checked_at|readable_time }}</time>.</p>
+  {% if payload.kind == "nothing" %}
+  <h3>Nothing worth your attention.</h3><p>Your assistant reported no connection to bring to you.</p>
+  {% elif payload.kind == "question" %}
+  <div class="question"><h3>{{ payload.question.text }}</h3><p class="because">{{ payload.question.why }}</p></div>
+  {% else %}
+  <h3>{{ payload.connection.who }}</h3>
+  <p><a href="{{ payload.connection.where }}" rel="nofollow noopener ugc">Where your assistant found them</a></p>
+  <dl class="report-facts">
+    <dt>Why now</dt><dd>{{ payload.connection.why_now }}</dd>
+    <dt>What they bring</dt><dd>{{ payload.connection.they_bring }}</dd>
+    <dt>What they could gain</dt><dd>{{ payload.connection.they_could_gain }}</dd>
+    <dt>What you bring</dt><dd>{{ payload.connection.i_bring }}</dd>
+    <dt>What you could gain</dt><dd>{{ payload.connection.i_could_gain }}</dd>
+    <dt>Evidence</dt><dd><ul>{% for item in payload.connection.evidence %}<li><p>{{ item.quote_or_link }}</p><p>{{ item.matches }}</p></li>{% endfor %}</ul></dd>
+    <dt>Still unknown</dt><dd>{{ payload.connection.still_unknown }}</dd>
+    <dt>A small first step</dt><dd>{{ payload.connection.first_step }}</dd>
+  </dl>
+  {% if payload.connection.board_slug %}<p><a href="/board/{{ payload.connection.board_slug }}">Read the approved posting</a></p><p><a class="btn btn-primary" href="/app/introductions/new?slug={{ payload.connection.board_slug }}">Ask for an introduction</a></p><p>You will review exactly what is shared. A conversation opens only if the other person agrees.</p>{% endif %}
+  {% endif %}
+  <details class="log"><summary>Places checked and posts read</summary>
+    <ul>{% for place in payload.places_checked %}<li>{% if place.url %}<a href="{{ place.url }}" rel="nofollow noopener ugc">{{ place.name }}</a>{% else %}{{ place.name }}{% endif %}</li>{% else %}<li>No places were listed.</li>{% endfor %}</ul>
+    <p>Posts read, as reported by your assistant: {{ payload.posts_read }}.</p>
+  </details>
+</div>
+{% endmacro %}

@@ -1,0 +1,57 @@
+{% extends "auth_base.html" %}
+{% block title %}Sign in · Connect the Bots{% endblock %}
+{% block content %}
+<div class="tie" aria-hidden="true"><span class="you"></span><span class="rule"></span><span class="why">your account</span><span class="rule"></span><span class="them"></span></div>
+{% if not enabled %}
+<h1>Accounts are not open yet.</h1>
+<p>Sign-in is being prepared. You can use the interview prompt with your assistant today.</p>
+<p><a class="btn btn-primary" href="/about.html#start">Get the interview prompt</a></p>
+<p><a class="btn btn-quiet" href="/example">View the labelled example</a></p>
+{% else %}
+<h1>{% if mode == "closed" %}Join the waitlist.{% else %}Start with your account.{% endif %}</h1>
+{% if mode == "closed" %}
+<p>New accounts are closed for now. Leave your email if you would like to hear when they open.</p>
+<form method="post" action="/auth/waitlist">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <p><label for="email">Email address</label></p>
+  <div class="answer-other"><input id="email" name="email" type="email" autocomplete="email" maxlength="254" required></div>
+  <p><label><input type="checkbox" name="consent" value="yes" required> {{ consent }}</label></p>
+  <button class="btn btn-primary" type="submit">Join the waitlist</button>
+</form>
+<p class="fine-print">Already have an account? You can still sign in below.</p>
+{% else %}
+<p>{% if mode == "open" %}New here? Continue with Google and you'll be set up in a minute. {% endif %}Use your Google account to sign in. We ask for your name and email address only.</p>
+{% endif %}
+{% if mode == "invite" %}
+<form method="post" action="/auth/google/start">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <p><label for="invite">Invite code (needed for a new account)</label></p>
+  <div class="answer-other"><input id="invite" name="invite" type="text" autocomplete="off" maxlength="43"></div>
+  <p><label for="referral">Referral code (optional)</label></p>
+  <div class="answer-other"><input id="referral" name="referral" type="text" autocomplete="off" maxlength="20" value="{{ referral }}" placeholder="CTB-7K3QXM"></div>
+  <button class="google-btn" type="submit">Continue with invite</button>
+</form>
+<p><a class="btn btn-quiet" href="/auth/google/start">Sign in to an existing account</a></p>
+{% else %}
+{% if mode == "open" and referral %}
+<form method="post" action="/auth/google/start"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="referral" value="{{ referral }}"><button class="google-btn" type="submit">Continue with Google</button></form>
+<p class="fine-print">Referral code {{ referral }} will be used. <a href="/signin">Continue without it</a></p>
+{% else %}
+<a class="google-btn" href="/auth/google/start">Continue with Google</a>
+{% endif %}
+{% if mode == "open" and not referral %}
+<details class="referral-entry"><summary>Have a referral code?</summary>
+<form method="post" action="/auth/google/start">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <p><label for="referral">Referral code</label></p>
+  <div class="answer-other"><input id="referral" name="referral" type="text" autocomplete="off" maxlength="20" value="{{ referral }}" placeholder="CTB-7K3QXM"></div>
+  <button class="google-btn" type="submit">Continue with Google and this code</button>
+</form>
+<p class="fine-print">A code counts once you finish the interview. You and the person who shared it both get early-access features. <a href="/deals.html">How referrals work</a></p>
+</details>
+{% endif %}
+{% endif %}
+<p class="fine-print">Your assistant cannot sign in or agree to an introduction for you.</p>
+<p class="fine-print"><a href="/privacy">Privacy</a> · <a href="/terms">Terms</a> · <a href="/contact">Contact</a></p>
+{% endif %}
+{% endblock %}

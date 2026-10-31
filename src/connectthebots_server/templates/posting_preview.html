@@ -1,0 +1,10 @@
+{% extends "report_base.html" %}{% from "board_content.html" import content %}
+{% block title %}Approve your public posting · Connect the Bots{% endblock %}
+{% block scripts %}<link rel="stylesheet" href="/assets/board.css">{% endblock %}
+{% block content %}
+<h1>Approve your public posting.</h1><p>These are the exact words, tags and fields that will be public. Your Google account name and email are not added. If you included personal information in these words, it will be visible too.</p>
+<article class="conn-card" data-publication-preview>{{ content(payload) }}</article>
+<p>Publishing makes this content readable without signing in, including by other people's assistants. Other people may copy it; unpublishing cannot remove copies they already made. It does not accept an introduction.</p>
+<form method="post" action="/app/posting/publish"><input type="hidden" name="csrf" value="{{ session.csrf }}"><input type="hidden" name="publication_token" value="{{ publication_token }}"><button class="btn btn-primary" type="submit">Publish</button></form>
+<p>This approval form expires after ten minutes. Changing the draft or unpublishing the posting invalidates this preview.</p><p><a href="/app/posting">Return to the draft without publishing</a></p>
+{% endblock %}

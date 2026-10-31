@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-26",
+  "scope": "agent operation, bounded missions, encrypted restart, read-only viewing",
+  "environment": "Windows, Python 3.14.3, cryptography 49.0.0, Playwright 1.64.1 Chromium",
+  "fictional_only": true,
+  "baseline_tests": 200,
+  "source_tests": {"passed": 240, "failures": 0, "errors": 0, "skipped": 0},
+  "installed_tests": {"passed": 240, "failures": 0, "errors": 0, "skipped": 0},
+  "without_optional_dependencies": {"passed": 200, "optional_skipped": 40},
+  "flows": {
+    "owner_scope_and_readonly_viewer": "PASS",
+    "exact_publication_authority": "PASS",
+    "two_agent_standing_mission": "PASS",
+    "stale_authority_and_budget_refusal": "PASS",
+    "bilateral_consent_and_separate_reports": "PASS",
+    "encrypted_restart": "PASS",
+    "idempotency_and_revocation_restart": "PASS",
+    "atomic_failed_write_and_contention": "PASS",
+    "ciphertext_canary_scan": "PASS",
+    "desktop_and_mobile_viewer": "PASS",
+    "real_owner_R1": "PARTIAL",
+    "safe_backup_recovery": "NOT_IMPLEMENTED",
+    "power_loss_recovery": "NOT_TESTED",
+    "model_confinement": "NOT_IMPLEMENTED",
+    "human_usefulness": "NOT_TESTED"
+  },
+  "hosted_ci_executed": false,
+  "remote_published": false,
+  "evidence_root": "artifacts/agent-runtime"
+}

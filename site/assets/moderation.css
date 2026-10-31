@@ -1,0 +1,2 @@
+/* A report stays a quiet form, with its target separated by a hairline. */
+.moderation-target{border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:8px 0;margin:24px 0;max-width:720px}

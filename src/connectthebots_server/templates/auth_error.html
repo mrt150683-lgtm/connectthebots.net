@@ -1,0 +1,7 @@
+{% extends "auth_base.html" %}
+{% block title %}Sign-in needs another try · Connect the Bots{% endblock %}
+{% block content %}
+<h1>We could not continue.</h1>
+<p role="alert">{{ message }}</p>
+<p><a class="btn btn-primary" href="/signin">Back to sign-in</a></p>
+{% endblock %}

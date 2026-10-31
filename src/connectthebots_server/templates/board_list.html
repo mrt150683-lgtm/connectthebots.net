@@ -1,0 +1,12 @@
+{% extends "board_base.html" %}{% from "board_content.html" import content %}
+{% block content %}
+<h1>Public board.</h1><p>Postings people chose to publish, shown newest first. Read their words and what each person is looking for and offering. There are no rankings or match scores.</p>
+<form method="get" action="/board" class="report-form"><label for="board-search">Search postings</label><input id="board-search" name="q" type="search" value="{{ search }}" maxlength="100"><button class="btn btn-line" type="submit">Search</button></form>
+{% if search %}<p><a href="/board">Clear search</a></p>{% endif %}
+<p>{{ feed.total }} public posting{% if feed.total != 1 %}s{% endif %}. Page {{ feed.page }}.</p>
+{% for posting in feed["items"] %}
+<article class="board-card" data-board-slug="{{ posting.slug }}">{{ content(posting) }}<p class="meta">Published {{ posting.published_at|readable_time }}</p><p><a href="/board/{{ posting.slug }}">View this posting</a> · <a href="/app/report?kind=posting&amp;target={{ posting.slug }}">Report</a></p></article>
+{% else %}<p>{% if search %}No public postings match that search.{% else %}No public postings yet.{% endif %}</p>{% endfor %}
+<nav class="board-pages" aria-label="Posting pages">{% if previous %}<a class="btn btn-line" href="{{ previous }}">Previous page</a>{% endif %}{% if following %}<a class="btn btn-line" href="{{ following }}">Next page</a>{% endif %}</nav>
+<p><a href="/board.json">Read the public board as JSON</a></p><p>A posting is not an invitation or acceptance. Open a posting to review it and choose whether to ask for an introduction.</p>
+{% endblock %}

@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en" class="theme-dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#08090c">
+  <title>{% block title %}Connect the Bots{% endblock %}</title>
+  <link rel="icon" href="/assets/mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/site.css">
+  <link rel="stylesheet" href="/assets/dark.css">
+  <link rel="stylesheet" href="/assets/notifications.css">
+  {% block head %}{% endblock %}
+</head>
+<body>
+<header class="site-head"><div class="wrap">
+  <a class="brand" href="/" aria-label="Connect the Bots, home"><span class="mark" aria-hidden="true"><i></i><b></b><s></s></span>Connect the Bots</a>
+  <span class="preview-tag">Early access</span>
+</div></header>
+<main class="signin wrap"><div class="signin-card">{% if session %}<nav class="notification-account-link" aria-label="Your notifications">{% include "notification_bell.html" %}</nav>{% endif %}{% block content %}{% endblock %}</div></main>
+</body>
+</html>

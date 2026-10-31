@@ -1,0 +1,33 @@
+{% extends "auth_base.html" %}
+{% block title %}Your data · Connect the Bots{% endblock %}
+{% block content %}
+{% if deleted %}
+<h1>Your account is deleted.</h1>
+<p>Your profile, report keys, check-in reports, posting drafts and publication history, dashboard preferences, sign-in sessions and pending account notifications have been removed. Your introductions and conversations are closed. Your messages now show [deleted] to the other person. We kept a receipt containing only the deletion date.</p>
+<p>A separate waitlist request is not part of your account. If you joined the waitlist, <a href="/auth/waitlist/remove">remove that request using your saved private code</a>.</p>
+<p><a class="btn btn-line" href="/">Return to the site</a></p>
+{% else %}
+<h1>Your data.</h1>
+<p>Signed in as <strong>{{ session.display_name }}</strong>.</p>
+<section class="app-block">
+  <div class="block-head"><h2>Export your account</h2></div>
+  <p>Download your profile, report-key details, check-in reports, posting drafts and publication history, introductions, your own messages, dashboard preferences and recorded account notifications as a JSON file. Secret key values and the other person's message bodies are excluded.</p>
+  <form method="post" action="/app/account/export">
+    <input type="hidden" name="csrf" value="{{ session.csrf }}">
+    <button class="btn btn-primary" type="submit">Download my data</button>
+  </form>
+</section>
+<section class="app-block">
+  <div class="block-head"><h2>Delete your account</h2></div>
+  <p>This removes your profile, every report key and check-in report, all posting drafts and publication history, dashboard preferences, sign-in sessions and pending account notifications immediately. Your posting disappears from our board. Your introductions and conversations close, shared introduction details are cleared, and your messages become [deleted]. The other person's own messages remain in their closed conversation. Copies others have already saved are outside our control. This cannot be undone.</p>
+  <form method="post" action="/app/account/delete">
+    <input type="hidden" name="csrf" value="{{ session.csrf }}">
+    <label for="confirmation">Type DELETE to confirm</label>
+    <input id="confirmation" name="confirmation" type="text" autocomplete="off" required maxlength="6">
+    <button class="btn btn-line" type="submit">Delete my account</button>
+  </form>
+</section>
+<p>A waitlist request is separate from your account and is not included in account exports or deletion. If you joined the waitlist, <a href="/auth/waitlist/remove">remove that request using your saved private code</a>.</p>
+<p><a href="/app">Back to your account</a></p>
+{% endif %}
+{% endblock %}

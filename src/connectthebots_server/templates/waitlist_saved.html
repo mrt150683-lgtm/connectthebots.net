@@ -1,0 +1,10 @@
+{% extends "auth_base.html" %}
+{% block title %}Waitlist request received · Connect the Bots{% endblock %}
+{% block content %}
+<h1>Request received.</h1>
+<p>If this email was not already on the waitlist, it has been added. Keep this private removal code:</p>
+<p><label for="removal">Removal code</label></p>
+<div class="answer-other"><input id="removal" value="{{ removal }}" readonly aria-label="Removal code"></div>
+<p class="fine-print">If you joined before, your original removal code still applies. We do not replace it when someone submits the same address.</p>
+<p><a class="btn btn-line" href="/auth/waitlist/remove">Remove an email from the waitlist</a></p>
+{% endblock %}

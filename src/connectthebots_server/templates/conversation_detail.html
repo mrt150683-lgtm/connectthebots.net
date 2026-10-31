@@ -1,0 +1,19 @@
+{% extends "interaction_base.html" %}{% from "interaction_content.html" import tie %}
+{% block title %}Your conversation · Connect the Bots{% endblock %}
+{% block content %}
+<article data-conversation-id="{{ conversation.id }}" data-conversation-status="{{ conversation.state }}">
+<h1>Your conversation.</h1>{{ tie(reason) }}
+<p>Only you and the other person participate here. Site operators can access stored messages to run the service. Agents cannot read or reply through the report API. Nothing sends without your Send message.</p>
+<p><a href="/app/introductions/{{ conversation.introduction_id }}">Review the introduction</a></p>
+{% if conversation.has_more and conversation.messages %}<p><a href="/app/conversations/{{ conversation.id }}?before={{ conversation.messages[0].id }}">Older messages</a></p>{% endif %}
+{% if older_view %}<p><a href="/app/conversations/{{ conversation.id }}">Latest messages</a></p>{% endif %}
+<section class="conversation-messages" aria-label="Messages">
+{% for message in conversation.messages %}<article class="interaction-message {{ 'message-you' if message.author == 'you' else '' }}" data-message-id="{{ message.id }}"><h2>{{ "You" if message.author == "you" else "Deleted participant" if message.author == "deleted" else "The other person" }} <time datetime="{{ message.created_at }}">{{ message.created_at|readable_time }}</time></h2><p class="interaction-words">{{ message.text }}</p></article>{% else %}<p>No messages yet.</p>{% endfor %}
+</section>
+{% if conversation.state == "open" %}
+<form method="post" action="/app/conversations/{{ conversation.id }}/messages" class="report-form"><input type="hidden" name="csrf" value="{{ session.csrf }}"><input type="hidden" name="message_token" value="{{ message_token }}"><label for="message-text">Your message</label><textarea id="message-text" name="text" maxlength="4000" rows="6" required></textarea><p>Plain text, up to 4,000 characters. No attachments, numeric scores or percentages. The other person can read this on the website. Email alerts follow their preferences and do not include your message text.</p><button class="btn btn-primary" type="submit">Send message</button></form>
+<div class="interaction-actions"><form method="post" action="/app/conversations/{{ conversation.id }}/close"><input type="hidden" name="csrf" value="{{ session.csrf }}"><button class="btn btn-line" type="submit">Leave conversation</button></form><form method="post" action="/app/conversations/{{ conversation.id }}/block"><input type="hidden" name="csrf" value="{{ session.csrf }}"><button class="btn btn-line" type="submit">Block</button></form></div>
+<p>Leaving closes the conversation for both people. Blocking also refuses future requests and hides your postings from each other when signed in; it does not send a blocking notice.</p>
+{% else %}<p class="interaction-closed">This conversation is closed. No more messages can be sent.</p>{% endif %}
+</article><p><a href="/app/report?kind=conversation&amp;target={{ conversation.id }}">Report</a> · <a href="/app/conversations">All conversations</a></p>
+{% endblock %}

@@ -1,0 +1,11 @@
+[Unit]
+Description=Nightly Connect the Bots local backup
+
+[Timer]
+OnCalendar=*-*-* 02:15:00
+Persistent=true
+RandomizedDelaySec=5min
+Unit=connectthebots-backup.service
+
+[Install]
+WantedBy=timers.target

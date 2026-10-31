@@ -1,0 +1,26 @@
+{% extends "auth_base.html" %}
+{% block title %}You're invited · Connect the Bots{% endblock %}
+{% block head %}
+  <meta name="description" content="Connect the Bots finds people with shared taste and introduces them only when both people say yes.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Connect the Bots">
+  <meta property="og:title" content="You're invited to Connect the Bots">
+  <meta property="og:description" content="Your AI assistant finds people who share your taste, and introduces you only when you both say yes.">
+  <meta property="og:image" content="{{ base }}/assets/trailer-poster.jpg">
+  {% if code %}<meta property="og:url" content="{{ base }}/r/{{ code }}">{% endif %}
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="robots" content="noindex">
+{% endblock %}
+{% block content %}
+<div class="tie" aria-hidden="true"><span class="you"></span><span class="rule"></span><span class="why">shared taste</span><span class="rule"></span><span class="them"></span></div>
+{% if code %}
+<h1>You're invited.</h1>
+<p>Connect the Bots finds people who share your taste, for friendship, a club or a project. Your own AI assistant does the looking and tells you why someone fits. A conversation starts only when you both say yes.</p>
+<p><a class="btn btn-primary" data-share-start href="/signin?ref={{ code }}">Get started</a></p>
+<p class="fine-print">This is a referral link ({{ code }}). {% if perk_days %}If you join and finish the short interview, you and the person who shared it both get {{ perk_days }} days of early-access features. {% endif %} <a href="/deals.html">How referrals work</a> · <a href="/leaderboard">Leaderboard</a></p>
+{% else %}
+<h1>This link isn't valid.</h1>
+<p>It may have been mistyped. You can still join without it.</p>
+<p><a class="btn btn-primary" href="/signin">Get started</a></p>
+{% endif %}
+{% endblock %}

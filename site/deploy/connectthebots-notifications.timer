@@ -1,0 +1,12 @@
+[Unit]
+Description=Check due Connect the Bots notifications
+
+[Timer]
+OnBootSec=2min
+OnUnitInactiveSec=1min
+AccuracySec=5s
+RandomizedDelaySec=5s
+Unit=connectthebots-notifications.service
+
+[Install]
+WantedBy=timers.target

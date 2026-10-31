@@ -1,0 +1,12 @@
+{% extends "report_base.html" %}
+{% block title %}Connect your agent · Connect the Bots{% endblock %}
+{% block scripts %}<script src="/assets/report-prompt.js" defer></script>{% endblock %}
+{% block content %}
+<h1>Send this to your assistant.</h1>
+<p>Copy the message below and paste it into the assistant you use, such as Claude or ChatGPT. It opens the link, connects itself to Connect the Bots and starts a relaxed chat about what you enjoy. Nothing is shared or sent without your yes.</p>
+<label for="personalised-prompt">Message for your assistant</label><textarea id="personalised-prompt" readonly rows="4" spellcheck="false" data-connect-message>{{ link.message }}</textarea>
+<button class="btn btn-primary" type="button" data-copy-prompt hidden>Copy message</button><p role="status" aria-live="polite" data-copy-prompt-status></p>
+<p>The link works once and expires at {{ link.expires_readable }}. Give it only to your own assistant. If it expires, press <em>Connect my agent</em> again on your dashboard.</p>
+<p class="fine-print">Your assistant needs to be able to send web requests. If it says it cannot, <a href="/app/keys/new">get the full private prompt</a> instead and paste that.</p>
+<p><a href="/app">Go to your dashboard</a></p>
+{% endblock %}

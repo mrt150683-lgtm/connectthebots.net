@@ -1,0 +1,58 @@
+{
+  "annotation_mode": "manual_fixture_annotations",
+  "checks": [
+    "bundled_file_hashes",
+    "exact_counts",
+    "unique_ids",
+    "strict_typed_owners",
+    "source_author_and_reference_integrity",
+    "case_reference_integrity",
+    "fictional_provenance"
+  ],
+  "conversation_count": 200,
+  "corpus_id": "agentmatch-r0-fiction-1",
+  "files": {
+    "corpus.json": {
+      "bytes": 627508,
+      "sha256": "b6d93a17b9b9a534188ebe3be9625cf387f19acf7244909941965e1d5663d0e6"
+    },
+    "expected_outcomes.json": {
+      "bytes": 11720,
+      "sha256": "ae5de24ed8da397e46a05961b700f810c5f4fa04a64b8179a1aefd059438b76b"
+    }
+  },
+  "fixture_version": "1",
+  "limitation": "Authored fixtures test software behavior; they are not available people, model extraction results, or evidence of human compatibility.",
+  "named_oracle_count": 22,
+  "named_oracle_ids": [
+    "T-MATCH-001",
+    "T-MATCH-002",
+    "T-MATCH-003",
+    "T-MATCH-004",
+    "T-MATCH-005",
+    "T-MATCH-006",
+    "T-MATCH-007",
+    "T-MATCH-008",
+    "T-MATCH-009",
+    "T-MATCH-010",
+    "T-MATCH-011",
+    "T-MATCH-012",
+    "T-MATCH-013",
+    "T-MATCH-014",
+    "T-MATCH-015",
+    "T-MATCH-016",
+    "T-MATCH-017",
+    "T-MATCH-018",
+    "T-MATCH-019",
+    "T-MATCH-020",
+    "T-SELECTIVITY-003",
+    "T-SELECTIVITY-004"
+  ],
+  "numeric_oracles_executed_by_this_command": false,
+  "owner_count": 40,
+  "real_owner_data_used": false,
+  "reference_corpus_used": false,
+  "release": "R0",
+  "source_message_count": 800,
+  "status": "passed"
+}

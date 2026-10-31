@@ -1,0 +1,11 @@
+[Unit]
+Description=Weekly Connect the Bots certificate expiry check
+
+[Timer]
+OnCalendar=weekly
+Persistent=true
+RandomizedDelaySec=1h
+Unit=connectthebots-certificate.service
+
+[Install]
+WantedBy=timers.target

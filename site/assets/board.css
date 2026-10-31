@@ -1,0 +1,8 @@
+.board-card{margin:24px 0}.board-app h1{margin-bottom:16px}
+.posting-text{white-space:pre-wrap;overflow-wrap:anywhere;font-family:var(--serif);font-style:italic;font-size:24px;line-height:1.55}
+.posting-tags{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.posting-tags li{border:1px solid var(--rule-2);padding:4px 10px;font-size:14px;overflow-wrap:anywhere;max-width:100%}
+.board-pages{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}
+.board-card .meta{font-size:14px;color:var(--muted)}
+.board-posting,.board-card{border-top:1.5px solid var(--ink);border-bottom:1px solid var(--rule);padding:24px 0}
+@media(max-width:600px){.posting-text{font-size:18px}.board-card{margin:18px 0}}

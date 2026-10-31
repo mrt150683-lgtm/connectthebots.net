@@ -1,0 +1,9 @@
+{% extends "legal_base.html" %}
+{% block title %}Contact · Connect the Bots{% endblock %}
+{% block content %}
+<h1>Contact Connect the Bots</h1>
+<p>For account help, a privacy request, feedback or a security concern, {% if settings.contact_email %}email <a href="mailto:{{ settings.contact_email }}">{{ settings.contact_email }}</a>{% else %}[the contact email is awaiting confirmation]{% endif %}.</p>
+{% if settings.legal_controller_name %}<p>Operator: {{ settings.legal_controller_name }}.{% if settings.legal_contact_address %} Correspondence address: {{ settings.legal_contact_address }}.{% endif %}</p>{% elif settings.legal_contact_address %}<p>Correspondence address: {{ settings.legal_contact_address }}.</p>{% endif %}
+<p>Describe the problem briefly. Do not send passwords, sign-in codes, private keys or copies of private conversations unless we explain what limited information is needed and how to provide it safely. Keep sensitive security details out of public issues.</p>
+<p>To raise a concern about a posting or a conversation you participate in, sign in and use its Report link. Your report goes to the operator for review.</p>
+{% endblock %}

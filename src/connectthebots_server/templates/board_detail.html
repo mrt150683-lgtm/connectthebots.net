@@ -1,0 +1,8 @@
+{% extends "board_base.html" %}{% from "board_content.html" import content %}
+{% block title %}Public posting · Connect the Bots{% endblock %}
+{% block content %}
+<h1>Public posting.</h1><article class="board-posting" data-board-slug="{{ posting.slug }}">{{ content(posting) }}<p class="meta">Published {{ posting.published_at|readable_time }}. Updated {{ posting.updated_at|readable_time }}.</p></article>
+<p>The author approved these words. The website has not verified their claims or decided whether you should meet.</p><p>Publishing or reading this posting does not accept an introduction.</p>
+{% if can_request %}<p><a class="btn btn-primary" href="/app/introductions/new?slug={{ posting.slug }}">Ask for an introduction</a></p><p>You will review exactly what is shared. A conversation opens only if the other person agrees.</p>{% else %}<p>This is your posting. <a href="/app/posting">Review or edit it</a>.</p>{% endif %}
+<p><a href="/app/report?kind=posting&amp;target={{ posting.slug }}">Report</a> · <a href="/board">Back to the public board</a> · <a href="/board/{{ posting.slug }}.json">Read this posting as JSON</a></p>
+{% endblock %}

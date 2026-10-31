@@ -1,0 +1,17 @@
+{% extends "report_base.html" %}
+{% block title %}Report a concern · Connect the Bots{% endblock %}
+{% block scripts %}<link rel="stylesheet" href="/assets/moderation.css">{% endblock %}
+{% block content %}
+<h1>Report a concern.</h1>
+<div class="moderation-target" data-report-kind="{{ target.kind }}" data-report-target="{{ target.id }}"><p>You are reporting {{ "a public posting" if target.kind == "posting" else "a conversation you participate in" }}. <a href="{{ target.url }}">Review {{ "the posting" if target.kind == "posting" else "the conversation" }}</a>.</p></div>
+<p>This report goes to the site operator. It is not sent to the other person. Reporting does not send them a message, block them or reopen a conversation.</p>
+<form class="report-form" method="post" action="/app/report">
+  <input type="hidden" name="csrf" value="{{ session.csrf }}"><input type="hidden" name="report_token" value="{{ report_token }}">
+  <label for="report-reason">Reason</label><select id="report-reason" name="reason" required><option value="">Choose a reason</option>{% for value, label in reasons.items() %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select>
+  <label for="report-details">Details (optional)</label><textarea id="report-details" name="details" maxlength="2000" rows="7" aria-describedby="report-details-help"></textarea>
+  <p id="report-details-help">Describe what concerned you in plain words, up to 2,000 characters. Do not include passwords, private source documents, HTML, numeric scores or percentages.</p>
+  <p>The operator can review the related posting or conversation. Include only what is needed to understand your concern. This is not an emergency service.</p>
+  <button class="btn btn-primary" type="submit">Send report</button>
+</form>
+<p><a href="{{ target.url }}">Cancel and go back</a></p>
+{% endblock %}

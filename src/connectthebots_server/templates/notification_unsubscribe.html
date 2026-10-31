@@ -1,0 +1,7 @@
+{% extends "auth_base.html" %}
+{% block title %}Email preference · Connect the Bots{% endblock %}
+{% block content %}
+{% if complete %}<h1>Email preference updated.</h1><p>Emails for {{ label }} are now off. Other email choices stay as they were. This does not delete your account or hide in-app notifications.</p>
+{% else %}<h1>Stop these emails?</h1><p>This link controls emails for {{ label }} only. Opening the page has not changed your preference.</p><form method="post" action="{{ unsubscribe_url }}"><input type="hidden" name="List-Unsubscribe" value="One-Click"><button class="btn btn-primary" type="submit">Stop these emails</button></form>{% endif %}
+<p><a href="/app/notifications/preferences">Manage email preferences after signing in</a></p>
+{% endblock %}

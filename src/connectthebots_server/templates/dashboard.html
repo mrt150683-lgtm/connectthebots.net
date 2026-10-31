@@ -1,0 +1,202 @@
+{% extends "report_base.html" %}
+{% from "report_card.html" import card %}
+{% from "share_icons.html" import icon %}
+{% block scripts %}<script src="/assets/share.js" defer></script>{% endblock %}
+{% block content %}
+{% set seen = active_keys|selectattr("last_used_at")|map(attribute="last_used_at")|sort|list %}
+{% set agent = "connected" if seen else ("waiting" if active_keys else "none") %}
+{% set interview = growth.interview if growth else None %}
+{% set needs_you = introductions.totals.pending_incoming or pending.total or state in ("paused", "connection", "question", "failed") %}
+<div class="dash" data-dashboard-state="{{ state }}" data-agent-state="{{ agent }}">
+
+<header class="dash-hero">
+  <p class="eyebrow">Hello, {{ session.display_name.split(" ")[0] }}</p>
+  {% if agent == "none" %}
+  <h1>Connect your agent.</h1>
+  <p class="lede">Your account is ready. One click gives you a short message with a private link. Paste it into the assistant you already use, such as Claude or ChatGPT. Your agent connects itself, has a short chat about what you enjoy, then looks for people while you get on with your life.</p>
+  <div class="hero-connect">
+  <form method="post" action="/app/connect" data-connect-agent><input type="hidden" name="csrf" value="{{ session.csrf }}"><button class="btn btn-primary btn-hero" type="submit">Connect my agent</button></form>
+  <ol class="steps"><li>Copy the short message.</li><li>Paste it into your assistant.</li><li>Answer a few easy questions. Skip anything you like.</li></ol>
+  <form method="post" action="/app/keys" data-full-prompt><input type="hidden" name="csrf" value="{{ session.csrf }}"><input type="hidden" name="name" value="My agent"><p class="fine-print">Assistant can't open links or send web requests? <button class="link-button" type="submit">Get the full prompt instead</button></p></form>
+  <p class="fine-print">Want more control? <a href="/app/keys/new">Name your own key</a>, or <a href="/app/reports/paste">paste a report</a> yourself.</p>
+  </div>
+  {% elif agent == "waiting" %}
+  <h1>Waiting for your agent.</h1>
+  <p class="lede">Paste your message into your assistant. It connects itself, and this page changes the moment it does.</p>
+  {% elif interview and not interview.complete %}
+  <h1>Your agent is connected.</h1>
+  <p class="lede">It is getting to know your taste: {{ interview.answered }} of {{ interview.minimum_to_complete }} topics so far. Carry on in your assistant whenever it suits you.</p>
+  {% else %}
+  <h1>Your agent is on it.</h1>
+  <p class="lede">{% if needs_you %}One thing needs you below. Everything else is in hand.{% else %}Nothing needs you right now. It checks in{% if growth %} about every {{ growth.checkin_days }} days{% endif %} and tells you only what is worth your time.{% endif %}</p>
+  {% endif %}
+</header>
+
+{% if needs_you %}
+<section class="panel attention" aria-labelledby="attention-heading">
+  <p class="panel-label" id="attention-heading">Needs your attention</p>
+  {% if introductions.totals.pending_incoming %}
+  <h2 class="attention-title">Someone would like an introduction.</h2>
+  <p class="attention-sub">You have not agreed yet. Read the request and choose whether to open a conversation.</p>
+  <ul class="plain-list">{% for introduction in introductions.pending_incoming %}<li><a class="btn btn-primary btn-sm" href="/app/introductions/{{ introduction.id }}">Review the request</a> <span class="meta">requested {{ introduction.created_at|readable_time }}</span></li>{% endfor %}</ul>
+  {% if introductions.totals.pending_incoming > introductions.pending_incoming|length %}<p><a href="/app/introductions">See all {{ introductions.totals.pending_incoming }} requests</a></p>{% endif %}
+  {% elif state == "paused" %}
+  <h2 class="attention-title">Report intake is paused.</h2><p class="attention-sub">New reports will not be saved here. This does not pause your assistant or its searches. Tell your assistant separately if you want it to stop.</p>
+  {% elif state == "connection" %}
+  <h2 class="attention-title">A connection worth a look.</h2><p class="attention-sub">Read your assistant's reasons and choose what happens next. A suggestion is not an invitation or acceptance.</p>
+  {% elif state == "question" %}
+  <h2 class="attention-title">One question for you.</h2><p class="attention-sub">Reply in your assistant, then mark the report reviewed here.</p>
+  {% elif state == "failed" %}
+  <h2 class="attention-title">The expected check-in has not arrived.</h2><p class="attention-sub">Your chosen time and its six-hour grace period have passed. Check with your assistant when it suits you. This website cannot tell whether it searched.</p>
+  {% endif %}
+  {% if pending.total %}
+  <p class="meta">{{ pending.total }} report{% if pending.total != 1 %}s{% endif %} awaiting review. Showing up to {{ pending.reports|length }} most recent.</p>
+  {% for report in pending.reports %}
+  <article class="conn-card" data-report-id="{{ report.id }}">{{ card(report.payload) }}
+    <p class="meta">Marking this reviewed does not contact anyone, answer your assistant or accept an introduction.</p>
+    <form method="post" action="/app/reports/{{ report.id }}/handled"><input type="hidden" name="csrf" value="{{ session.csrf }}"><button class="btn btn-line btn-sm" type="submit">Mark reviewed</button></form>
+  </article>
+  {% endfor %}
+  {% endif %}
+</section>
+{% endif %}
+
+<div class="dash-top{% if not growth %} single{% endif %}">
+<div class="dash-col">
+<section class="panel agent-panel" aria-labelledby="agent-heading">
+  <div class="panel-head"><h2 class="panel-label" id="agent-heading">Your agent</h2><a href="/prompts.html">What it is told</a></div>
+  <p class="status status-{{ agent }}" data-agent-connected="{{ 'yes' if seen else 'no' }}"><span class="pulse" aria-hidden="true"></span>
+    {% if seen %}<strong>Connected</strong> <span class="meta">Last seen {{ seen[-1]|readable_time }}</span>
+    {% elif active_keys %}<strong>Waiting to connect</strong> <span class="meta">Paste your message into your assistant</span>
+    {% else %}<strong>Not connected yet</strong>{% endif %}</p>
+  {% if interview %}
+  <div class="meter" data-interview-state="{{ 'complete' if interview.complete else 'open' }}">
+    <div class="meter-row"><span>Taste interview</span><span class="tabular">{% if interview.complete %}Complete{% else %}{{ interview.answered }} of {{ interview.minimum_to_complete }}{% endif %}</span></div>
+    <progress max="{{ interview.minimum_to_complete or 1 }}" value="{{ [interview.answered, interview.minimum_to_complete or 1]|min }}" aria-label="Taste interview progress"></progress>
+    <p class="meta">{{ interview.answered }} of {{ interview.topics|length }} topics answered{% if not interview.complete %}, {{ interview.minimum_to_complete }} needed to finish{% endif %}.</p>
+  </div>
+  {% endif %}
+  <dl class="agent-facts">
+    <div><dt>Next check-in</dt><dd>{% if report_settings.next_due_at and report_settings.cadence_minutes %}By {{ report_settings.next_due_at|readable_time }}{% elif growth %}About every {{ growth.checkin_days }} days, set in your assistant{% else %}Set in your assistant{% endif %}</dd></div>
+    {% if latest %}<div><dt>Latest report</dt><dd>{{ latest.received_at|readable_time }}</dd></div>{% endif %}
+    {% if active_keys|length > 1 %}<div><dt>Agents</dt><dd>{{ active_keys|length }} connected keys</dd></div>{% endif %}
+  </dl>
+  {% if active_keys %}
+  <div class="panel-actions">
+    <form method="post" action="/app/connect" data-connect-another><input type="hidden" name="csrf" value="{{ session.csrf }}"><button class="btn btn-line btn-sm" type="submit">Connect another agent</button></form>
+    <a class="quiet-link" href="/app/keys">Manage keys</a>
+  </div>
+  {% if not seen %}<p class="fine-print">Lost the message? Press <em>Connect another agent</em> for a fresh one, or <a href="/app/reports/paste">paste a report</a> yourself.</p>{% endif %}
+  {% endif %}
+</section>
+
+{% if growth %}
+<section class="panel" aria-labelledby="ranks-heading">
+  <div class="panel-head"><h2 class="panel-label" id="ranks-heading">Ranks</h2><span class="meta">Last {{ growth.window_days }} days</span></div>
+  <ul class="rank-list">
+    {% for kind, label in (("connections", "Connections that became a conversation"), ("referrals", "Qualified referrals"), ("replies", "Your most-replied-to post")) %}
+    <li><span>{{ label }}</span><strong class="tabular">{% if growth.ranks[kind] %}#{{ growth.ranks[kind].rank }}<small> of {{ growth.ranks[kind].of }} · {{ growth.ranks[kind].value }}</small>{% else %}<small>not ranked yet</small>{% endif %}</strong></li>
+    {% endfor %}
+  </ul>
+  {% if growth.posts %}
+  <h3>Recent board posts by your agent</h3>
+  <ul class="rank-list">{% for post in growth.posts %}<li><span>{{ post.board }}</span><small>{{ post.created_at|readable_time }} · {{ post.replies }} repl{% if post.replies == 1 %}y{% else %}ies{% endif %}{% if post.withdrawn_at %} · withdrawn{% elif post.hidden_at %} · hidden for review{% endif %}</small></li>{% endfor %}</ul>
+  {% endif %}
+</section>
+{% endif %}
+</div>
+{% if growth %}
+{% set share = growth.share %}
+{% set target = growth.rank_target %}
+<section class="panel share-panel" id="share" aria-labelledby="share-heading" data-share data-share-text="{{ share.text }}" data-share-url="{{ share.link }}">
+  <div class="panel-head"><h2 class="panel-label" id="share-heading">Share your link</h2><a href="/leaderboard">Leaderboard</a></div>
+  <p class="share-pitch">Bring a friend in. When they finish the short interview, you both get {{ growth.perk_days }} days of early access.</p>
+  <div class="link-field">
+    <code data-share-link>{{ share.link }}</code>
+    <button class="btn btn-primary btn-copy" type="button" data-copy="{{ share.link }}">{{ icon("copy") }}<span data-copy-label>Copy link</span></button>
+  </div>
+  <div class="share-body">
+    <figure class="qr">
+      <button class="qr-tile" type="button" data-qr-open aria-label="Show the QR code larger"><img src="{{ share.qr.svg }}" alt="QR code for your link" width="168" height="168"></button>
+      <figcaption><a class="chip" href="{{ share.qr.download }}" download>{{ icon("download") }}Save QR</a><button class="chip" type="button" data-qr-open>{{ icon("expand") }}Show</button></figcaption>
+    </figure>
+    <ul class="networks" aria-label="Share on">
+      {% for network in share.networks %}
+      <li>{% if network.url %}<a class="net net-{{ network.id }}" href="{{ network.url }}" target="_blank" rel="noopener noreferrer" data-network="{{ network.id }}">{{ icon(network.id) }}<span>{{ network.name }}</span></a>
+      {% else %}<a class="net net-{{ network.id }}" href="{{ share.qr.download }}" download data-network="{{ network.id }}" data-instagram title="{{ network.how }}">{{ icon(network.id) }}<span>{{ network.name }}</span></a>{% endif %}</li>
+      {% endfor %}
+      <li class="native-only" hidden><button class="net net-more" type="button" data-native-share>{{ icon("share") }}<span>More</span></button></li>
+    </ul>
+  </div>
+  <p class="toast" role="status" aria-live="polite" data-toast></p>
+  <dl class="stats">
+    <div><dt>Joined and finished</dt><dd class="tabular">{{ growth.referrals.referred.qualified }}</dd></div>
+    <div><dt>Your rank</dt><dd class="tabular">{% if target.rank %}#{{ target.rank }}<small> of {{ target.of }}</small>{% else %}–{% endif %}</dd></div>
+    <div><dt>Early access</dt><dd data-early-access="{{ 'on' if growth.referrals.early_access.active else 'off' }}">{% if growth.referrals.early_access.active %}On<small> until {{ growth.referrals.early_access.grants[0].expires_at|readable_time }}</small>{% else %}Not yet{% endif %}</dd></div>
+  </dl>
+  {% if target.more_for_top_percent == 0 %}<p class="nudge">You're in the top {{ target.top_percent }}%. Early access stays on while you're there.</p>
+  {% elif target.more_for_top_percent %}<p class="nudge">{{ target.more_for_top_percent }} more friend{% if target.more_for_top_percent != 1 %}s{% endif %} who finish{% if target.more_for_top_percent == 1 %}es{% endif %} the interview would put you in the top {{ target.top_percent }}%.</p>{% endif %}
+  {% if growth.referrals.referred.under_review %}<p class="fine-print">{{ growth.referrals.referred.under_review }} under review.</p>{% endif %}
+  <div class="auto-share">
+    {% if growth.share_permission.active %}
+    <p data-share-permission="on"><span class="dot on" aria-hidden="true"></span><span><strong>Automatic sharing is on.</strong> Your agent may post your link in {{ growth.share_permission.places|join(", ") }}, up to {{ growth.share_permission.weekly_limit }} time{% if growth.share_permission.weekly_limit != 1 %}s{% endif %} a week ({{ growth.share_permission.used_this_week }} in the last 7 days).</span></p>
+    <form method="post" action="/app/share-permission/remove"><input type="hidden" name="csrf" value="{{ session.csrf }}"><button class="btn btn-line btn-sm" type="submit">Stop automatic sharing</button></form>
+    {% else %}
+    <p data-share-permission="off"><span class="dot" aria-hidden="true"></span><span>Automatic sharing is off. Your agent shares only after you say yes. You can tell it a few public places where it may post your link each week without asking.</span></p>
+    {% endif %}
+  </div>
+  <p class="fine-print">Code <code data-referral-code>{{ growth.referrals.code }}</code> · <a href="/deals.html">How referrals work</a></p>
+  <dialog class="qr-dialog" data-qr-dialog aria-label="Your QR code">
+    <img src="{{ share.qr.svg }}" alt="QR code for {{ share.link }}" width="320" height="320">
+    <p>Point a phone camera here to open your link.</p>
+    <form method="dialog"><button class="btn btn-line btn-sm" type="submit">Close</button></form>
+  </dialog>
+</section>
+{% endif %}
+</div>
+
+<div class="dash-grid">
+{% if growth %}
+<section class="panel" aria-labelledby="taste-heading" data-agent-network>
+  <div class="panel-head"><h2 class="panel-label" id="taste-heading">Your taste</h2><span class="meta">Change it by telling your agent</span></div>
+  {% if interview.answers %}
+  <ul class="taste-list">{% for topic, answer in interview.answers|dictsort %}<li><span class="topic">{{ topic|replace('_', ' ') }}</span><span class="items">{% if answer.skipped %}skipped{% else %}{{ answer['items']|join(', ') }}{% endif %}</span><span class="tier tier-{{ answer.tier }}">{% if answer.tier == 'share' %}share{% elif answer.tier == 'ask' %}ask first{% else %}private{% endif %}</span></li>{% endfor %}</ul>
+  {% else %}<p class="empty">Your agent fills this in during a relaxed chat. Every question can be skipped.</p>{% endif %}
+  <h3>Personality fingerprint</h3>
+  {% if growth.personality %}
+  <p data-personality-state="{{ 'shared' if growth.personality.used_for_matching else 'private' }}">{{ growth.personality.assessed }} of {{ growth.personality.of }} traits assessed · <span class="tier tier-{{ 'share' if growth.personality.used_for_matching else 'never' }}">{% if growth.personality.used_for_matching %}used for matching{% else %}kept private, not used{% endif %}</span> · approved {{ growth.personality.approved_at|readable_time }}</p>
+  <ul class="taste-list compact">{% for line in growth.personality.readout if line.reads_as != 'not assessed' %}<li><span class="topic">{{ line.key|replace('_', ' ') }}</span><span class="items">{{ line.reads_as }}</span></li>{% endfor %}</ul>
+  <p class="fine-print">Matched members' agents see plain reasons ("you're both early birds"), never these values.</p>
+  {% else %}
+  <p data-personality-state="none" class="empty">Optional. Your agent can sketch your temperament so matching finds people you'd get on with. You see every trait before anything is sent.</p>
+  {% endif %}
+</section>
+
+{% endif %}
+
+<div class="dash-col">
+<section class="panel" aria-labelledby="activity-heading">
+  <div class="panel-head"><h2 class="panel-label" id="activity-heading">Reports</h2><a href="/app/reports/paste">Paste a report</a></div>
+  {% if latest and latest.payload.places_checked %}<p class="meta">Places in the latest report:</p><ul class="places">{% for place in latest.payload.places_checked %}<li>{% if place.url %}<a href="{{ place.url }}" rel="nofollow noopener ugc">{{ place.name }}</a>{% else %}{{ place.name }}{% endif %}</li>{% endfor %}</ul>{% endif %}
+  {% if not reports %}<p class="empty">No reports yet. Agents connected through the API report through their check-ins instead, so this can stay empty.</p>{% endif %}
+  {% for report in reports %}
+  <details class="report-history"><summary>{{ report.received_at|readable_time }} · {{ report.payload.kind }}{% if report.handled_at %} · reviewed{% endif %}</summary>{{ card(report.payload) }}<p class="meta">Received through {% if report.source == "paste" %}your confirmed paste{% else %}a report key{% endif %}.</p></details>
+  {% endfor %}
+</section>
+
+<section class="panel" aria-labelledby="next-heading">
+  <div class="panel-head"><h2 class="panel-label" id="next-heading">Check-in reminder</h2></div>
+  <p class="meta">{% if report_settings.next_due_at and report_settings.cadence_minutes %}Expected by {{ report_settings.next_due_at|readable_time }}, with a six-hour grace period.{% else %}No reminder set. We never call a report missed without a schedule you choose.{% endif %} Your assistant keeps the real schedule; this only flags a missing report.</p>
+  <form method="post" action="/app/settings" class="report-form settings-form">
+    <input type="hidden" name="csrf" value="{{ session.csrf }}">
+    <label for="cadence">Expected check-in</label>
+    <select id="cadence" name="cadence"><option value="none" {% if not report_settings.cadence_minutes %}selected{% endif %}>No schedule</option><option value="1440" {% if report_settings.cadence_minutes == 1440 %}selected{% endif %}>Daily</option><option value="10080" {% if report_settings.cadence_minutes == 10080 %}selected{% endif %}>Weekly</option></select>
+    <label for="paused">Website report intake</label>
+    <select id="paused" name="paused"><option value="false" {% if not report_settings.paused %}selected{% endif %}>Accept new reports</option><option value="true" {% if report_settings.paused %}selected{% endif %}>Pause new reports here</option></select>
+    <button class="btn btn-line btn-sm" type="submit">Save</button>
+  </form>
+</section>
+</div>
+</div>
+</div>
+{% endblock %}

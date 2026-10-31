@@ -1,0 +1,175 @@
+{
+  "success": true,
+  "release": "R0",
+  "date": "2026-10-26",
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+    "maximum_child_peak_rss_kib_linux": 64804
+  },
+  "execution_boundary": "libseccomp denial of socket-related and io_uring_setup syscalls; inherited nonstdio descriptors closed; socket stdio refused",
+  "positive_controls": "Every isolated command first checks IPv4, IPv6 and Unix socket creation returns EPERM.",
+  "inherited_descriptor_controls": {
+    "inherited_socket_closed": true,
+    "socket_stdio_rejected": true
+  },
+  "comparison": {
+    "source_installed_demo_identical": true,
+    "demo_sha256": "5c42649749e11268b6425e1a4e3c99e2fe4834c9ff6bf056f8cc0e67158dcb65",
+    "wheel_sha256": "e17b07a08a93061c03a44946d4d789bf391b0e7ee11880ac727cf537623a14a8"
+  },
+  "commands": [
+    {
+      "check": "source_verification",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "run_agentmatch.py",
+        "verify",
+        "--offline",
+        "--out",
+        "/workspace/scratch/ef297cdbc3fb/agentmatch/artifacts/r0/release/source-verification"
+      ],
+      "working_directory": "/workspace/scratch/ef297cdbc3fb/agentmatch",
+      "external_isolation": true,
+      "exit_code": 0,
+      "elapsed_seconds": 2.7757,
+      "stdout": "PASS: 129 tests; 0 failures, 0 errors, 0 skipped.\nEvidence: /workspace/scratch/ef297cdbc3fb/agentmatch/artifacts/r0/release/source-verification\n--offline selects the suite. Network enforcement requires the separate isolation harness.\n",
+      "stderr": "{\"external_harness\": \"linux_libseccomp\", \"socket_positive_controls\": \"IPv4 IPv6 Unix denied EPERM\", \"denied_syscalls\": [\"socket\", \"socketpair\", \"connect\", \"accept\", \"accept4\", \"bind\", \"listen\", \"sendto\", \"sendmsg\", \"sendmmsg\", \"recvfrom\", \"recvmsg\", \"recvmmsg\", \"io_uring_setup\"], \"credentials_inherited\": false, \"nonstdio_inherited_descriptors_closed\": true, \"socket_stdio_rejected\": true}\n"
+    },
+    {
+      "check": "source_demo",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "run_agentmatch.py",
+        "demo",
+        "--out",
+        "/workspace/scratch/ef297cdbc3fb/agentmatch/artifacts/r0/release/source-demo"
+      ],
+      "working_directory": "/workspace/scratch/ef297cdbc3fb/agentmatch",
+      "external_isolation": true,
+      "exit_code": 0,
+      "elapsed_seconds": 0.3613,
+      "stdout": "AgentMatch 0.1.0 \u00b7 R0 synthetic reference\n40 fictional owners \u00b7 200 annotated conversations \u00b7 no inference or networking\nScanned 39 candidates for Lumen.\nSelected fictional offers: harbor\nOpen the report: /workspace/scratch/ef297cdbc3fb/agentmatch/artifacts/r0/release/source-demo/demo.html\nFull evidence: /workspace/scratch/ef297cdbc3fb/agentmatch/artifacts/r0/release/source-demo/demo.json\n",
+      "stderr": "{\"external_harness\": \"linux_libseccomp\", \"socket_positive_controls\": \"IPv4 IPv6 Unix denied EPERM\", \"denied_syscalls\": [\"socket\", \"socketpair\", \"connect\", \"accept\", \"accept4\", \"bind\", \"listen\", \"sendto\", \"sendmsg\", \"sendmmsg\", \"recvfrom\", \"recvmsg\", \"recvmmsg\", \"io_uring_setup\"], \"credentials_inherited\": false, \"nonstdio_inherited_descriptors_closed\": true, \"socket_stdio_rejected\": true}\n"
+    },
+    {
+      "check": "mutation_checks",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "tools/mutation_checks.py",
+        "--out",
+        "/workspace/scratch/ef297cdbc3fb/agentmatch/artifacts/r0/release/mutation_results.json"
+      ],
+      "working_directory": "/workspace/scratch/ef297cdbc3fb/agentmatch",
+      "external_isolation": true,
+      "exit_code": 0,
+      "elapsed_seconds": 0.2953,
+      "stdout": "{\"all_detected\": true, \"mutations\": 2}\n",
+      "stderr": "{\"external_harness\": \"linux_libseccomp\", \"socket_positive_controls\": \"IPv4 IPv6 Unix denied EPERM\", \"denied_syscalls\": [\"socket\", \"socketpair\", \"connect\", \"accept\", \"accept4\", \"bind\", \"listen\", \"sendto\", \"sendmsg\", \"sendmmsg\", \"recvfrom\", \"recvmsg\", \"recvmmsg\", \"io_uring_setup\"], \"credentials_inherited\": false, \"nonstdio_inherited_descriptors_closed\": true, \"socket_stdio_rejected\": true}\n"
+    },
+    {
+      "check": "build_wheel",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "pip",
+        "wheel",
+        "--no-index",
+        "--no-deps",
+        "--no-build-isolation",
+        ".",
+        "--wheel-dir",
+        "dist"
+      ],
+      "working_directory": "/workspace/scratch/ef297cdbc3fb/agentmatch",
+      "external_isolation": true,
+      "exit_code": 0,
+      "elapsed_seconds": 0.725,
+      "stdout": "Processing ./.\n  Preparing metadata (pyproject.toml): started\n  Preparing metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: agentmatch\n  Building wheel for agentmatch (pyproject.toml): started\n  Building wheel for agentmatch (pyproject.toml): finished with status 'done'\n  Created wheel for agentmatch: filename=agentmatch-0.1.0-py3-none-any.whl size=137084 sha256=e17b07a08a93061c03a44946d4d789bf391b0e7ee11880ac727cf537623a14a8\n  Stored in directory: /tmp/pip-ephem-wheel-cache-4i1zk5df/wheels/45/c1/b5/96eefe81fc6312abe94ba361a1d1551ae559b1074767b259ff\nSuccessfully built agentmatch\n",
+      "stderr": "{\"external_harness\": \"linux_libseccomp\", \"socket_positive_controls\": \"IPv4 IPv6 Unix denied EPERM\", \"denied_syscalls\": [\"socket\", \"socketpair\", \"connect\", \"accept\", \"accept4\", \"bind\", \"listen\", \"sendto\", \"sendmsg\", \"sendmmsg\", \"recvfrom\", \"recvmsg\", \"recvmmsg\", \"io_uring_setup\"], \"credentials_inherited\": false, \"nonstdio_inherited_descriptors_closed\": true, \"socket_stdio_rejected\": true}\n"
+    },
+    {
+      "check": "create_venv",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "venv",
+        "/tmp/agentmatch-clean-install-n67lammd/venv"
+      ],
+      "working_directory": "/tmp/agentmatch-clean-install-n67lammd",
+      "external_isolation": true,
+      "exit_code": 0,
+      "elapsed_seconds": 1.8675,
+      "stdout": "",
+      "stderr": "{\"external_harness\": \"linux_libseccomp\", \"socket_positive_controls\": \"IPv4 IPv6 Unix denied EPERM\", \"denied_syscalls\": [\"socket\", \"socketpair\", \"connect\", \"accept\", \"accept4\", \"bind\", \"listen\", \"sendto\", \"sendmsg\", \"sendmmsg\", \"recvfrom\", \"recvmsg\", \"recvmmsg\", \"io_uring_setup\"], \"credentials_inherited\": false, \"nonstdio_inherited_descriptors_closed\": true, \"socket_stdio_rejected\": true}\n"
+    },
+    {
+      "check": "install_wheel",
+      "command": [
+        "/tmp/agentmatch-clean-install-n67lammd/venv/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--no-index",
+        "--no-deps",
+        "/workspace/scratch/ef297cdbc3fb/agentmatch/dist/agentmatch-0.1.0-py3-none-any.whl"
+      ],
+      "working_directory": "/tmp/agentmatch-clean-install-n67lammd",
+      "external_isolation": true,
+      "exit_code": 0,
+      "elapsed_seconds": 0.4674,
+      "stdout": "Processing /workspace/scratch/ef297cdbc3fb/agentmatch/dist/agentmatch-0.1.0-py3-none-any.whl\nInstalling collected packages: agentmatch\nSuccessfully installed agentmatch-0.1.0\n",
+      "stderr": "{\"external_harness\": \"linux_libseccomp\", \"socket_positive_controls\": \"IPv4 IPv6 Unix denied EPERM\", \"denied_syscalls\": [\"socket\", \"socketpair\", \"connect\", \"accept\", \"accept4\", \"bind\", \"listen\", \"sendto\", \"sendmsg\", \"sendmmsg\", \"recvfrom\", \"recvmsg\", \"recvmmsg\", \"io_uring_setup\"], \"credentials_inherited\": false, \"nonstdio_inherited_descriptors_closed\": true, \"socket_stdio_rejected\": true}\n"
+    },
+    {
+      "check": "installed_verification",
+      "command": [
+        "/tmp/agentmatch-clean-install-n67lammd/venv/bin/agentmatch",
+        "verify",
+        "--offline",
+        "--out",
+        "/workspace/scratch/ef297cdbc3fb/agentmatch/artifacts/r0/release/installed-verification"
+      ],
+      "working_directory": "/tmp/agentmatch-clean-install-n67lammd",
+      "external_isolation": true,
+      "exit_code": 0,
+      "elapsed_seconds": 2.4791,
+      "stdout": "PASS: 129 tests; 0 failures, 0 errors, 0 skipped.\nEvidence: /workspace/scratch/ef297cdbc3fb/agentmatch/artifacts/r0/release/installed-verification\n--offline selects the suite. Network enforcement requires the separate isolation harness.\n",
+      "stderr": "{\"external_harness\": \"linux_libseccomp\", \"socket_positive_controls\": \"IPv4 IPv6 Unix denied EPERM\", \"denied_syscalls\": [\"socket\", \"socketpair\", \"connect\", \"accept\", \"accept4\", \"bind\", \"listen\", \"sendto\", \"sendmsg\", \"sendmmsg\", \"recvfrom\", \"recvmsg\", \"recvmmsg\", \"io_uring_setup\"], \"credentials_inherited\": false, \"nonstdio_inherited_descriptors_closed\": true, \"socket_stdio_rejected\": true}\n"
+    },
+    {
+      "check": "installed_demo",
+      "command": [
+        "/tmp/agentmatch-clean-install-n67lammd/venv/bin/agentmatch",
+        "demo",
+        "--out",
+        "/workspace/scratch/ef297cdbc3fb/agentmatch/artifacts/r0/release/installed-demo"
+      ],
+      "working_directory": "/tmp/agentmatch-clean-install-n67lammd",
+      "external_isolation": true,
+      "exit_code": 0,
+      "elapsed_seconds": 0.3461,
+      "stdout": "AgentMatch 0.1.0 \u00b7 R0 synthetic reference\n40 fictional owners \u00b7 200 annotated conversations \u00b7 no inference or networking\nScanned 39 candidates for Lumen.\nSelected fictional offers: harbor\nOpen the report: /workspace/scratch/ef297cdbc3fb/agentmatch/artifacts/r0/release/installed-demo/demo.html\nFull evidence: /workspace/scratch/ef297cdbc3fb/agentmatch/artifacts/r0/release/installed-demo/demo.json\n",
+      "stderr": "{\"external_harness\": \"linux_libseccomp\", \"socket_positive_controls\": \"IPv4 IPv6 Unix denied EPERM\", \"denied_syscalls\": [\"socket\", \"socketpair\", \"connect\", \"accept\", \"accept4\", \"bind\", \"listen\", \"sendto\", \"sendmsg\", \"sendmmsg\", \"recvfrom\", \"recvmsg\", \"recvmmsg\", \"io_uring_setup\"], \"credentials_inherited\": false, \"nonstdio_inherited_descriptors_closed\": true, \"socket_stdio_rejected\": true}\n"
+    },
+    {
+      "check": "installed_metadata",
+      "command": [
+        "/tmp/agentmatch-clean-install-n67lammd/venv/bin/python",
+        "-c",
+        "from importlib.metadata import distribution; import json; d=distribution('agentmatch'); print(json.dumps({'version':d.version,'runtime_requirements':d.requires or []}))"
+      ],
+      "working_directory": "/tmp/agentmatch-clean-install-n67lammd",
+      "external_isolation": true,
+      "exit_code": 0,
+      "elapsed_seconds": 0.0858,
+      "stdout": "{\"version\": \"0.1.0\", \"runtime_requirements\": []}\n",
+      "stderr": "{\"external_harness\": \"linux_libseccomp\", \"socket_positive_controls\": \"IPv4 IPv6 Unix denied EPERM\", \"denied_syscalls\": [\"socket\", \"socketpair\", \"connect\", \"accept\", \"accept4\", \"bind\", \"listen\", \"sendto\", \"sendmsg\", \"sendmmsg\", \"recvfrom\", \"recvmsg\", \"recvmmsg\", \"io_uring_setup\"], \"credentials_inherited\": false, \"nonstdio_inherited_descriptors_closed\": true, \"socket_stdio_rejected\": true}\n"
+    }
+  ],
+  "limits": [
+    "Local Linux reference run, not the owner's Mac Studio or target Ryzen benchmark.",
+    "No private-model isolation, network encryption, persistent-queue or human-utility claim.",
+    "Ordinary captured standard streams remain an intentional test-harness communication path."
+  ]
+}

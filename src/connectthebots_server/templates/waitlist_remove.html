@@ -1,0 +1,12 @@
+{% extends "auth_base.html" %}
+{% block title %}Leave the waitlist · Connect the Bots{% endblock %}
+{% block content %}
+<h1>Leave the waitlist.</h1>
+<p>Paste the private removal code you saved when you joined.</p>
+<form method="post" action="/auth/waitlist/remove">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <p><label for="removal">Removal code</label></p>
+  <div class="answer-other"><input id="removal" name="removal" required maxlength="43" autocomplete="off"></div>
+  <button class="btn btn-primary" type="submit">Remove my email</button>
+</form>
+{% endblock %}

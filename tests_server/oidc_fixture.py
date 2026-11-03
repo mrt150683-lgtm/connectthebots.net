@@ -321,9 +321,9 @@ def moderation_cli(app, command):
             owner = connection.execute("SELECT id FROM users WHERE google_sub=?", ("fixture-" + command["person"],)).fetchone()
         if owner is None:
             raise ValueError("Fictional operator target does not exist")
-        arguments = ["user", operation, owner[0]]
+        arguments = ["user", operation, "--", owner[0]]
         if operation == "delete":
-            arguments.extend(["--confirm", owner[0]])
+            arguments = ["user", operation, "--confirm=" + owner[0], "--", owner[0]]
     elif operation in {"hide", "unhide"}:
         slug = command.get("slug")
         if not isinstance(slug, str) or re.fullmatch(r"[0-9a-f]{32}", slug) is None:

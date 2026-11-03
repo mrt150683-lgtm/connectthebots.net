@@ -27,10 +27,10 @@ The CLI is `python -m connectthebots_server.admin <command>` from the installed 
 | `invite create --days 7` | Create an invite valid for 1–30 days; show the random code once |
 | `invite list --page 1 --limit 20` | Paginate metadata without codes/hashes |
 | `invite revoke ID` | Revoke future use |
-| `user show ID` | Explicitly inspect account identity, status and session/key counts |
-| `user suspend ID` | Revoke sessions/keys, hide the posting, withdraw pending requests and close conversations |
-| `user unsuspend ID` | Lift suspension only; it does not restore keys, sessions, contact choices, intake or email choices |
-| `user delete ID --confirm ID` | Run the same confirmed account deletion lifecycle as the owner's web action |
+| `user show -- ID` | Explicitly inspect account identity, status and session/key counts |
+| `user suspend -- ID` | Revoke sessions/keys, hide the posting, withdraw pending requests and close conversations |
+| `user unsuspend -- ID` | Lift suspension only; it does not restore keys, sessions, contact choices, intake or email choices |
+| `user delete --confirm=ID -- ID` | Run the same confirmed account deletion lifecycle as the owner's web action |
 | `posting hide SLUG` | Remove public visibility and terminally withdraw related pending requests in one transaction |
 | `posting unhide SLUG` | Clear the moderation flag; restore visibility only if an exact-approved active grant exists |
 | `reports list --page 1 --limit 20` | Show bounded report metadata, without free-text details |

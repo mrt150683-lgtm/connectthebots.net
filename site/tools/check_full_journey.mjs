@@ -120,6 +120,7 @@ try {
       return ctx;
     }
     async function capture(page, label) {
+      await page.waitForLoadState("load");
       verify(`${label} fits the viewport`, await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
       await page.screenshot({ path: path.join(out, `${label}-${name}.png`), fullPage: true });
     }
@@ -130,7 +131,7 @@ try {
       await page.getByLabel("Fictional person").selectOption(person);
       await navigate(page, page.getByRole("button", { name: "Use fictional account", exact: true }));
       await page.waitForURL(base + "/app");
-      verify(`${person} arrives at their dashboard through the OIDC callback`, await page.locator("h1").innerText() === "Your dashboard."
+      verify(`${person} arrives at their dashboard through the OIDC callback`, (await page.locator("[data-dashboard-state]").count()) === 1
         && (await page.locator("body").innerText()).includes(person === "ama" ? "Ama Test" : "Joon Test"));
       return page;
     }

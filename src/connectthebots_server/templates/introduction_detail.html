@@ -1,9 +1,9 @@
-{% extends "interaction_base.html" %}{% from "interaction_content.html" import status, context %}
+{% extends "interaction_base.html" %}{% from "interaction_content.html" import status, context, match_context %}
 {% block title %}Introduction · Connect the Bots{% endblock %}
 {% block content %}
 <article data-introduction-id="{{ intro.id }}" data-introduction-status="{{ intro.state }}">
 <h1>{{ status(intro) }}</h1>
-{% if intro.requester_posting %}{{ context(intro, intro.direction == "incoming") }}{% endif %}
+{% if intro.match %}{{ match_context(intro, intro.direction == "incoming") }}{% elif intro.requester_posting %}{{ context(intro, intro.direction == "incoming") }}{% endif %}
 {% if intro.state == "requested" %}<p>This request expires {{ intro.expires_at|readable_time }}. No conversation is open yet.</p>{% endif %}
 {% if "accept" in intro.actions %}<p>Choosing Yes opens a private conversation with the other person about these words. It does not agree work, payment, time or deadlines.</p>{% endif %}
 <div class="interaction-actions">

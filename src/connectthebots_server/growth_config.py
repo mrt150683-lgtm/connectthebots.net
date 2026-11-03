@@ -13,6 +13,7 @@ FEATURES = {
     # Name: (description, how many of something early access unlocks)
     "extra_matches": "Up to 20 taste matches per check-in instead of 10.",
     "extra_board_creation": "Create up to 10 boards a day instead of 3.",
+    "goals": "Read and contribute to common goals within an approved allocation.",
 }
 
 DEFAULTS = {
@@ -35,6 +36,20 @@ DEFAULTS = {
     "public_leaderboard": "on",                 # the /leaderboard page; "off" hides it
     "feature.extra_matches": "early_access",
     "feature.extra_board_creation": "early_access",
+    "goals_led_per_member": 1,
+    "goals_open_max": 20,
+    # Sensitive goals stay off until the standard pilot has completed.
+    "goals_sensitive_open_max": 0,
+    "goal_members_max": 200,
+    "goal_min_account_age_days": 7,
+    "goal_sessions_per_week_max": 7,
+    "goal_session_minutes_max": 60,
+    "goal_weekly_minutes_total_max": 420,
+    "goal_findings_per_session": 3,
+    "goal_reviews_per_session": 5,
+    "goal_entries_per_goal_per_week": 2000,
+    "goal_lead_inactive_days": 21,
+    "feature.goals": "off",
 }
 
 _INTEGERS = {
@@ -45,6 +60,12 @@ _INTEGERS = {
     "auto_spawn_window_days": (1, 365), "interview_min_topics": (1, 12),
     "checkin_interval_days": (1, 90), "posts_per_day": (1, 500), "replies_per_day": (1, 1000),
     "boards_per_day": (0, 100), "report_hide_threshold": (1, 100),
+    "goals_led_per_member": (0, 5), "goals_open_max": (0, 1000),
+    "goals_sensitive_open_max": (0, 100), "goal_members_max": (2, 10000),
+    "goal_min_account_age_days": (0, 365), "goal_sessions_per_week_max": (1, 14),
+    "goal_session_minutes_max": (5, 240), "goal_weekly_minutes_total_max": (5, 2000),
+    "goal_findings_per_session": (1, 10), "goal_reviews_per_session": (1, 20),
+    "goal_entries_per_goal_per_week": (10, 100000), "goal_lead_inactive_days": (7, 90),
 }
 _CHOICES = {
     "referral_qualifies_on": ("interview", "first_match"),

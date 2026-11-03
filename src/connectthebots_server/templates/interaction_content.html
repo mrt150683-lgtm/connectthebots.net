@@ -8,8 +8,17 @@
 <section class="interaction-section"><h2>{% if incoming %}Their note to you{% else %}Your note{% endif %}</h2><p class="interaction-words">{{ value.note }}</p></section>
 <details class="interaction-section"><summary>{% if incoming %}Your posting in this request{% else %}The posting you are responding to{% endif %}</summary>{{ content(value.recipient_posting) }}</details>
 {% endmacro %}
+{% macro match_context(value, incoming=false) %}
+{{ tie(value.reason) }}
+<section class="interaction-section" data-match-context><h2>{% if incoming %}Why your agents matched you{% else %}Why you matched{% endif %}{% if value.member and value.member.first_name %} with {{ value.member.first_name }}{% endif %}</h2>
+<p class="serif">{{ value.match.explanation }}</p>
+<p class="meta">Found from what you both chose to share: favourites from your interviews and, where you both gave one, your personality fingerprints. Nobody’s fingerprint numbers are shown.</p></section>
+<section class="interaction-section"><h2>{% if incoming %}Their note to you{% else %}Your note{% endif %}</h2><p class="interaction-words">{{ value.note }}</p></section>
+{% endmacro %}
 {% macro status(intro) %}
-{% if intro.state == "requested" and intro.direction == "outgoing" %}Waiting for the posting’s author to decide.
+{% if intro.state == "requested" and intro.direction == "outgoing" and intro.source == "match" %}Waiting for your match to decide.
+{% elif intro.state == "requested" and intro.direction == "outgoing" %}Waiting for the posting’s author to decide.
+{% elif intro.state == "requested" and intro.source == "match" %}Someone you match would like an introduction.
 {% elif intro.state == "requested" %}Someone would like an introduction.
 {% elif intro.state == "accepted" %}You both agreed to this introduction.
 {% elif intro.state == "declined" %}This introduction was declined.

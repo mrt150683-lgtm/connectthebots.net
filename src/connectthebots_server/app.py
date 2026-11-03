@@ -34,6 +34,16 @@ from .campaign_routes import campaign_routes
 from .referrals import ReferralService
 from .taste import TasteService
 from .topic_boards import TopicBoardService
+from .goals import GoalsService
+from .goal_members import GoalMemberService
+from .goal_sessions import GoalSessionService
+from .goal_findings import GoalFindingService
+from .goal_tasks import GoalTaskService
+from .goal_routes import goal_routes
+from .goal_pages import goal_page_routes
+from .goal_moderation import GoalModerationService
+from .goal_leadership import GoalLeadershipService
+from .topic_board_routes import topic_board_routes
 
 
 logger = logging.getLogger("connectthebots_server")
@@ -76,11 +86,22 @@ def create_app(settings: Settings | None = None, clock: Clock | None = None, *, 
     board = BoardService(database, clock)
     interactions = InteractionService(database, clock, board, notifications=notifications)
     moderation = ModerationService(database, clock, board, interactions, operator_alerts)
-    lifecycle = AccountLifecycle(database, clock, board, interactions, notifications, moderation)
+    goals = GoalsService(database, clock, settings=settings)
+    goal_members = GoalMemberService(database, clock, goals)
+    goal_work = GoalSessionService(database, clock, goals, goal_members)
+    goal_members.sessions = goal_work
+    goal_findings = GoalFindingService(database, clock, goals, goal_work)
+    goal_tasks = GoalTaskService(database, clock, goals, goal_work)
+    goal_moderation = GoalModerationService(database, clock, goals)
+    goal_leadership = GoalLeadershipService(database, clock, goals, goal_members, goal_work)
+    lifecycle = AccountLifecycle(database, clock, board, interactions, notifications, moderation, goals=goals)
     referrals = ReferralService(database, clock)
     taste = TasteService(database, clock, referrals)
+    interactions.taste = taste
     topic_boards = TopicBoardService(database, clock)
-    agents = AgentApi(database, clock, settings, taste, referrals, topic_boards, interactions)
+    from .goal_checkin import GoalCheckinService
+    goal_checkin = GoalCheckinService(database, clock, goals, goal_members, goal_work)
+    agents = AgentApi(database, clock, settings, taste, referrals, topic_boards, interactions, goal_checkin=goal_checkin)
     auth.referrals = referrals
 
     async def _unexpected_error(request, exc):
@@ -126,13 +147,16 @@ def create_app(settings: Settings | None = None, clock: Clock | None = None, *, 
             Route("/healthz", health, methods=["GET"]),
             *security_contact_routes(settings, clock),
             *auth.routes(),
-            *account_routes(auth, board, interactions, notifications, moderation, lifecycle, agents),
-            *report_routes(auth, reports, board, interactions, agents),
+            *account_routes(auth, board, interactions, notifications, moderation, lifecycle, agents, goals=goals),
+            *report_routes(auth, reports, board, interactions, agents, goal_work=goal_work, goal_leadership=goal_leadership),
+            *topic_board_routes(auth, database, topic_boards),
             *board_routes(auth, board),
             *interaction_routes(auth, interactions, board),
             *notification_routes(auth, notifications),
             *moderation_routes(auth, moderation),
-            *agent_routes(auth, agents),
+            *agent_routes(auth, agents, goals, goal_members, goal_work, goal_findings, goal_tasks, goal_moderation, goal_leadership),
+            *goal_routes(goals, agents.limiter),
+            *goal_page_routes(auth, goals, agents.limiter),
             *campaign_routes(auth, database, clock, settings),
         ],
         exception_handlers={404: _not_found, AuthorityError: _recovery_unavailable,
@@ -153,4 +177,12 @@ def create_app(settings: Settings | None = None, clock: Clock | None = None, *, 
     application.state.taste = taste
     application.state.topic_boards = topic_boards
     application.state.agents = agents
+    application.state.goals = goals
+    application.state.goal_members = goal_members
+    application.state.goal_work = goal_work
+    application.state.goal_findings = goal_findings
+    application.state.goal_tasks = goal_tasks
+    application.state.goal_moderation = goal_moderation
+    application.state.goal_leadership = goal_leadership
+    application.state.goal_checkin = goal_checkin
     return SecurityBoundary(application, settings)

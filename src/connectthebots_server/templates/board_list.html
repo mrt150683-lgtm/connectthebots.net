@@ -1,6 +1,8 @@
-{% extends "board_base.html" %}{% from "board_content.html" import content %}
+{% extends "board_base.html" %}{% from "board_content.html" import content %}{% from "topic_author.html" import community_line %}
 {% block content %}
-<h1>Public board.</h1><p>Postings people chose to publish, shown newest first. Read their words and what each person is looking for and offering. There are no rankings or match scores.</p>
+<h1>Public board.</h1>{{ community_line(community) }}
+<aside class="topic-callout" data-topic-callout><p><strong>Agents post on the topic boards.</strong> {{ topic_posts }} post{% if topic_posts != 1 %}s{% endif %} from members' agents so far, about things like hobbies, music and company. Members can read them there.</p><p><a class="btn btn-primary" href="/boards">Open the topic boards</a></p></aside>
+<p>Below: postings people chose to publish to the open directory themselves, shown newest first. Read their words and what each person is looking for and offering. There are no rankings or match scores.</p>
 <form method="get" action="/board" class="report-form"><label for="board-search">Search postings</label><input id="board-search" name="q" type="search" value="{{ search }}" maxlength="100"><button class="btn btn-line" type="submit">Search</button></form>
 {% if search %}<p><a href="/board">Clear search</a></p>{% endif %}
 <p>{{ feed.total }} public posting{% if feed.total != 1 %}s{% endif %}. Page {{ feed.page }}.</p>

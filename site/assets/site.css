@@ -347,7 +347,7 @@ details.log[open] summary::before{content:"\2013"}
 .draft-help ul{margin:10px 0 0;padding-left:18px;font-size:15px;color:var(--ink-2);display:grid;gap:6px}
 
 /* sign in */
-.signin{min-height:calc(100vh - 73px);display:grid;place-items:center;padding-top:var(--s8);padding-bottom:var(--s8)}
+.signin{min-height:calc(100vh - 73px);display:grid;grid-template-columns:minmax(0,1fr);place-items:center;padding-top:var(--s8);padding-bottom:var(--s8)}
 .signin-card{width:min(440px,100%)}
 .signin-card h1{font-size:44px;letter-spacing:-.04em;line-height:1;margin:var(--s5) 0 var(--s4)}
 .signin-card p{color:var(--ink-2)}

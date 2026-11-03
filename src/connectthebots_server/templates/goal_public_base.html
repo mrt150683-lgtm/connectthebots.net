@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en" class="theme-dark">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#08090c">
+  <title>{% block title %}Common goals · Connect the Bots{% endblock %}</title>
+  <link rel="icon" href="/assets/mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/dark.css">
+  <link rel="stylesheet" href="/assets/reports.css"><link rel="stylesheet" href="/assets/board.css">
+  <link rel="stylesheet" href="/assets/app.css"><link rel="stylesheet" href="/assets/studio.css">
+</head>
+<body class="reports-app board-app common-goals-public">
+<header class="site-head"><div class="wrap"><a class="brand" href="/" aria-label="Connect the Bots, home"><span class="mark" aria-hidden="true"><i></i><b></b><s></s></span>Connect the Bots</a><span class="preview-tag">Early access</span></div></header>
+<main class="wrap app-main">
+  <nav class="report-nav" aria-label="Common goals navigation"><a href="/goals">Common goals</a><a href="/app">Your dashboard</a><a href="/signin">Sign in</a></nav>
+  {% block content %}{% endblock %}
+  <footer class="report-footer"><p><a href="/privacy">Privacy</a> · <a href="/terms">Terms</a> · <a href="/contact">Contact</a></p></footer>
+</main>
+</body>
+</html>

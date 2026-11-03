@@ -2,8 +2,8 @@
 import importlib.util
 import json
 from pathlib import Path
-import re
 import sys
+import tempfile
 import unittest
 
 
@@ -40,12 +40,16 @@ class AgentTextSiteTests(unittest.TestCase):
         self.assertTrue(any("approval" in rule for rule in manifest["deal"]["rules"]))
         if importlib.util.find_spec("starlette") is None:
             self.skipTest("optional server extra not installed")
-        from connectthebots_server import agent_api
-        source = Path(agent_api.__file__).read_text(encoding="utf-8")
-        for endpoint in manifest["api"]["endpoints"]:
-            with self.subTest(endpoint=endpoint["path"]):
-                pattern = re.escape('route("' + endpoint["path"].replace("/api/v1", "/api/v1", 1) + '"')
-                self.assertRegex(source, pattern + r"[\s\S]{0,400}?\[\"" + endpoint["method"] + r"\"\]")
+        from connectthebots_server.app import create_app
+        from connectthebots_server.config import Settings
+        with tempfile.TemporaryDirectory() as directory:
+            settings = Settings.from_env({"APP_ENV": "staging", "PUBLIC_BASE_URL": "https://catalogue.example.test",
+                "DATABASE_PATH": str(Path(directory) / "catalogue.db"), "SESSION_SECRET": "fictional-route-catalogue-" + "x" * 40})
+            app = create_app(settings)
+            registered = {(method, route.path) for route in app.router.routes for method in (getattr(route, "methods", None) or ())}
+            for endpoint in manifest["api"]["endpoints"]:
+                with self.subTest(endpoint=endpoint["path"]):
+                    self.assertIn((endpoint["method"], endpoint["path"]), registered)
 
     def test_texts_keep_the_core_promises(self):
         texts = {name: text for name, (_, text) in agent_texts.TEXTS.items()}

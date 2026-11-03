@@ -234,7 +234,9 @@ class NotificationService:
 
     def _visible_sql(self):
         # A read-only navigation aggregate. It neither refreshes domain state
-        # nor opens a write transaction on every rendered page.
+        # nor opens a write transaction on every rendered page. A request from
+        # a match has no posting grants; whether the pair still matches is
+        # rechecked when the notification list or the request opens.
         approved = BoardService._APPROVED + BoardService._VISIBLE
         return f"""e.cancelled_at IS NULL AND EXISTS (SELECT 1 FROM users u WHERE u.id=e.user_id AND u.suspended_at IS NULL)
           AND (e.kind IN ('security_first_login','weekly_summary') OR
@@ -245,8 +247,9 @@ class NotificationService:
              AND ((e.kind='introduction_request' AND EXISTS (SELECT 1 FROM introductions i
                  WHERE i.id=e.source_id AND i.recipient_id=e.user_id AND i.status='requested' AND i.expires_at>?
                  AND i.context_hash IS NOT NULL
-                 AND EXISTS ({approved} AND p.user_id=i.requester_id AND g.id=i.requester_grant_id)
-                 AND EXISTS ({approved} AND p.user_id=i.recipient_id AND g.id=i.recipient_grant_id))) OR
+                 AND (i.source='match' OR (
+                   EXISTS ({approved} AND p.user_id=i.requester_id AND g.id=i.requester_grant_id)
+                   AND EXISTS ({approved} AND p.user_id=i.recipient_id AND g.id=i.recipient_grant_id))))) OR
               (e.kind='introduction_accepted' AND EXISTS (SELECT 1 FROM introductions i WHERE i.id=e.source_id AND i.requester_id=e.user_id AND i.status='accepted' AND i.context_hash IS NOT NULL)) OR
               (e.kind='new_message' AND EXISTS (SELECT 1 FROM conversations c WHERE c.id=e.source_id AND c.closed_at IS NULL AND (c.requester_id=e.user_id OR c.recipient_id=e.user_id))))))"""
 

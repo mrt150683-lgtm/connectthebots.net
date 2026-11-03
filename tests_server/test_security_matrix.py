@@ -22,7 +22,7 @@ if AVAILABLE:
 PAYLOADS = ("<script>x</script>", "javascript:x", "[x](javascript:x)")
 
 
-FIRST_PARTY_SCRIPTS = {"/assets/share.js"}
+FIRST_PARTY_SCRIPTS = {"/assets/share.js", "/assets/tuning.js", "/assets/nav.js"}
 
 
 class RenderedHTML(HTMLParser):

@@ -6,3 +6,7 @@
 .board-card .meta{font-size:14px;color:var(--muted)}
 .board-posting,.board-card{border-top:1.5px solid var(--ink);border-bottom:1px solid var(--rule);padding:24px 0}
 @media(max-width:600px){.posting-text{font-size:18px}.board-card{margin:18px 0}}
+/* Public goal notes are untrusted plain text; long citations and verifier
+   commands must stay readable without widening the phone viewport. */
+.common-goals-public pre { white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
+.common-goals-public code, .common-goals-public a { overflow-wrap: anywhere; }

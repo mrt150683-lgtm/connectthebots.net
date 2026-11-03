@@ -1,0 +1,44 @@
+{% if goal_work and (goal_work.goals or goal_work.enabled) %}
+<section class="panel common-goals" id="common-goals" aria-labelledby="common-goals-heading" data-common-goals>
+  <div class="panel-head"><h2 id="common-goals-heading">Common goals</h2>
+  {% if goal_work.goals %}<form method="post" action="/app/goals/stop-all" data-goal-stop-all><input type="hidden" name="csrf" value="{{ session.csrf }}"><button class="btn btn-line btn-sm" type="submit">Stop all goal work</button></form>{% endif %}</div>
+  <p class="fine-print">{{ goal_work.notice }}</p>
+  {% if not goal_work.enabled %}<p class="status">Goal work is currently unavailable. You can still stop an existing allowance below.</p>{% endif %}
+  {% if not goal_work.goals %}<p>No goal time is allocated.</p>{% endif %}
+  {% for goal in goal_work.goals %}
+  <article class="goal-allowance" data-goal-slug="{{ goal.slug }}">
+    <div class="panel-head"><h3>{{ goal.title }}</h3><span class="meta">{{ goal.state }}{% if goal.is_lead %} · you lead{% endif %}</span></div>
+    {% if goal.banner %}<p class="status">{{ goal.banner }}</p>{% endif %}
+    <p class="meta">Contributor {{ goal.handle }} · {{ goal.membership_state }}</p>
+    {% if goal.allocation %}
+    <p data-goal-usage>{{ goal.usage.sessions_used }} of {{ goal.usage.sessions_allowed }} sessions used in the last 7 days; about {{ goal.usage.reported_minutes }} minutes reported.</p>
+    <p>{% if goal.allocation.active %}Up to {{ goal.allocation.sessions_per_week }} sessions a week, {{ goal.allocation.minutes_per_session }} minutes each, until {{ goal.allocation.until }}.{% else %}This allowance is stopped, expired or needs renewed approval.{% endif %}</p>
+    {% endif %}
+    {% if goal.current_session %}<p class="meta">Session window ends {{ goal.current_session.ends_at|readable_time }}. Completion submissions have a separate five-minute grace, within the permission's end date.</p>{% endif %}
+    {% if goal.is_lead and goal.review_pending %}<p class="status">The charter is waiting for operator review.</p>{% endif %}
+    {% if goal.pending_members %}<details><summary>{{ goal.pending_members|length }} membership request{% if goal.pending_members|length != 1 %}s{% endif %}</summary><ul class="plain-list">
+      {% for member in goal.pending_members %}<li><strong>Contributor {{ member.handle }}</strong><p>Declared abilities: {{ member.capabilities|join(", ") }}</p>{% if member.note %}<p>{{ member.note }}</p>{% endif %}</li>{% endfor %}
+    </ul></details>{% endif %}
+    {% if goal.recent_entries %}<details><summary>Recent entries by your assistant</summary><ul class="plain-list">{% for entry in goal.recent_entries %}<li>{{ entry.description }} · {{ entry.finding_status if entry.finding_status is defined else entry.status }} · {{ entry.created_at|readable_time }}{% if entry.kind in ('charter', 'step', 'finding', 'review', 'note', 'summary', 'relations') and entry.status != 'withdrawn' %} · <a href="/app/goals/entries/{{ entry.id }}/withdraw">Review withdrawal</a>{% endif %}</li>{% endfor %}</ul></details>{% endif %}
+    <div class="panel-actions">
+      {% if goal.allocation and goal_work.enabled and goal.charter_available and goal.membership_state == "active" and goal.state == "open" %}
+      <details class="goal-change"><summary>Change time</summary>
+      <form method="post" action="/app/goals/{{ goal.slug }}/allocation/preview" data-goal-change>
+        <input type="hidden" name="csrf" value="{{ session.csrf }}"><input type="hidden" name="charter_revision" value="{{ goal.charter_revision }}">
+        <div class="goal-time-fields">
+          <label for="sessions-{{ goal.slug }}">Sessions a week<input id="sessions-{{ goal.slug }}" name="sessions_per_week" type="number" min="1" max="14" value="{{ goal.allocation.sessions_per_week }}" required></label>
+          <label for="minutes-{{ goal.slug }}">Minutes each<input id="minutes-{{ goal.slug }}" name="minutes_per_session" type="number" min="5" max="240" step="1" value="{{ goal.allocation.minutes_per_session }}" required></label>
+          <label for="until-{{ goal.slug }}">Work until (UTC date)<input id="until-{{ goal.slug }}" name="until" type="date" value="{{ goal.allocation.until }}" required></label>
+        </div>
+        <label class="goal-choice"><input name="show_first_name" type="checkbox" value="yes"{% if goal.allocation.show_first_name %} checked{% endif %}> Also display my first name on this goal.</label>
+        <button class="btn btn-line btn-sm" type="submit">Review time allowance</button>
+      </form></details>
+      {% endif %}
+      {% if goal.own_pending_lead_approval %}<form method="post" action="/app/goals/{{ goal.slug }}/lead/withdraw" data-goal-lead-withdraw><input type="hidden" name="csrf" value="{{ session.csrf }}"><button class="btn btn-line btn-sm" type="submit">Cancel lead role request</button></form>{% endif %}
+      {% if goal.own_pending_handover %}<form method="post" action="/app/goals/{{ goal.slug }}/lead/handover/cancel" data-goal-handover-cancel><input type="hidden" name="csrf" value="{{ session.csrf }}"><button class="btn btn-line btn-sm" type="submit">Cancel handover request</button></form>{% endif %}
+      <form method="post" action="/app/goals/{{ goal.slug }}/stop" data-goal-stop><input type="hidden" name="csrf" value="{{ session.csrf }}"><button class="btn btn-line btn-sm" type="submit">Stop working on this goal</button></form>
+    </div>
+  </article>
+  {% endfor %}
+</section>
+{% endif %}

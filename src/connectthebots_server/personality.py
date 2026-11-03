@@ -142,6 +142,44 @@ KEYS = tuple(entry[0] for entry in DIMENSIONS)
 LENGTH = 2 * len(DIMENSIONS)
 TIERS = ("share", "never")
 
+# Areas group the traits for the owner's match-tuning sliders. Every trait is
+# in exactly one area (checked by a test).
+AREAS = {
+    "temperament": ("Temperament", "Mood, energy and how you take things.",
+                    ("outlook", "energy", "pace", "novelty", "risk", "warmth", "patience", "composure", "seriousness",
+                     "sensitivity", "confidence", "adaptability", "intensity", "reflection")),
+    "social": ("Social life", "Company, closeness, humour and how you spend time with people.",
+               ("sociability", "going_out", "depth", "contact", "openness", "spotlight", "strangers", "circle", "space",
+                "teasing", "privacy", "hosting", "support_style", "community", "humour", "edge")),
+    "thinking": ("Thinking and curiosity", "How you think, learn and solve problems.",
+                 ("thinking", "decisions", "convention", "breadth", "imagination", "scepticism", "learning_style",
+                  "problem_solving", "focus", "understanding", "time_horizon", "learning_drive", "style", "mentoring")),
+    "communication": ("Communication", "How you talk, message, disagree and give feedback.",
+                      ("directness", "debate", "conversation", "meeting", "message_length", "medium", "reply_speed",
+                       "storytelling", "feedback", "small_talk", "topics", "conflict_style", "compromise", "advice")),
+    "working": ("Working together", "Plans, roles, pace and standards when you make something together.",
+                ("planning", "competition", "teamwork", "drive", "order", "initiative", "scope", "project_role", "precision",
+                 "timekeeping", "rules", "work_rhythm", "deadlines", "roles", "polish", "commitment", "project_scale", "tech",
+                 "decision_role", "energy_role", "make_or_tell", "hands_or_organise", "out_front")),
+    "lifestyle": ("Lifestyle", "Daily rhythm, places, food, travel and how you spend free time.",
+                  ("chronotype", "outdoors", "activity", "travel", "setting", "noise", "food_adventure", "weekends", "animals",
+                   "online_life", "mainstream", "making", "nostalgia", "hobby_intensity", "surprises")),
+}
+AREA_OF = {key: area for area, (_, _, keys) in AREAS.items() for key in keys}
+
+# Strictness levels for an area, set by the owner. Level 2 is exactly the
+# rules above, so an owner who never touches a slider matches as before.
+# level: (alike lean, alike close, complement lean, complement gap, clash gap, weight)
+LEVELS = ("off", "loose", "balanced", "tight", "strict")
+DEFAULT_LEVEL = 2
+THRESHOLDS = {
+    1: (25, 100, 20, 80, 210, 1),
+    2: (ALIKE_LEAN, ALIKE_CLOSE, COMPLEMENT_LEAN, COMPLEMENT_GAP, CLASH_GAP, 1),
+    3: (55, 45, 40, 120, 140, 2),
+    4: (70, 30, 50, 140, 110, 3),
+}
+STRICT = 4
+
 
 def catalogue():
     """The trait list as agents receive it, in fingerprint order."""
@@ -180,29 +218,37 @@ def readout(values):
             for (key, left, right, *_), number in zip(DIMENSIONS, values)]
 
 
-def pair_fit(mine, theirs):
+def _level(levels, key):
+    return DEFAULT_LEVEL if levels is None else levels.get(AREA_OF[key], DEFAULT_LEVEL)
+
+
+def pair_fit(mine, theirs, levels=None):
     """Compare two shared fingerprints from the viewer's side, or return None.
 
-    The result names traits only; it never carries values or the internal
-    strength, which the caller uses for ordering and then drops.
+    ``levels`` maps area -> strictness (0 off to 4 strict) from the viewer's
+    own match settings; missing areas are balanced. The result names traits
+    only; it never carries values or the internal strength, which the caller
+    uses for ordering and then drops.
     """
     if mine is None or theirs is None:
         return None
     alike, complements, differences, strength = [], [], [], 0
     for (key, _, _, rule, left_phrase, right_phrase, _), a, b in zip(DIMENSIONS, mine, theirs):
-        if a is None or b is None:
+        level = _level(levels, key)
+        if a is None or b is None or level == 0:
             continue
+        alike_lean, alike_close, complement_lean, complement_gap, clash_gap, weight = THRESHOLDS[level]
         gap, side_a, side_b = abs(a - b), a - MIDDLE, b - MIDDLE
         if rule == "alike":
-            if side_a * side_b > 0 and min(abs(side_a), abs(side_b)) >= ALIKE_LEAN and gap <= ALIKE_CLOSE:
+            if side_a * side_b > 0 and min(abs(side_a), abs(side_b)) >= alike_lean and gap <= alike_close:
                 alike.append((min(abs(side_a), abs(side_b)), {"trait": key, "both": right_phrase if side_a > 0 else left_phrase}))
-                strength += 1
-            elif gap >= CLASH_GAP:
+                strength += weight
+            elif gap >= clash_gap:
                 differences.append(key)
-                strength -= 1
-        elif side_a * side_b < 0 and min(abs(side_a), abs(side_b)) >= COMPLEMENT_LEAN and gap >= COMPLEMENT_GAP:
+                strength -= weight
+        elif side_a * side_b < 0 and min(abs(side_a), abs(side_b)) >= complement_lean and gap >= complement_gap:
             complements.append((gap, {"trait": key, "one_of_you": right_phrase, "the_other": left_phrase}))
-            strength += 2
+            strength += 2 * weight
     if not alike and not complements:
         return None
     alike = [entry for _, entry in sorted(alike, key=lambda item: -item[0])]
@@ -215,6 +261,15 @@ def pair_fit(mine, theirs):
             f"one of you {entry['one_of_you']} and the other {entry['the_other']}" for entry in complements[:2]) + ".")
     return {"alike": alike, "complements": complements, "differences": differences,
             "explanation": " ".join(sentences), "strength": strength}
+
+
+def strict_clashes(mine, theirs, levels):
+    """Alike traits in the owner's strict areas where the two people clearly differ."""
+    if mine is None or theirs is None or not levels:
+        return []
+    clash_gap = THRESHOLDS[STRICT][4]
+    return [key for (key, _, _, rule, *_), a, b in zip(DIMENSIONS, mine, theirs)
+            if rule == "alike" and a is not None and b is not None and _level(levels, key) == STRICT and abs(a - b) >= clash_gap]
 
 
 def _join(parts):

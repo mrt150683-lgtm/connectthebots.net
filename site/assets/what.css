@@ -1,0 +1,88 @@
+/* What this is: the page behind the home film's Enter button.
+   One idea per screen-height, one accent (cobalt = you and the primary action),
+   and the house motif: a connection is a line with its reason on it. */
+
+.what{padding-bottom:40px}
+.what .wrap{max-width:calc(880px + 2 * 32px)}
+
+/* Opening */
+.what-hero{padding-top:min(14vh,128px);padding-bottom:88px;text-align:center;display:flex;flex-direction:column;align-items:center}
+.what-kicker{color:var(--cobalt-ink);margin:0 0 22px;letter-spacing:.16em}
+.what-hero h1{margin:0;max-width:17ch;font-size:clamp(36px,6.4vw,68px);line-height:1.04;letter-spacing:-.035em;font-weight:700;
+  background:linear-gradient(180deg,#fff 30%,#aeb6c8);-webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:what-rise .9s var(--ease) both}
+.what-tie{display:flex;align-items:center;width:min(100%,560px);margin:44px 0 40px;animation:what-rise .9s var(--ease) .15s both}
+.what-tie .dot{flex:none;width:12px;height:12px;border-radius:50%}
+.what-tie .you{background:var(--fill);box-shadow:0 0 18px rgba(59,91,255,.9)}
+.what-tie .them{border:1.5px solid var(--ink-2)}
+.what-tie .rule{flex:1;height:1.5px;background:linear-gradient(90deg,var(--fill),var(--edge-hi));transform-origin:left;animation:what-draw 1.2s var(--ease) .35s both}
+.what-tie .rule:last-of-type{background:linear-gradient(90deg,var(--edge-hi),var(--ink-2));transform-origin:right}
+.what-tie .why{flex:none;padding:0 16px;font-family:var(--serif);font-style:italic;font-size:clamp(17px,2.2vw,21px);color:var(--ink)}
+.what-cta{min-height:56px;padding:0 28px 0 22px;font-size:18px;gap:14px;border-radius:14px}
+.what-cta .mark b,.what-cta .mark i{background:#fff}
+.what-cta .mark s{border-color:#fff}
+.what-cta .mark b{width:6px;transition:width var(--draw) var(--ease)}
+.what-cta:hover .mark b,.what-cta:focus-visible .mark b{width:18px}
+.what-sub{margin:14px 0 0;font-size:15px;color:var(--muted)}
+
+/* Steps: a single line runs down the page and every step hangs off it. */
+.what-steps{padding-bottom:72px}
+.steps{list-style:none;margin:0;padding:0;position:relative}
+.steps::before{content:"";position:absolute;left:23px;top:28px;bottom:28px;width:1.5px;background:linear-gradient(180deg,var(--edge-hi),var(--fill) 55%,var(--edge-hi))}
+.steps li{position:relative;display:grid;grid-template-columns:48px 1fr;gap:28px;padding:22px 0}
+.steps .n{position:relative;z-index:1;display:grid;place-items:center;width:48px;height:48px;border-radius:50%;background:var(--paper);border:1px solid var(--edge-hi);color:var(--ink-2);font-size:12px}
+.steps h3{margin:10px 0 6px;font-size:clamp(21px,2.6vw,26px);line-height:1.2;letter-spacing:-.02em;font-weight:650;color:var(--ink)}
+.steps p{margin:0;max-width:60ch;color:var(--ink-2);font-size:17px;line-height:1.6}
+.steps .big .n{background:var(--fill);border-color:var(--fill);color:#fff;box-shadow:0 0 0 6px rgba(59,91,255,.14),0 0 32px rgba(59,91,255,.55)}
+.steps .big>div{padding:26px 28px 24px;margin:-4px 0;background:linear-gradient(180deg,rgba(59,91,255,.12),rgba(59,91,255,.03));border:1px solid rgba(142,160,255,.28);border-radius:var(--radius);box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 40px 80px -50px rgba(59,91,255,.7)}
+.steps .big h3{margin-top:4px;font-size:clamp(25px,3.4vw,34px)}
+.steps .big p{color:var(--ink)}
+.big-tag{margin:0;color:var(--cobalt-ink);letter-spacing:.14em}
+
+.fp-figure{margin:26px 0 0}
+.fp{display:block;width:100%;height:auto}
+.fp line{stroke-width:3;stroke-linecap:round}
+.fp .fp-you{stroke:#3a4a9a}
+.fp .fp-them{stroke:#3a3f4c}
+.fp .fp-you.on{stroke:var(--fill)}
+.fp .fp-them.on{stroke:var(--ink-2)}
+.fp .fp-link{stroke:var(--cobalt);stroke-width:1.2;stroke-dasharray:2 4;opacity:.9}
+.fp-figure figcaption{margin-top:10px;color:var(--muted);font-size:11px;letter-spacing:.08em}
+
+/* Why */
+.what-why{padding-top:40px;padding-bottom:88px;border-top:1px solid var(--edge)}
+.what-why h2{margin:48px 0 36px;max-width:22ch;font-size:clamp(28px,4vw,42px);line-height:1.1;letter-spacing:-.03em;font-weight:700;color:var(--ink)}
+.pillars{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.pillars li{display:flex;flex-direction:column;gap:8px;padding:22px 24px;background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1px solid var(--edge);border-radius:16px}
+.pillars b{font-size:18px;font-weight:650;color:var(--ink)}
+.pillars span{color:var(--ink-2);font-size:16px;line-height:1.55}
+
+/* Close */
+.what-end{text-align:center;padding-top:72px;padding-bottom:56px;display:flex;flex-direction:column;align-items:center;border-top:1px solid var(--edge)}
+.what-sign{margin:0 0 36px;font-size:clamp(38px,7vw,76px);line-height:1;letter-spacing:-.04em;font-weight:700;color:var(--ink)}
+.what-sign span{color:var(--cobalt-ink)}
+.what-note{margin:28px 0 0;max-width:46ch;font-size:14px;color:var(--muted)}
+
+.what-foot{padding-top:24px;padding-bottom:max(40px,env(safe-area-inset-bottom,0px));border-top:1px solid var(--edge)}
+.what-foot nav{display:flex;flex-wrap:wrap;gap:10px 22px;justify-content:center;font-size:14px}
+.what-foot a{color:var(--ink-2)}
+
+@keyframes what-rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes what-draw{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+@media (max-width:760px){
+  .what .wrap{padding-left:20px;padding-right:20px}
+  .what-hero{padding-top:56px;padding-bottom:56px}
+  .what-tie .why{font-size:15px;padding:0 10px}
+  .what-cta{width:min(100%,360px)}
+  .steps::before{left:17px}
+  .steps li{grid-template-columns:36px 1fr;gap:16px;padding:16px 0}
+  .steps .n{width:36px;height:36px;font-size:11px}
+  .steps h3{margin-top:5px}
+  .steps p{font-size:16px}
+  .steps .big>div{padding:20px 18px}
+  .pillars{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  .what-hero h1,.what-tie,.what-tie .rule{animation:none}
+}

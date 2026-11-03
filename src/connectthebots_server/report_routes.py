@@ -11,6 +11,7 @@ from starlette.responses import JSONResponse, PlainTextResponse, RedirectRespons
 from starlette.routing import Route
 
 from .auth import AuthenticationError, form_values
+from .agent_common import AgentError
 from .board import BoardError
 from .dashboard import dashboard_context
 from .prompt import personalised_prompt
@@ -93,7 +94,7 @@ def _paste_text(payload):
     return "\n".join(lines) + "\n"
 
 
-def report_routes(auth, reports, board, interactions, agents=None):
+def report_routes(auth, reports, board, interactions, agents=None, goal_work=None, goal_leadership=None):
     def current(request):
         if not auth.enabled:
             return None, auth.render("signin.html", enabled=False, mode=auth.settings.signups, status=503)
@@ -133,7 +134,7 @@ def report_routes(auth, reports, board, interactions, agents=None):
                 return await endpoint(request)
             except AuthenticationError as error:
                 return auth.error(str(error), 400)
-            except ReportError as error:
+            except (ReportError, AgentError) as error:
                 response = auth.error(error.detail, error.status)
                 if error.retry_after is not None:
                     response.headers["Retry-After"] = str(error.retry_after)
@@ -146,8 +147,110 @@ def report_routes(auth, reports, board, interactions, agents=None):
             return response
         context = dashboard_context(reports, session.user_id, auth.clock())
         context["introductions"] = interactions.list_introductions(session.user_id, limit=5)
+        context["open_conversations"] = interactions.open_conversation_count(session.user_id)
         context["growth"] = agents.dashboard(session.user_id) if agents is not None else None
+        context["goal_work"] = await run_in_threadpool(goal_work.dashboard, session.user_id) if goal_work is not None else None
         return renewed(request, auth.render("dashboard.html", session=session, **context))
+
+    async def goal_allocation_preview(request):
+        session, fields, response = await checked(request, {
+            "sessions_per_week", "minutes_per_session", "until", "show_first_name", "charter_revision"})
+        if response is not None:
+            return response
+        if goal_work is None:
+            return auth.error("Goal controls are not available.", 404)
+        proposed = {}
+        for name in ("sessions_per_week", "minutes_per_session", "charter_revision"):
+            raw = fields.get(name, "")
+            if not raw.isascii() or not raw.isdigit() or len(raw) > 18:
+                return auth.error("Choose a valid time allowance and reload the current goal.", 422)
+            proposed[name] = int(raw)
+        if fields.get("show_first_name", "no") not in ("yes", "no"):
+            return auth.error("Choose whether to display your first name.", 422)
+        proposed.update(until=fields.get("until"), show_first_name=fields.get("show_first_name") == "yes")
+        slug = request.path_params["slug"]
+        preview = await run_in_threadpool(goal_work.preview_allocation, session.user_id, slug, proposed)
+        token = _signed(auth, session.user_id, "goal-allocation:" + slug,
+                        {"proposed": preview["proposed"], "expected_approval_id": preview["expected_approval_id"],
+                         "expected_work_generation": preview["expected_work_generation"], "statement": preview["statement"]})
+        return renewed(request, auth.render("goal_allocation_confirm.html", session=session, slug=slug, preview=preview, token=token))
+
+    async def goal_allocation_confirm(request):
+        session, fields, response = await checked(request, {"token", "approve", "approve_lead"})
+        if response is not None:
+            return response
+        if goal_work is None:
+            return auth.error("Goal controls are not available.", 404)
+        slug = request.path_params["slug"]
+        document = _verified(auth, session.user_id, "goal-allocation:" + slug, fields.get("token"))
+        if fields.get("approve") != "yes":
+            return auth.error("Approve the contribution statement before saving this time allowance.", 409)
+        body = {**document["value"]["proposed"], "approved_by_owner": True}
+        if "lead_notice_version" in body:
+            if fields.get("approve_lead") != "yes":
+                return auth.error("Approve the separate lead statement before saving the lead's time allowance.", 409)
+            body["lead_approved_by_owner"] = True
+        await run_in_threadpool(goal_work.set_allocation, session.user_id, slug, body,
+                                expected_approval_id=document["value"]["expected_approval_id"],
+                                expected_work_generation=document["value"]["expected_work_generation"],
+                                expected_statement=document["value"]["statement"])
+        return renewed(request, RedirectResponse("/app#common-goals", status_code=303))
+
+    async def goal_stop(request):
+        session, _, response = await checked(request, set())
+        if response is not None:
+            return response
+        if goal_work is None:
+            return auth.error("Goal controls are not available.", 404)
+        await run_in_threadpool(goal_work.stop, session.user_id, request.path_params["slug"])
+        return renewed(request, RedirectResponse("/app#common-goals", status_code=303))
+
+    async def goal_stop_all(request):
+        session, _, response = await checked(request, set())
+        if response is not None:
+            return response
+        if goal_work is None:
+            return auth.error("Goal controls are not available.", 404)
+        await run_in_threadpool(goal_work.stop_all, session.user_id)
+        return renewed(request, RedirectResponse("/app#common-goals", status_code=303))
+
+    async def goal_lead_withdraw(request):
+        session, _, response = await checked(request, set())
+        if response is not None:
+            return response
+        if goal_leadership is None:
+            return auth.error("Goal controls are not available.", 404)
+        await run_in_threadpool(goal_leadership.withdraw, session.user_id, request.path_params["slug"])
+        return renewed(request, RedirectResponse("/app#common-goals", status_code=303))
+
+    async def goal_handover_cancel(request):
+        session, _, response = await checked(request, set())
+        if response is not None:
+            return response
+        if goal_leadership is None:
+            return auth.error("Goal controls are not available.", 404)
+        await run_in_threadpool(goal_leadership.cancel_handover, session.user_id, request.path_params["slug"])
+        return renewed(request, RedirectResponse("/app#common-goals", status_code=303))
+
+    async def goal_withdraw_preview(request):
+        session, response = current(request)
+        if response is not None:
+            return response
+        if goal_work is None:
+            return auth.error("Goal controls are not available.", 404)
+        entry = await run_in_threadpool(goal_work.goals.owned_entry, session.user_id, request.path_params["entry_id"])
+        return renewed(request, auth.render("goal_withdraw.html", session=session, entry=entry))
+
+    async def goal_withdraw_confirm(request):
+        session, fields, response = await checked(request, {"confirm"})
+        if response is not None:
+            return response
+        if goal_work is None:
+            return auth.error("Goal controls are not available.", 404)
+        if fields.get("confirm") != "withdraw":
+            return auth.error("Confirm which entry you want to withdraw.", 409)
+        await run_in_threadpool(goal_work.goals.withdrawal, session.user_id, request.path_params["entry_id"], owner_control=True)
+        return renewed(request, RedirectResponse("/app#common-goals", status_code=303))
 
     async def keys(request):
         session, response = current(request)
@@ -205,6 +308,47 @@ def report_routes(auth, reports, board, interactions, agents=None):
             return response
         agents.share_permission(session.user_id, remove=True)
         return renewed(request, RedirectResponse("/app", status_code=303))
+
+    async def match_settings(request):
+        # The owner moves the sliders themselves, so this is their own yes.
+        from .match_tuning import AREAS
+        session, fields, response = await checked(request, set(AREAS))
+        if response is not None:
+            return response
+        levels = {}
+        for area in AREAS:
+            raw = fields.get(area)
+            if raw is None or not raw.isascii() or not raw.isdigit():
+                return auth.error("Choose a level for every area.", 422)
+            levels[area] = int(raw)
+        await run_in_threadpool(_save_tuning, session.user_id, {"areas": levels})
+        return renewed(request, RedirectResponse("/app#match-settings", status_code=303))
+
+    async def remove_preference(request):
+        session, _, response = await checked(request, set())
+        if response is not None:
+            return response
+        raw = request.path_params["index"]
+        current = (await run_in_threadpool(agents.taste.match_settings, session.user_id))["current"]["preferences"]
+        if not raw.isascii() or not raw.isdigit() or int(raw) >= len(current):
+            return auth.error("That preference was already removed. Reload the page.", 404)
+        kept = [{key: value for key, value in entry.items() if key != "reads_as"} for position, entry in enumerate(current) if position != int(raw)]
+        await run_in_threadpool(_save_tuning, session.user_id, {"preferences": kept})
+        return renewed(request, RedirectResponse("/app#match-settings", status_code=303))
+
+    async def reset_tuning(request):
+        session, _, response = await checked(request, set())
+        if response is not None:
+            return response
+        await run_in_threadpool(agents.taste.reset_match_settings, session.user_id)
+        return renewed(request, RedirectResponse("/app#match-settings", status_code=303))
+
+    def _save_tuning(user_id, fields):
+        from .agent_common import AgentError
+        try:
+            agents.taste.save_match_settings(user_id, fields, approved=True)
+        except AgentError as error:
+            raise ReportError(error.status, error.detail) from None
 
     async def rename_key(request):
         session, fields, response = await checked(request, {"name"})
@@ -337,6 +481,14 @@ def report_routes(auth, reports, board, interactions, agents=None):
             return JSONResponse({"error": error.detail}, status_code=error.status)
 
     return [
+        route("/app/goals/entries/{entry_id}/withdraw", goal_withdraw_preview, ["GET"]),
+        route("/app/goals/entries/{entry_id}/withdraw", goal_withdraw_confirm, ["POST"]),
+        route("/app/goals/stop-all", goal_stop_all, ["POST"]),
+        route("/app/goals/{slug}/stop", goal_stop, ["POST"]),
+        route("/app/goals/{slug}/lead/withdraw", goal_lead_withdraw, ["POST"]),
+        route("/app/goals/{slug}/lead/handover/cancel", goal_handover_cancel, ["POST"]),
+        route("/app/goals/{slug}/allocation/preview", goal_allocation_preview, ["POST"]),
+        route("/app/goals/{slug}/allocation/confirm", goal_allocation_confirm, ["POST"]),
         route("/app", dashboard, ["GET"]),
         route("/app/keys", keys, ["GET"]),
         route("/app/keys/new", keys, ["GET"]),
@@ -351,6 +503,9 @@ def report_routes(auth, reports, board, interactions, agents=None):
         route("/app/reports/{report_id}/handled", handled, ["POST"]),
         route("/app/settings", settings, ["POST"]),
         route("/app/share-permission/remove", remove_share_permission, ["POST"]),
+        route("/app/match-settings", match_settings, ["POST"]),
+        route("/app/match-settings/reset", reset_tuning, ["POST"]),
+        route("/app/match-settings/preferences/{index}/remove", remove_preference, ["POST"]),
         Route("/api/v1/reports", ingest, methods=["POST"]),
         Route("/api/v1/me", me, methods=["GET"]),
     ]

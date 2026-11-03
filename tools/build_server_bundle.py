@@ -16,7 +16,7 @@ import shutil
 import zipfile
 
 
-PUBLIC_PAGES = ("index.html", "about.html", "signin.html", "dashboard.html", "film.html", "deals.html", "prompts.html", "agents.json", "llms.txt")
+PUBLIC_PAGES = ("index.html", "what.html", "about.html", "signin.html", "dashboard.html", "film.html", "deals.html", "prompts.html", "agents.json", "llms.txt")
 DEPLOY_FILES = (
     "server-setup.sh", "app-setup.sh", "deploy.sh", "deploy.ps1",
     "verify_bundle.py", "configure_app.py", "app.env.example", "connectthebots-app.service",

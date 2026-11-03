@@ -46,3 +46,7 @@ html.theme-dark .signin-card ol,html.theme-dark .signin-card ul{padding-left:1.4
 .legal p,.legal li{color:var(--ink-2);line-height:1.65}
 .legal p+p,.legal ul,.legal ol{margin-top:12px}
 .legal .preview-tag{display:inline-block;margin-bottom:8px}
+/* Community counter (totals only) */
+.community-count{display:inline-flex;gap:6px;align-items:baseline;margin:6px 0 18px;padding:8px 14px;border:1px solid var(--edge);border-radius:999px;font-size:14px;color:var(--muted)}
+.community-count strong{font-size:16px;color:var(--ink)}
+.community-count::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--good);align-self:center}

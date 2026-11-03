@@ -59,25 +59,28 @@ for (const [name, opts] of [
   page.on("request", (r) => { if (!r.url().startsWith(base) && !r.url().startsWith("data:")) remote.push(r.url()); });
   const noSideways = () => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
 
-  // Home: only the film and one sign-in action; the film plays muted by itself, once
+  // Home: only the film and one Enter action; the film plays by itself, once, with sound where allowed
   await page.goto(base + "index.html");
   await page.evaluate(() => document.fonts.ready);
-  const signin = page.locator("[data-signin]");
-  ok(await signin.isVisible() && /Sign in with Google/.test(await signin.innerText()) && (await signin.getAttribute("href")) === "signin.html", `${name}: home has the sign-in action`);
+  const signin = page.locator("[data-enter]");
+  ok(await signin.isVisible() && /^\s*Enter\s*$/.test(await signin.innerText()) && (await signin.getAttribute("href")) === "what.html", `${name}: home has the Enter action to What this is`);
+  ok((await page.locator("[data-signin]").getAttribute("href")) === "signin.html", `${name}: returning members can still sign in from home`);
   ok(await page.locator("main a.btn, main button.btn").count() === 1, `${name}: home has exactly one primary action`);
   await page.waitForFunction(() => { const v = document.querySelector("[data-trailer]"); return v.currentTime > 0.3; }, null, { timeout: 15000 });
   const home = await page.evaluate(() => window.__home.state());
-  ok(!home.paused && home.muted, `${name}: film autoplays muted`);
+  ok(!home.paused, `${name}: film autoplays`);
+  const startedMuted = home.muted;
   ok(home.src.endsWith(name === "mobile" ? "assets/trailer-480.mp4" : "assets/trailer.mp4"), `${name}: ${name === "mobile" ? "phones get the light 480p film" : "desktop gets the 720p film"}`);
   const box = await page.locator("[data-trailer]").boundingBox();
   const vp = page.viewportSize();
   ok(box.width >= vp.width * 0.8 && box.y >= 0 && box.y + box.height <= vp.height, `${name}: film is a large framed screen, not cropped`);
   const cta = await signin.boundingBox();
-  ok(cta.y + cta.height <= vp.height, `${name}: sign-in is on screen without scrolling`);
+  ok(cta.y + cta.height <= vp.height, `${name}: Enter is on screen without scrolling`);
   ok(/Sascha Ende/.test(await page.locator("[data-music-credit]").innerText()) && /CC BY 4\.0/.test(await page.locator("[data-music-credit]").innerText()), `${name}: home credits the music (CC BY 4.0)`);
   for (const [label, href] of [["Privacy", "/privacy"], ["Terms", "/terms"], ["How it works", "about.html"]]) {
     ok((await page.getByRole("link", { name: label, exact: true }).getAttribute("href")) === href, `${name}: home links ${label}`);
   }
+  if (!startedMuted) { await page.locator("[data-sound]").click(); ok((await page.evaluate(() => window.__home.state())).muted, `${name}: sound can be turned off`); }
   await page.locator("[data-sound]").click();
   ok(!(await page.evaluate(() => window.__home.state())).muted && (await page.locator("[data-sound-label]").innerText()) === "Sound off", `${name}: sound can be turned on`);
   if (!externalBase) {
@@ -89,6 +92,17 @@ for (const [name, opts] of [
   await page.evaluate(() => { const v = document.querySelector("[data-trailer]"); v.muted = true; v.currentTime = 25; v.pause(); });
   await page.waitForTimeout(700);
   await page.screenshot({ path: path.join(out, `home-${name}.png`) });
+
+  // What this is: the page behind Enter, ending in Google sign-in
+  await page.goto(base + "what.html");
+  await page.evaluate(() => document.fonts.ready);
+  ok(/open board where AI agents meet/.test(await page.locator("h1").innerText()), `${name}: what-this-is page opens with the statement`);
+  ok(await page.locator(".steps > li").count() === 7 && /The big one/i.test(await page.locator(".steps .big").innerText()), `${name}: seven steps, fingerprint matching marked as the big one`);
+  const whatSignin = page.locator("[data-signin]");
+  ok(await whatSignin.isVisible() && /Sign in with Google/.test(await whatSignin.innerText()) && (await whatSignin.getAttribute("href")) === "signin.html", `${name}: what-this-is page has Sign in with Google on the first screen`);
+  ok(/Let.s connect/.test(await page.locator(".what-sign").innerText()), `${name}: page ends "Let's connect... the bots."`);
+  ok(await noSideways(), `${name}: what-this-is page has no sideways scroll`);
+  await page.screenshot({ path: path.join(out, `what-${name}.png`), fullPage: true });
 
   // How it works: the longer page with the prompt, kept at about.html
   await page.goto(base + "about.html");
@@ -187,9 +201,9 @@ for (const [name, opts] of [
   let home = false;
   for (let i = 0; i < 4 && !home; i++) {
     await page.keyboard.press("Tab");
-    home = (await page.evaluate(() => document.activeElement && document.activeElement.hasAttribute("data-signin")));
+    home = (await page.evaluate(() => document.activeElement && document.activeElement.hasAttribute("data-enter")));
   }
-  ok(home, "keyboard: home sign-in within 4 tabs");
+  ok(home, "keyboard: home Enter within 4 tabs");
   await page.screenshot({ path: path.join(out, "home-reduced-motion.png") });
   await page.goto(base + "about.html");
   await page.waitForTimeout(600);

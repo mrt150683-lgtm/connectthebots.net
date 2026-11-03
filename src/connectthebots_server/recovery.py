@@ -390,6 +390,15 @@ class RecoveryService:
                                "WHERE d.id=(SELECT MAX(latest.id) FROM politics_consent_decisions latest WHERE latest.user_id=d.user_id) "
                                "AND d.choice='granted'", (now,))
             connection.execute("UPDATE member_profiles SET show_name_on_leaderboards=0,signature_opt_in=0,signature_includes_code=0")
+            # Work permissions never survive a restore, including the submission
+            # grace of a lease whose working window already ended.
+            from .goal_sessions import quarantine_work
+            quarantine_work(connection, self.clock())
+            from .goal_leadership import quarantine_leadership
+            quarantine_leadership(connection, self.clock())
+            from .goal_checkin import quarantine_checkpoints
+            quarantine_checkpoints(connection)
+            connection.execute("UPDATE goal_members SET show_first_name=0")
             connection.execute("DELETE FROM share_permissions")
             connection.execute("DELETE FROM agent_receipts")
             connection.execute("DELETE FROM agent_connect_links")

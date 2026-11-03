@@ -13,7 +13,7 @@ import json
 import re
 import sys
 
-PAGES = ("/", "/about", "/signin", "/example", "/film")
+PAGES = ("/", "/what", "/about", "/signin", "/example", "/film")
 VIDEO = {"/video-play": "plays", "/video-sound": "sound_on", "/video-done": "finished"}
 _LINE = re.compile(r'^(?P<ip>\S+) - - \[(?P<day>\d{2}/\w{3}/\d{4}):[^\]]*\] "(?P<method>[A-Z]+) (?P<path>\S+) [^"]*" (?P<status>\d{3}) ')
 

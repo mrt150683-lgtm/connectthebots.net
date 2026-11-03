@@ -40,7 +40,9 @@ try {
             && await securityContact.text() === "Security contact information is not currently available.\n"
             && securityContact.headers()["content-type"].startsWith("text/plain; charset=utf-8")
             && securityContact.headers()["cache-control"].includes("no-store"));
-      await page.goto(origin.href);
+      // The home page is only the trailer and one sign-in button; the footer
+      // and header sign-in links live on the how-it-works page.
+      await page.goto(new URL("about.html", origin).href);
       check(`${name}: footer keeps its sign-in link`, await page.getByRole("navigation", { name: "Footer" })
             .getByRole("link", { name: "Sign in", exact: true }).getAttribute("href") === "signin.html");
       await page.getByRole("banner").getByRole("link", { name: "Sign in", exact: true }).click();

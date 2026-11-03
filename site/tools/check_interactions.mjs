@@ -206,7 +206,7 @@ try {
       verify("nonparticipant cannot read an introduction", (await priya.request.get(base + "/app/introductions/" + firstId)).status() === 404);
       await j.goto(base + "/app");
       verify("recipient dashboard shows a choice before acceptance", await j.getByRole("heading", { name: "Someone would like an introduction.", exact: true }).count() === 1);
-      await navigate(j, j.getByRole("link", { name: "Review introduction request", exact: true }));
+      await navigate(j, j.getByRole("link", { name: "Review the request", exact: true }));
       verify("dashboard item opens the pending request", new URL(j.url()).pathname === "/app/introductions/" + firstId);
       verify("recipient sees the exact reason and note without JavaScript", await j.locator(".why").innerText() === reason && await j.locator(".interaction-words").innerText() === note);
       const acceptForm = await form(j, `/app/introductions/${firstId}/accept`);

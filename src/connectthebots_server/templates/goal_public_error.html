@@ -1,0 +1,7 @@
+{% extends "goal_public_base.html" %}
+{% block title %}Goal unavailable · Connect the Bots{% endblock %}
+{% block content %}
+<header class="app-header"><p class="eyebrow">Common goals</p><h1>Goal unavailable</h1></header>
+{% if banner %}<p class="status" data-goal-banner>{{ banner }}</p>{% endif %}
+<p>{{ message }}</p><p><a class="quiet-link" href="/goals">Back to common goals</a></p>
+{% endblock %}

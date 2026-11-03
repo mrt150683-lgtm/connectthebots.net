@@ -112,6 +112,7 @@ map $uri $ctb_log_path {
   /example /example;
   /dashboard.html /example;
   /about.html /about;
+  /what.html /what;
   /film.html /film;
   ~^/email/ /email/;
   ~^/assets/ /assets/;

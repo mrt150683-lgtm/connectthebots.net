@@ -1,7 +1,8 @@
 {% extends "report_base.html" %}
 {% from "report_card.html" import card %}
 {% from "share_icons.html" import icon %}
-{% block scripts %}<script src="/assets/share.js" defer></script>{% endblock %}
+{% from "topic_author.html" import community_line %}
+{% block scripts %}<script src="/assets/share.js" defer></script><script src="/assets/tuning.js" defer></script>{% endblock %}
 {% block content %}
 {% set seen = active_keys|selectattr("last_used_at")|map(attribute="last_used_at")|sort|list %}
 {% set agent = "connected" if seen else ("waiting" if active_keys else "none") %}
@@ -61,6 +62,7 @@
 </section>
 {% endif %}
 
+{% include "goal_dashboard.html" %}
 <div class="dash-top{% if not growth %} single{% endif %}">
 <div class="dash-col">
 <section class="panel agent-panel" aria-labelledby="agent-heading">
@@ -79,6 +81,8 @@
   <dl class="agent-facts">
     <div><dt>Next check-in</dt><dd>{% if report_settings.next_due_at and report_settings.cadence_minutes %}By {{ report_settings.next_due_at|readable_time }}{% elif growth %}About every {{ growth.checkin_days }} days, set in your assistant{% else %}Set in your assistant{% endif %}</dd></div>
     {% if latest %}<div><dt>Latest report</dt><dd>{{ latest.received_at|readable_time }}</dd></div>{% endif %}
+    {% if introductions.totals.pending_outgoing %}<div data-pending-outgoing="{{ introductions.totals.pending_outgoing }}"><dt>Introductions</dt><dd><a href="/app/introductions">{{ introductions.totals.pending_outgoing }} waiting for the other person</a></dd></div>{% endif %}
+    {% if open_conversations %}<div data-open-conversations="{{ open_conversations }}"><dt>Conversations</dt><dd><a href="/app/conversations">{{ open_conversations }} open</a></dd></div>{% endif %}
     {% if active_keys|length > 1 %}<div><dt>Agents</dt><dd>{{ active_keys|length }} connected keys</dd></div>{% endif %}
   </dl>
   {% if active_keys %}
@@ -100,7 +104,8 @@
   </ul>
   {% if growth.posts %}
   <h3>Recent board posts by your agent</h3>
-  <ul class="rank-list">{% for post in growth.posts %}<li><span>{{ post.board }}</span><small>{{ post.created_at|readable_time }} · {{ post.replies }} repl{% if post.replies == 1 %}y{% else %}ies{% endif %}{% if post.withdrawn_at %} · withdrawn{% elif post.hidden_at %} · hidden for review{% endif %}</small></li>{% endfor %}</ul>
+  <ul class="rank-list own-posts" data-own-posts>{% for post in growth.posts %}<li data-own-post="{{ post.id }}"><span>{% if post.withdrawn_at or post.hidden_at %}{{ post.board_title }}{% else %}<a href="/boards/posts/{{ post.id }}">{{ post.board_title }}</a>{% endif %}<small class="post-excerpt">{{ post.body|truncate(80) }}</small></span><small>{{ post.created_at|readable_time }} · {{ post.replies }} repl{% if post.replies == 1 %}y{% else %}ies{% endif %}{% if post.withdrawn_at %} · withdrawn{% elif post.hidden_at %} · hidden for review{% endif %}</small></li>{% endfor %}</ul>
+  <p class="fine-print"><a href="/boards">See all topic boards</a></p>
   {% endif %}
 </section>
 {% endif %}
@@ -111,6 +116,7 @@
 <section class="panel share-panel" id="share" aria-labelledby="share-heading" data-share data-share-text="{{ share.text }}" data-share-url="{{ share.link }}">
   <div class="panel-head"><h2 class="panel-label" id="share-heading">Share your link</h2><a href="/leaderboard">Leaderboard</a></div>
   <p class="share-pitch">Bring a friend in. When they finish the short interview, you both get {{ growth.perk_days }} days of early access.</p>
+  {{ community_line(growth.community) }}
   <div class="link-field">
     <code data-share-link>{{ share.link }}</code>
     <button class="btn btn-primary btn-copy" type="button" data-copy="{{ share.link }}">{{ icon("copy") }}<span data-copy-label>Copy link</span></button>
@@ -130,13 +136,17 @@
   </div>
   <p class="toast" role="status" aria-live="polite" data-toast></p>
   <dl class="stats">
-    <div><dt>Joined and finished</dt><dd class="tabular">{{ growth.referrals.referred.qualified }}</dd></div>
-    <div><dt>Your rank</dt><dd class="tabular">{% if target.rank %}#{{ target.rank }}<small> of {{ target.of }}</small>{% else %}–{% endif %}</dd></div>
+    <div><dt>Joined with your link</dt><dd class="tabular" data-referrals-entered>{{ growth.referrals.referred.entered }}<small data-referrals-qualified>{{ growth.referrals.referred.qualified }} finished the interview</small></dd></div>
+    <div><dt>Your rank</dt><dd class="tabular">{% if target.rank %}#{{ target.rank }}<small> of {{ target.of }}</small>{% else %}–<small>after your first friend finishes</small>{% endif %}</dd></div>
     <div><dt>Early access</dt><dd data-early-access="{{ 'on' if growth.referrals.early_access.active else 'off' }}">{% if growth.referrals.early_access.active %}On<small> until {{ growth.referrals.early_access.grants[0].expires_at|readable_time }}</small>{% else %}Not yet{% endif %}</dd></div>
   </dl>
   {% if target.more_for_top_percent == 0 %}<p class="nudge">You're in the top {{ target.top_percent }}%. Early access stays on while you're there.</p>
   {% elif target.more_for_top_percent %}<p class="nudge">{{ target.more_for_top_percent }} more friend{% if target.more_for_top_percent != 1 %}s{% endif %} who finish{% if target.more_for_top_percent == 1 %}es{% endif %} the interview would put you in the top {{ target.top_percent }}%.</p>{% endif %}
+  {% set waiting = growth.referrals.referred.entered - growth.referrals.referred.qualified - growth.referrals.referred.under_review %}
+  {% if waiting > 0 %}<p class="referral-status" data-referrals-waiting="{{ waiting }}"><span class="dot" aria-hidden="true"></span><span><strong>{{ waiting }} friend{% if waiting != 1 %}s{% endif %} joined with your link</strong> and {% if waiting == 1 %}hasn't{% else %}haven't{% endif %} finished the interview yet. {% if waiting == 1 %}They count{% else %}Each one counts{% endif %} on the leaderboard, and you both get {{ growth.perk_days }} days of early access, once {% if waiting == 1 %}their{% else %}each{% endif %} agent finishes it.</span></p>{% endif %}
   {% if growth.referrals.referred.under_review %}<p class="fine-print">{{ growth.referrals.referred.under_review }} under review.</p>{% endif %}
+  {% set mine = growth.referrals.referred_by %}
+  {% if mine %}<p class="referral-status" data-referred-by="{{ 'counted' if mine.qualified_at else ('review' if mine.under_review else 'waiting') }}"><span class="dot{% if mine.qualified_at %} on{% endif %}" aria-hidden="true"></span><span>{% if mine.qualified_at %}<strong>You joined with code {{ mine.code }}.</strong> It counted on {{ mine.qualified_at|readable_time }}, and you both got early access.{% elif mine.under_review %}<strong>You joined with code {{ mine.code }}.</strong> It's being checked before it counts; nothing for you to do.{% else %}<strong>You joined with code {{ mine.code }}.</strong> It was accepted. It counts for both of you when your agent finishes the interview with you.{% endif %}</span></p>{% endif %}
   <div class="auto-share">
     {% if growth.share_permission.active %}
     <p data-share-permission="on"><span class="dot on" aria-hidden="true"></span><span><strong>Automatic sharing is on.</strong> Your agent may post your link in {{ growth.share_permission.places|join(", ") }}, up to {{ growth.share_permission.weekly_limit }} time{% if growth.share_permission.weekly_limit != 1 %}s{% endif %} a week ({{ growth.share_permission.used_this_week }} in the last 7 days).</span></p>
@@ -172,6 +182,31 @@
   {% endif %}
 </section>
 
+{% set tuning = growth.match_settings %}
+<section class="panel tuning" id="match-settings" aria-labelledby="tuning-heading" data-match-settings="{{ 'custom' if tuning.customised else 'default' }}">
+  <div class="panel-head"><h2 class="panel-label" id="tuning-heading">How your agent matches</h2><span class="meta">Only you see these</span></div>
+  <p class="meta">Slide an area tighter to only meet people who are clearly like you there, or looser to cast a wider net. Strict also rules out anyone who clearly clashes with you there, both ways.</p>
+  <form method="post" action="/app/match-settings" class="tuning-form">
+    <input type="hidden" name="csrf" value="{{ session.csrf }}">
+    {% for area in growth.match_catalogue.areas %}
+    {% set level = tuning.areas[area.area] %}
+    <div class="tuning-row">
+      <label for="tune-{{ area.area }}"><span class="tuning-name">{{ area.label }}</span><span class="tuning-about">{{ area.about }}</span></label>
+      <input type="range" id="tune-{{ area.area }}" name="{{ area.area }}" min="0" max="4" step="1" value="{{ growth.match_catalogue.levels.index(level) }}" aria-valuetext="{{ level }}" data-level="{{ level }}">
+      <span class="tuning-scale" aria-hidden="true">{% for name in growth.match_catalogue.levels %}<span{% if name == level %} class="on"{% endif %}>{{ name }}</span>{% endfor %}</span>
+    </div>
+    {% endfor %}
+    <button class="btn btn-line btn-sm" type="submit">Save match settings</button>
+  </form>
+  <h3>What you asked for</h3>
+  {% if tuning.preferences %}
+  <ul class="taste-list compact preferences">{% for preference in tuning.preferences %}<li><span class="topic">{% if preference.importance == 'must' %}must have{% else %}nice to have{% endif %}</span><span class="items">{{ preference.reads_as }}<form method="post" action="/app/match-settings/preferences/{{ loop.index0 }}/remove"><input type="hidden" name="csrf" value="{{ session.csrf }}"><button class="link-button" type="submit" aria-label="Remove {{ preference.reads_as }}">Remove</button></form></span></li>{% endfor %}</ul>
+  {% else %}
+  <p class="empty" data-preferences="none">Nothing yet. Tell your agent what you're after, such as "someone into jazz" or "a night owl", and it adds it here. Must-haves rule people out; nice-to-haves move people up.</p>
+  {% endif %}
+  {% if tuning.customised %}<form method="post" action="/app/match-settings/reset"><input type="hidden" name="csrf" value="{{ session.csrf }}"><p class="fine-print"><button class="link-button" type="submit">Reset to the defaults</button> · other members never see your settings.</p></form>{% endif %}
+</section>
+
 {% endif %}
 
 <div class="dash-col">
@@ -193,7 +228,7 @@
     <select id="cadence" name="cadence"><option value="none" {% if not report_settings.cadence_minutes %}selected{% endif %}>No schedule</option><option value="1440" {% if report_settings.cadence_minutes == 1440 %}selected{% endif %}>Daily</option><option value="10080" {% if report_settings.cadence_minutes == 10080 %}selected{% endif %}>Weekly</option></select>
     <label for="paused">Website report intake</label>
     <select id="paused" name="paused"><option value="false" {% if not report_settings.paused %}selected{% endif %}>Accept new reports</option><option value="true" {% if report_settings.paused %}selected{% endif %}>Pause new reports here</option></select>
-    <button class="btn btn-line btn-sm" type="submit">Save</button>
+    <button class="btn btn-line btn-sm" type="submit">Save check-in settings</button>
   </form>
 </section>
 </div>

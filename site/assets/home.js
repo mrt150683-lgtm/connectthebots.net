@@ -1,5 +1,7 @@
-/* Home: the film starts by itself, muted, unless the visitor asked for reduced motion or
-   Save-Data, and plays once, resting on its end card. Phones get the 480p file. */
+/* Home: the film starts by itself, with sound where the browser allows it, unless the visitor
+   asked for reduced motion or Save-Data, and plays once, resting on its end card. Browsers refuse
+   sound before the visitor has touched the page, so then it plays muted and the first tap, click
+   or key anywhere turns the sound on. Phones get the 480p file. */
 (function () {
   "use strict";
   var video = document.querySelector("[data-trailer]");
@@ -51,11 +53,37 @@
   });
   video.addEventListener("ended", function () { replayBtn.hidden = false; });
 
+  // Sound is the default. Try with sound; if the browser refuses, play muted and turn the
+  // sound on at the visitor's first gesture, unless they have already chosen with the button.
+  var chose = false;
+  soundBtn.addEventListener("click", function () { chose = true; }, true);
+  function firstGesture(e) {
+    stopListening();
+    // The sound button and a tap on the film handle sound themselves; links leave the page.
+    if (e.target && e.target.closest && e.target.closest("[data-sound],[data-trailer],[data-signin],a")) return;
+    if (!chose && video.muted && !video.paused) setSound(true);
+  }
+  function stopListening() {
+    ["pointerdown", "keydown", "touchend"].forEach(function (ev) { document.removeEventListener(ev, firstGesture, true); });
+  }
+  function autoplay() {
+    load();
+    setSound(true);
+    var p = video.play();
+    showPlay(false);
+    if (p && p.catch) p.catch(function () {
+      setSound(false);
+      var q = video.play();
+      if (q && q.catch) q.catch(function () { showPlay(true); });
+      ["pointerdown", "keydown", "touchend"].forEach(function (ev) { document.addEventListener(ev, firstGesture, true); });
+    });
+  }
+
   setSound(false);
   if (reduced || saveData) {
     showPlay(true);
   } else {
-    play();
+    autoplay();
   }
 
   window.__home = { state: function () { return { src: video.currentSrc, paused: video.paused, muted: video.muted, ended: video.ended }; } };

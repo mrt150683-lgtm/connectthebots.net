@@ -10,8 +10,8 @@ import json
 from hashlib import sha256
 import secrets
 
-from . import agent_texts, growth_config, personality
-from .agent_common import AgentError, blocked, clean_text, normalize_item, public_id, require_owner, user_for_public_id
+from . import agent_texts, growth_config, match_tuning, personality
+from .agent_common import AgentError, blocked, clean_text, normalize_item, public_id, require_approval, require_owner, user_for_public_id
 from .sessions import storage_time
 
 
@@ -107,32 +107,43 @@ def answer_revision(answer, nonce):
     return sha256(json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode()).hexdigest()
 
 
-def pair_match(mine, theirs, mine_disclosed, theirs_disclosed, fit=None):
+def pair_match(mine, theirs, mine_disclosed, theirs_disclosed, fit=None, *, tuning=None, their_tuning=None, prints=(None, None)):
     """Explain a match from the viewer's side, or return None.
 
     ``mine``/``theirs`` map topic -> answer. ``*_disclosed`` are the ask-first
     topics each side approved for the other. Only mutually visible items count.
     ``fit`` is ``personality.pair_fit`` for two shared fingerprints, or None.
     Hard exclusions (politics, looking_for) apply to personality matches too.
+    ``tuning``/``their_tuning`` are each side's match settings (None means the
+    defaults); ``prints`` are the two shared fingerprints (viewer first). Strict
+    areas and must preferences rule a match out in both directions.
     """
     a, b = _visible(mine, mine_disclosed), _visible(theirs, theirs_disclosed)
     if "looking_for" in a and "looking_for" in b and not set(a["looking_for"]) & set(b["looking_for"]):
         return None
     if "politics" in a and "politics" in b and {a["politics"][0], b["politics"][0]} == {"left", "right"}:
         return None
+    my_print, their_print = prints
+    if match_tuning.rules_out(tuning, my_print, their_print, b) or match_tuning.rules_out(their_tuning, their_print, my_print, a):
+        return None
+    interest_level, interest_weight, personality_only = match_tuning.interest_rule(tuning)
     shared, strength = [], 0
     for topic, (_, verb, weight, _, _) in TOPICS.items():
-        if topic in {"looking_for", "politics"} or topic not in a or topic not in b:
+        if interest_level == 0 or topic in {"looking_for", "politics"} or topic not in a or topic not in b:
             continue
         theirs_keys = {normalize_item(item) for item in b[topic]}
         common = [item for item in a[topic] if normalize_item(item) in theirs_keys]
         if common:
             shared.append({"topic": topic, "items": common})
-            strength += weight * len(common)
+            strength += weight * len(common) * interest_weight
+    met = match_tuning.met_preferences(tuning, my_print, their_print, b)
     # Personality alone can make a match only with enough signals; it can
-    # always add reasons to a taste match.
-    use_fit = fit is not None and (shared or fit["strength"] >= personality.MIN_PERSONALITY_ONLY)
-    if not shared and not use_fit:
+    # always add reasons to a taste match. A met preference also counts as a
+    # reason on its own: the owner asked for exactly this.
+    use_fit = fit is not None and (shared or met or (personality_only is not None and fit["strength"] >= personality_only))
+    if interest_level == 4 and not shared and not any(entry["kind"] == "interest" for entry in met):
+        return None
+    if not shared and not use_fit and not met:
         return None
     clauses = [TOPICS[entry["topic"]][1] + " " + _join(entry["items"][:2]) for entry in
                sorted(shared, key=lambda entry: -TOPICS[entry["topic"]][2] * len(entry["items"]))[:3]]
@@ -152,6 +163,9 @@ def pair_match(mine, theirs, mine_disclosed, theirs_disclosed, fit=None):
     if use_fit:
         sentences.append(fit["explanation"])
         strength += fit["strength"]
+    if met:
+        sentences.append("Fits what you asked for: " + _join([match_tuning.describe(entry) for entry in met]) + ".")
+        strength += match_tuning.PREFERENCE_BONUS * len(met)
     sentence = " ".join(sentences)
     # Hints use only the viewer's own private answers and what the other
     # person already shows: they never reveal the other side's private data.
@@ -164,6 +178,8 @@ def pair_match(mine, theirs, mine_disclosed, theirs_disclosed, fit=None):
     traits = ({"alike": fit["alike"], "complements": fit["complements"], "differences": fit["differences"]}
               if use_fit else None)
     return {"shared": shared, "compatible": compatible, "personality": traits, "explanation": sentence,
+            "asked_for": [{key: value for key, value in entry.items() if key != "importance"} | {"reads_as": match_tuning.describe(entry)}
+                          for entry in met],
             "strength": strength, "ask_first_overlaps": hints}
 
 
@@ -431,14 +447,86 @@ class TasteService:
             removed = connection.execute("DELETE FROM personality_fingerprints WHERE user_id=?", (user_id,)).rowcount
             return {"deleted": bool(removed), "note": "The fingerprint is removed and no longer used for matching."}
 
+    # Match tuning ----------------------------------------------------------------
+    @staticmethod
+    def _tuning(connection, user_id):
+        """The owner's stored match settings, or None for the defaults."""
+        row = connection.execute("SELECT settings_json FROM match_settings WHERE user_id=?", (user_id,)).fetchone()
+        if row is None:
+            return None
+        stored = json.loads(row["settings_json"])
+        # Re-validate on read, so a trait or topic retired later is refused
+        # loudly in tests rather than silently mis-applied.
+        return match_tuning.validate({"areas": stored["areas"], "preferences": stored["preferences"]})
+
+    def _tuning_view(self, connection, user_id):
+        stored = connection.execute("SELECT updated_at FROM match_settings WHERE user_id=?", (user_id,)).fetchone()
+        settings = self._tuning(connection, user_id) or match_tuning.default_settings()
+        return {"areas": {area: personality.LEVELS[level] for area, level in settings["areas"].items()},
+                "preferences": [entry | {"reads_as": match_tuning.describe(entry)} for entry in settings["preferences"]],
+                "customised": stored is not None, "updated_at": stored["updated_at"] if stored else None}
+
+    def match_settings(self, user_id):
+        with self.database.connect() as connection:
+            require_owner(connection, user_id)
+            return {"current": self._tuning_view(connection, user_id), **match_tuning.catalogue()}
+
+    def save_match_settings(self, user_id, fields, *, approved=None):
+        """Replace the parts sent; the rest stay. Agents must state the owner's yes."""
+        require_approval(fields.get("approved_by_owner") if approved is None else approved)
+        with self.database.transaction() as connection:
+            require_owner(connection, user_id)
+            settings = match_tuning.validate(fields, self._tuning(connection, user_id))
+            encoded = json.dumps(settings, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+            connection.execute(
+                "INSERT INTO match_settings(user_id,settings_json,updated_at) VALUES(?,?,?) "
+                "ON CONFLICT(user_id) DO UPDATE SET settings_json=excluded.settings_json,updated_at=excluded.updated_at "
+                "WHERE match_settings.settings_json IS NOT excluded.settings_json",
+                (user_id, encoded, storage_time(self.clock())))
+            return {"current": self._tuning_view(connection, user_id),
+                    "note": "Saved. Your next matches use these settings."}
+
+    def reset_match_settings(self, user_id):
+        with self.database.transaction() as connection:
+            require_owner(connection, user_id)
+            removed = connection.execute("DELETE FROM match_settings WHERE user_id=?", (user_id,)).rowcount
+            return {"reset": bool(removed), "current": self._tuning_view(connection, user_id)}
+
     def _disclosed(self, connection, owner, other):
         return {row[0] for row in connection.execute("SELECT topic FROM taste_disclosures WHERE user_id=? AND other_user_id=?", (owner, other))}
+
+    def _pair(self, connection, user_id, other, mine, my_print, my_tuning):
+        their_print = self._fingerprint_for_matching(connection, other)
+        fit = personality.pair_fit(my_print, their_print, match_tuning.personality_levels(my_tuning))
+        return pair_match(mine, self._answers(connection, other, for_matching=True), self._disclosed(connection, user_id, other),
+                          self._disclosed(connection, other, user_id), fit, tuning=my_tuning,
+                          their_tuning=self._tuning(connection, other), prints=(my_print, their_print))
+
+    def pair_view(self, connection, user_id, other):
+        """Why ``user_id`` and ``other`` match, from ``user_id``'s side, or None.
+
+        Uses exactly the rules of :meth:`matches`: both must have finished the
+        interview, be active and not blocked, and the pair must qualify under
+        both people's settings. Used to open and re-check match introductions.
+        """
+        if user_id == other:
+            return None
+        for person in (user_id, other):
+            row = connection.execute("SELECT 1 FROM interview_state s JOIN users u ON u.id=s.user_id "
+                                     "WHERE s.user_id=? AND s.completed_at IS NOT NULL AND u.suspended_at IS NULL", (person,)).fetchone()
+            if row is None:
+                return None
+        if blocked(connection, user_id, other):
+            return None
+        return self._pair(connection, user_id, other, self._answers(connection, user_id, for_matching=True),
+                          self._fingerprint_for_matching(connection, user_id), self._tuning(connection, user_id))
 
     def matches(self, connection, user_id, limit, *, record=False):
         """Rank completed members by mutually visible shared taste."""
         mine = self._answers(connection, user_id, for_matching=True)
         my_print = self._fingerprint_for_matching(connection, user_id)
-        if not mine and my_print is None:
+        my_tuning = self._tuning(connection, user_id)
+        if not mine and my_print is None and not (my_tuning and my_tuning["preferences"]):
             return []
         candidates = connection.execute(
             "SELECT s.user_id FROM interview_state s JOIN users u ON u.id=s.user_id "
@@ -449,9 +537,7 @@ class TasteService:
         found = []
         for row in candidates:
             other = row["user_id"]
-            fit = personality.pair_fit(my_print, self._fingerprint_for_matching(connection, other))
-            result = pair_match(mine, self._answers(connection, other, for_matching=True), self._disclosed(connection, user_id, other),
-                                self._disclosed(connection, other, user_id), fit)
+            result = self._pair(connection, user_id, other, mine, my_print, my_tuning)
             if result is None:
                 continue
             seen = connection.execute("SELECT first_seen_at FROM taste_matches_seen WHERE user_id=? AND other_user_id=?", (user_id, other)).fetchone()
@@ -470,13 +556,14 @@ class TasteService:
                                       "first_name": member["first_name"]},
                            "new": seen is None, "explanation": result["explanation"], "shared": result["shared"],
                            "compatible": result["compatible"], "personality": result["personality"],
-                           "ask_first_overlaps": result["ask_first_overlaps"]})
+                           "asked_for": result["asked_for"], "ask_first_overlaps": result["ask_first_overlaps"]})
         return output
 
     def export_owner(self, user_id, connection):
         return {"member_profile": self._member(connection, user_id), "interview": self._state(connection, user_id),
                 "answers": self._answers(connection, user_id),
                 "personality_fingerprint": self._fingerprint(connection, user_id),
+                "match_settings": self._tuning_view(connection, user_id),
                 "politics_consent_decisions": [dict(row) for row in connection.execute(
                     "SELECT notice_version,choice,recorded_at,source FROM politics_consent_decisions WHERE user_id=? ORDER BY id", (user_id,))],
                 "disclosures": [dict(row) for row in connection.execute(

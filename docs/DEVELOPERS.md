@@ -16,8 +16,8 @@ The friendly introduction is the [README](../README.md). This page keeps the ful
 > - **Why it's different.** Every suggestion comes with its reason ("her farms, his firmware"), what each person brings, the evidence, and what's still unknown. There's no black-box score and no hidden decision.
 > - **You stay in charge.** The agent only posts wording you approved, never speaks as you, and never accepts anything for you. A conversation opens only when **both people say yes**.
 > - **Coming next: friendship and dating.** Collaborators come first. The same idea, an agent that finds people who fit both ways and lets you choose, will expand to **friendship** and then **dating**. Each mode opens only after its own safety and consent checks are in place.
-> - **Where it is today.** The latest private check confirms open signup, and the owner has tested Google login. Routine email is off. The tested consent/recovery fixes and updated notices are approved and await deployment, restore verification and final live acceptance. [Current build and remaining work](STATUS.md). The separate offline core and local runtimes use fictional people.
-> - **Try the offline reference.** Run `python3 run_agentmatch.py evaluate --owner lumen --intent lumen-collaboration`. Licensed Apache-2.0; the repository is intended to become public when ready.
+> - **Where it is today.** Common goals through M5 is available in this public source snapshot, including public pages, check-in integration and an independent record verifier. Deployment of this snapshot is pending; Common goals stays off, sensitive capacity stays zero and routine email stays outbox-only. [Current build and remaining work](STATUS.md). The separate offline core and local runtimes use fictional people.
+> - **Try the offline reference.** Run `python3 run_agentmatch.py evaluate --owner lumen --intent lumen-collaboration`. Licensed Apache-2.0; source is available in this public repository.
 
 The project's public name is **Connect The Bots** ([connectthebots.net](https://connectthebots.net)). The code keeps its `agentmatch` package names so the frozen R0 reference and runtime work remain identifiable and auditable.
 
@@ -25,7 +25,15 @@ Connect The Bots helps people find the right collaborators for a specific projec
 
 Project and business collaboration comes first. Friendship is a later, separate mode, and dating comes last, each behind its own readiness gates.
 
-## Project status
+## Current source, 3 November 2026
+
+The M5 source snapshot contains 149 hosted-server files and 24 migrations. Versioned instructions, public goal pages, owner-only check-in status changes and the standalone standard-library verifier build on the goal, permission, review, erasure and moderation services. Reviewed source CI passed nine jobs and 740 browser checks. Public-snapshot CI and production deployment remain separate checks. See [Common goals](COMMON_GOALS.md) for permissions, visibility, verification limits and the pending two-week standard pilot.
+
+Common goals is switched off, sensitive capacity is zero and routine email remains outbox-only. Source publication is not feature activation. The existing signup and sign-in settings are preserved.
+
+## Historical project checkpoints
+
+The following dated entries preserve the evidence and pending wording of earlier public snapshots. The current source checkpoint above takes precedence.
 
 **Approved integration checkpoint, 30 October:** safety PR #36 is merged on main at `ce60f2e`; this history-preserving integration includes the original heads of PRs #31, #34 and #29. The application and public site match the final reviewed candidate `26e785f` (installed release `4e2afc713b3be7d560273ad3`): 99 server files, 12 migrations, 70 installed service checks, 136 installed API/privacy/recovery checks, 932 checks across eight hosted browser suites and 93 static-site checks. Each approved PR had nine successful CI checks. Final main CI remains to be verified after this integration is pushed.
 

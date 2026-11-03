@@ -13,6 +13,15 @@ from .report_schema import ReportError, text_field
 from .sessions import random_token, storage_time, valid_token
 
 
+def _match_snapshot(result):
+    """The parts of a match explanation that may be shown in an introduction.
+
+    Leaves out the ranking strength and the private ask-first hints.
+    """
+    return {"explanation": result["explanation"], "shared": result["shared"], "compatible": result["compatible"],
+            "personality": result["personality"], "asked_for": result["asked_for"]}
+
+
 class InteractionError(ValueError):
     def __init__(self, status, detail, retry_after=None):
         super().__init__(detail)
@@ -42,6 +51,13 @@ class InteractionService:
     def __init__(self, database, clock, board, *, notifications=None):
         self.database, self.clock, self.board = database, clock, board
         self.notifications = notifications
+        # The taste service decides whether two members still match. The app
+        # replaces this with its shared instance. Every other instance (the
+        # notification service's own copy, the mail worker, operator commands)
+        # must still be able to check a match introduction: without a taste
+        # service, _refresh would wrongly mark every pending one withdrawn.
+        from .taste import TasteService
+        self.taste = TasteService(database, clock)
 
     @staticmethod
     def _owner(connection, user_id):
@@ -98,7 +114,21 @@ class InteractionService:
             raise InteractionError(404, "Introduction not found.")
         return row
 
+    def _matched(self, connection, left, right):
+        """Both people's own views of why they match, or None if either side no longer qualifies."""
+        if self.taste is None or left is None or right is None:
+            return None
+        if not self._active(connection, left) or not self._active(connection, right):
+            return None
+        ours, theirs = self.taste.pair_view(connection, left, right), self.taste.pair_view(connection, right, left)
+        if ours is None or theirs is None:
+            return None
+        return _match_snapshot(ours), _match_snapshot(theirs)
+
     def _context_current(self, connection, row):
+        if row["source"] == "match":
+            return (not self._blocked(connection, row["requester_id"], row["recipient_id"])
+                    and self._matched(connection, row["requester_id"], row["recipient_id"]) is not None)
         mine = self._approved(connection, user_id=row["requester_id"]) if row["requester_id"] else None
         theirs = self._approved(connection, user_id=row["recipient_id"]) if row["recipient_id"] else None
         return (mine is not None and theirs is not None and mine["grant"] == row["requester_grant_id"]
@@ -131,6 +161,7 @@ class InteractionService:
         shared = row["status"] in {"requested", "accepted"} and row["context_hash"] is not None
         conversation = connection.execute("SELECT id FROM conversations WHERE introduction_id=?", (row["id"],)).fetchone()
         peer = row["recipient_id"] if direction == "outgoing" else row["requester_id"]
+        from_match = row["source"] == "match"
         actions = []
         if row["status"] == "requested":
             actions = ["withdraw"] if direction == "outgoing" else ["accept", "decline"]
@@ -138,10 +169,18 @@ class InteractionService:
             actions = ["open_conversation"]
         if peer is not None and not self._blocked(connection, user_id, peer):
             actions.append("block")
-        return {"id": row["id"], "direction": direction, "state": state, "created_at": row["created_at"], "expires_at": row["expires_at"],
+        # A match request shows each person only their own side of why they
+        # match: the other side can mention what that person asked for.
+        own = row["requester_snapshot_json"] if direction == "outgoing" else row["recipient_snapshot_json"]
+        member = None
+        if from_match and shared and peer is not None:
+            profile = connection.execute("SELECT public_id,first_name FROM member_profiles WHERE user_id=?", (peer,)).fetchone()
+            member = {"public_id": profile["public_id"], "first_name": profile["first_name"]} if profile else None
+        return {"id": row["id"], "source": row["source"], "direction": direction, "state": state, "created_at": row["created_at"], "expires_at": row["expires_at"],
                 "context_hash": row["context_hash"] if shared else None,
-                "requester_posting": json.loads(row["requester_snapshot_json"]) if shared and row["requester_snapshot_json"] else None,
-                "recipient_posting": json.loads(row["recipient_snapshot_json"]) if shared and row["recipient_snapshot_json"] else None,
+                "requester_posting": json.loads(row["requester_snapshot_json"]) if shared and not from_match and row["requester_snapshot_json"] else None,
+                "recipient_posting": json.loads(row["recipient_snapshot_json"]) if shared and not from_match and row["recipient_snapshot_json"] else None,
+                "match": json.loads(own) if shared and from_match and own else None, "member": member,
                 "note": row["note"] if shared else None, "reason": row["reason"] if shared else None,
                 "conversation_id": conversation["id"] if conversation else None, "actions": actions}
 
@@ -167,20 +206,9 @@ class InteractionService:
                     failure = InteractionError(409, "The approved postings or request changed. Preview the request again.")
                 else:
                     peer = theirs["owner"]
-                    pair = (user_id, peer, peer, user_id)
-                    duplicate = connection.execute("SELECT 1 FROM introductions WHERE status='requested' AND ((requester_id=? AND recipient_id=?) OR (requester_id=? AND recipient_id=?))", pair).fetchone()
-                    open_chat = connection.execute("SELECT 1 FROM conversations WHERE closed_at IS NULL AND ((requester_id=? AND recipient_id=?) OR (requester_id=? AND recipient_id=?))", pair).fetchone()
-                    pending = connection.execute("SELECT COUNT(*) FROM introductions WHERE requester_id=? AND status='requested'", (user_id,)).fetchone()[0]
                     now = self.clock()
-                    recent = connection.execute("SELECT created_at FROM introductions WHERE requester_id=? AND created_at>? ORDER BY created_at", (user_id, storage_time(now - timedelta(days=7)))).fetchall()
-                    if duplicate or open_chat:
-                        failure = InteractionError(409, "An introduction or open conversation already exists with this posting's author.")
-                    elif pending >= 5:
-                        failure = InteractionError(429, "You can have up to five pending outgoing requests. Wait for a reply or withdraw one.", 60)
-                    elif len(recent) >= 20:
-                        retry = math.ceil((datetime.fromisoformat(recent[-20][0].replace("Z", "+00:00")) + timedelta(days=7) - now).total_seconds())
-                        failure = InteractionError(429, "You can send up to twenty new requests in any seven days.", max(1, retry))
-                    else:
+                    failure = self._limits(connection, user_id, peer, now, "this posting's author")
+                    if failure is None:
                         intro_id, created = random_token(), storage_time(now)
                         connection.execute(
                             "INSERT INTO introductions(id,requester_id,recipient_id,requester_grant_id,recipient_grant_id,requester_snapshot_json,recipient_snapshot_json,note,reason,context_hash,status,created_at,expires_at,requester_accepted_at) VALUES(?,?,?,?,?,?,?,?,?,?,'requested',?,?,?)",
@@ -194,6 +222,52 @@ class InteractionService:
             raise failure
         return result
 
+    def _limits(self, connection, user_id, peer, now, who):
+        """The same duplicate and rate limits for every kind of request, or None."""
+        pair = (user_id, peer, peer, user_id)
+        duplicate = connection.execute("SELECT 1 FROM introductions WHERE status='requested' AND ((requester_id=? AND recipient_id=?) OR (requester_id=? AND recipient_id=?))", pair).fetchone()
+        open_chat = connection.execute("SELECT 1 FROM conversations WHERE closed_at IS NULL AND ((requester_id=? AND recipient_id=?) OR (requester_id=? AND recipient_id=?))", pair).fetchone()
+        pending = connection.execute("SELECT COUNT(*) FROM introductions WHERE requester_id=? AND status='requested'", (user_id,)).fetchone()[0]
+        recent = connection.execute("SELECT created_at FROM introductions WHERE requester_id=? AND created_at>? ORDER BY created_at", (user_id, storage_time(now - timedelta(days=7)))).fetchall()
+        if duplicate or open_chat:
+            return InteractionError(409, "An introduction or open conversation already exists with " + who + ".")
+        if pending >= 5:
+            return InteractionError(429, "You can have up to five pending outgoing requests. Wait for a reply or withdraw one.", 60)
+        if len(recent) >= 20:
+            retry = math.ceil((datetime.fromisoformat(recent[-20][0].replace("Z", "+00:00")) + timedelta(days=7) - now).total_seconds())
+            return InteractionError(429, "You can send up to twenty new requests in any seven days.", max(1, retry))
+        return None
+
+    def request_from_match(self, connection, user_id, peer, note, reason):
+        """Ask for an introduction to a current match, inside the caller's transaction.
+
+        No board posting is needed. The pair must match under both people's
+        own rules now, and again when the recipient decides. The recipient sees
+        their own view of why they match, the note and the reason, and decides
+        on their dashboard; nothing opens until they say yes.
+        """
+        self._owner(connection, user_id)
+        note, reason = _text(note, "Note", 600), _text(reason, "Reason", 300)
+        self._refresh_owned(connection, user_id)
+        matched = self._matched(connection, user_id, peer)
+        if matched is None:
+            raise InteractionError(404, "This member is not a current match.")
+        now = self.clock()
+        failure = self._limits(connection, user_id, peer, now, "this member")
+        if failure is not None:
+            raise failure
+        ours, theirs = matched
+        intro_id, created = random_token(), storage_time(now)
+        context_hash = _digest({"source": "match", "requester": user_id, "recipient": peer, "requester_view": ours,
+                                "recipient_view": theirs, "note": note, "reason": reason, "id": intro_id})
+        connection.execute(
+            "INSERT INTO introductions(id,requester_id,recipient_id,requester_snapshot_json,recipient_snapshot_json,note,reason,context_hash,status,created_at,expires_at,requester_accepted_at,source) VALUES(?,?,?,?,?,?,?,?,'requested',?,?,?,'match')",
+            (intro_id, user_id, peer, json.dumps(ours), json.dumps(theirs), note, reason, context_hash, created, storage_time(now + timedelta(days=14)), created),
+        )
+        if self.notifications is not None:
+            self.notifications.record_event(connection, peer, "introduction_request", intro_id, user_id, intro_id)
+        return self._intro_view(connection, user_id, self._intro(connection, user_id, intro_id))
+
     def get_introduction(self, user_id, introduction_id):
         with self.database.transaction() as connection:
             self._owner(connection, user_id)
@@ -205,6 +279,11 @@ class InteractionService:
         if type(limit) is not int or not 1 <= limit <= 50 or type(page) is not int or not 1 <= page <= 10000:
             raise InteractionError(422, "Choose a page from 1 to 10000 and a page size from 1 to 50.")
         return limit * (page - 1)
+
+    def open_conversation_count(self, user_id):
+        with self.database.connect() as connection:
+            return connection.execute("SELECT COUNT(*) FROM conversations WHERE closed_at IS NULL AND (requester_id=? OR recipient_id=?)",
+                                      (user_id, user_id)).fetchone()[0]
 
     def list_introductions(self, user_id, limit=20, page=1):
         offset = self._pagination(limit, page)
@@ -418,7 +497,7 @@ class InteractionService:
             outgoing = row["requester_id"] == user_id
             own_snapshot = row["requester_snapshot_json"] if outgoing else row["recipient_snapshot_json"]
             intros.append({**self._intro_view(connection, user_id, row),
-                "own_posting_snapshot": json.loads(own_snapshot) if own_snapshot else None,
+                "own_posting_snapshot": json.loads(own_snapshot) if own_snapshot and row["source"] == "board" else None,
                 "own_note": row["note"] if outgoing else None,
                 "own_reason": row["reason"] if outgoing else None})
         messages = [dict(row) for row in connection.execute("SELECT id,conversation_id,body AS text,created_at FROM messages WHERE sender_id=? ORDER BY created_at,rowid", (user_id,))]

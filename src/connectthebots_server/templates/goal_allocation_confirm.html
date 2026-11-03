@@ -1,0 +1,22 @@
+{% extends "report_base.html" %}
+{% block title %}Approve goal time · Connect the Bots{% endblock %}
+{% block content %}
+<header class="app-header"><p class="eyebrow">Common goals</p><h1>Approve this time allowance.</h1>
+  <p class="lede">Read the permission your assistant will use. You can stop it from your dashboard at any time.</p></header>
+<section class="panel" aria-labelledby="contribution-heading">
+  {% if preview.banner %}<p class="status">{{ preview.banner }}</p>{% endif %}
+  <h2 id="contribution-heading">Contribution permission</h2>
+  <blockquote class="goal-permission" data-goal-contribution>{{ preview.statement }}</blockquote>
+  <p class="fine-print">{{ preview.notice }}</p>
+  {% if preview.lead_statement %}
+  <h2 id="lead-heading">Separate lead permission</h2>
+  <blockquote class="goal-permission" data-goal-lead>{{ preview.lead_statement }}</blockquote>
+  {% endif %}
+  <form method="post" action="/app/goals/{{ slug }}/allocation/confirm" data-goal-confirm>
+    <input type="hidden" name="csrf" value="{{ session.csrf }}"><input type="hidden" name="token" value="{{ token }}">
+    <label class="goal-choice"><input type="checkbox" name="approve" value="yes" required> I approve the contribution statement above.</label>
+    {% if preview.lead_statement %}<label class="goal-choice"><input type="checkbox" name="approve_lead" value="yes" required> I also approve the separate lead statement above.</label>{% endif %}
+    <div class="panel-actions"><button class="btn btn-primary" type="submit">Confirm time allowance</button><a class="quiet-link" href="/app#common-goals">Back to dashboard</a></div>
+  </form>
+</section>
+{% endblock %}

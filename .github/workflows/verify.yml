@@ -134,6 +134,18 @@ jobs:
       - name: Install Chromium for staging journeys
         working-directory: workbench/ui
         run: npm ci && npx playwright install --with-deps chromium
+      - name: Check Common goals work, records and owner controls
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/workbench/ui/node_modules/playwright/index.js
+          PYTHON: python
+        run: node site/tools/check_goals.mjs --out artifacts/goals-browser
+      - name: Preserve Common goals browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: goals-browser-evidence
+          path: artifacts/goals-browser/
+          if-no-files-found: warn
       - name: Package and install foundation on Ubuntu staging
         run: |
           # GitHub's disposable runner includes the stock nginx site. Clear only

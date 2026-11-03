@@ -302,10 +302,12 @@ class AuthService:
         return request.headers.get("origin") in {None, self.settings.public_base_url}
 
     async def privacy(self, request):
-        return self.render("privacy.html", settings=self.settings)
+        from .agent_texts import GOAL_PRIVACY_NOTICE
+        return self.render("privacy.html", settings=self.settings, goal_privacy_notice=GOAL_PRIVACY_NOTICE)
 
     async def terms(self, request):
-        return self.render("terms.html", settings=self.settings)
+        from .agent_texts import GOAL_TERMS_NOTICE
+        return self.render("terms.html", settings=self.settings, goal_terms_notice=GOAL_TERMS_NOTICE)
 
     async def contact(self, request):
         return self.render("contact.html", settings=self.settings)

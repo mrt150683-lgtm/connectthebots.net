@@ -26,7 +26,7 @@ function Line($label, $value, $extra) { Write-Host ("  {0,-26}{1,8}   {2}" -f $l
 Write-Host ""
 Write-Host "Connect the Bots, last $Days days ($($web.from) to $($web.to), UTC)" -ForegroundColor Cyan
 Write-Host ""
-Line "Visitors (approx.)" $web.visitors "page views $($web.page_views): home $($web.pages.'/'), about $($web.pages.'/about')"
+Line "Visitors (approx.)" $web.visitors "page views $($web.page_views): home $($web.pages.'/'), what this is $($web.pages.'/what'), about $($web.pages.'/about')"
 Line "Film started" $web.video_plays "sound turned on $($web.video_sound_on), watched to the end $($web.video_finished)"
 $recent = ($db.signups.by_day.PSObject.Properties | Measure-Object -Property Value -Sum).Sum
 Line "Sign-ups" $recent "all time $($db.signups.total), last 24 hours $($db.signups.last_24_hours)"

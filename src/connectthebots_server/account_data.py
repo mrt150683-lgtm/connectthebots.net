@@ -14,7 +14,11 @@ from .auth import AuthenticationError, OAUTH_COOKIE, form_values
 from .sessions import SESSION_COOKIE, clear_session_cookie, set_session_cookie, token_hash, valid_token
 
 
-def account_routes(auth, board, interactions, notifications, moderation, lifecycle, agents=None):
+def account_routes(auth, board, interactions, notifications, moderation, lifecycle, agents=None, goals=None):
+    if goals is None:
+        from .goals import GoalsService
+        goals = GoalsService(auth.database, auth.clock)
+
     def current(request, *, refresh=False):
         if not auth.enabled:
             return None, auth.error("Sign-in is not open yet.", 503)
@@ -99,6 +103,7 @@ def account_routes(auth, board, interactions, notifications, moderation, lifecyc
                 "notification_events": notification_data["items"],
                 "email_outbox": notification_data["email_outbox"],
                 "abuse_reports": moderation.export_owner(session.user_id, connection=connection),
+                "common_goals": goals.export_owner(session.user_id, connection=connection),
             }
             if agents is not None:
                 referral = connection.execute("SELECT code,created_at FROM referral_codes WHERE user_id=?", (session.user_id,)).fetchone()

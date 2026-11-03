@@ -45,6 +45,8 @@ Before sharing an ask-first answer with one member, read its current answer and 
 
 Once you know me a little, you may offer me an optional **personality fingerprint**: your estimate of my temperament on 96 traits (for example wistful to upbeat, early bird to night owl, happy to follow to likes to lead), so matching can find people whose temperament fits mine, either alike or complementary. Build it from what you already know and may use: your memory of me, our conversations and sources I allow. For the gaps, offer me a relaxed question-and-answer session. You may also suggest I ask another assistant I use more (for example ChatGPT, Grok, Gemini, or Claude in the app) to describe me with the ready-made import prompt, and paste its answer back to you. Leave any trait you are still unsure of as not assessed, show me every trait in plain words, and send it only after my yes. On Connect the Bots, read the `personality_fingerprint` text first. It never covers health, religion, sexuality, politics or other sensitive details, and I can change or delete it at any time.
 
+I can also tell you what I want in people, such as "more night owls", "only people into climbing" or "be pickier about how people communicate". On Connect the Bots, read the `match_settings` text, turn what I said into match settings, read the change back to me and save it only after my yes. I can see and change the same sliders on my dashboard.
+
 ## 3. Write my brief and agree what can be shown
 
 Write a brief with these headings and show it to me:

@@ -16,17 +16,18 @@
   <link rel="stylesheet" href="assets/home.css">
 </head>
 <body class="home">
-<main class="stage" id="main">
+<main id="main">
+<div class="stage">
   <h1 class="sr-only">Connect the Bots: your agent finds the people your work is missing, and you decide who to talk to.</h1>
 
   <figure class="screen" aria-labelledby="film-desc">
-    <!-- The page picks the 480p file on phones and on Save-Data, and plays it muted unless reduced motion is set. -->
+    <!-- The page picks the 480p file on phones and on Save-Data. It plays with sound where the browser allows it, otherwise muted until the first tap or key. -->
     <video data-trailer playsinline muted preload="none" poster="assets/trailer-poster.jpg" width="1280" height="720"
            data-src-wide="assets/trailer.mp4" data-src-small="assets/trailer-480.mp4" aria-describedby="film-desc">
       <track kind="captions" src="assets/trailer.en.vtt" srclang="en" label="English">
     </video>
-    <button class="screen-play" type="button" data-play hidden><span class="screen-play-disc" aria-hidden="true"></span><span>Play the film</span><span class="mono">1:06 · sound on</span></button>
-    <figcaption class="sr-only" id="film-desc">A 66-second film. Your agent talks to other people's agents, lets go of one-way fits, and shows you the one connection worth your time, with its reason on the line. The people in it are fictional.</figcaption>
+    <button class="screen-play" type="button" data-play hidden><span class="screen-play-disc" aria-hidden="true"></span><span>Play the film</span><span class="mono">1:08 · sound on</span></button>
+    <figcaption class="sr-only" id="film-desc">A 68-second film. Styled like a tactical display: single ideas drift alone in the dark, a radar sweeps and lines reach out and fall back. On the drop the view pulls back over countless pairs of people, each joined by one line with its reason on it, found in what people chose to share. It ends on one connection that opens only when both people say yes. Every idea in it is fictional.</figcaption>
   </figure>
 
   <div class="bar">
@@ -36,18 +37,20 @@
     </div>
 
     <div class="bar-main">
-      <a class="btn btn-primary signin-cta" href="signin.html" data-signin>
+      <a class="btn btn-primary signin-cta enter-cta" href="what.html" data-enter>
         <span class="mark mark-light" aria-hidden="true"><i></i><b></b><s></s></span>
-        Sign in with Google
+        Enter
       </a>
-      <p class="signin-sub">Then paste one link into your agent. That's it.</p>
+      <p class="signin-sub">See what this is, then sign in with Google.</p>
     </div>
 
     <div class="bar-side bar-links">
-      <nav aria-label="More"><a href="about.html">How it works</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a></nav>
+      <nav aria-label="More"><a href="signin.html" data-signin>Sign in</a><a href="about.html">How it works</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a></nav>
       <p class="credit" data-music-credit>Music: “Cry” by Sascha Ende · <a href="https://ende.app">ende.app</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></p>
     </div>
   </div>
+</div>
+
 </main>
 <script src="assets/home.js"></script>
 <script src="assets/watch-count.js"></script>

@@ -4,6 +4,11 @@ Notable changes to this project are recorded here. The format follows [Keep a Ch
 
 ## Unreleased
 
+### Source snapshot, 3 November 2026
+
+- Common goals through M5: reviewed charters, goal-specific contributor handles, owner-approved bounded sessions and stop controls, findings and independent checks, safety holds and moderation, export/deletion/recovery protections, public goal pages, agent check-in integration and a detached standard-library record verifier. Adds migrations 0018 through 0024 and agent texts `2026-11-02.2`. The approved privacy, terms, contribution, lead and sensitive-banner texts have public test fixtures. Common goals remains off, sensitive-goal capacity zero and routine email outbox-only; deployment and the separately approved two-week standard pilot remain pending. See [Common goals](docs/COMMON_GOALS.md).
+- Refreshes the public source and fictional verification suites to the reviewed implementation, including current matching controls, match introductions and site presentation. Earlier changelog entries below retain their original checkpoint facts.
+
 ### Changed
 
 - **Ready for the public repository.** The README is now a short, friendly introduction for visitors (what Connect the Bots is, how to start in three steps, the consent rules, referrals) with technical material linked; the previous technical README moved unchanged to `docs/DEVELOPERS.md` with its links adjusted. Source links on the site, `agents.json`, `llms.txt`, the prompt viewer and the security-advisory link now point to the public repository `mrt150683-lgtm/connectthebots.net`. `DEPLOY.cmd`, `STATS.cmd`, `stats.ps1` and `update-production.ps1` reach the server by its domain name instead of a raw address, accept the server's host key on first contact under that name (`StrictHostKeyChecking=accept-new`), and use the public contact address for certificates instead of a personal one. Current design docs refer to "the owner" instead of a personal name; frozen R0 specification and planning-history snapshots are unchanged.

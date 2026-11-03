@@ -79,8 +79,8 @@ async function downloadText(download) {
 }
 
 const stateWords = {
-  setup: "Your account is ready.", working: "This website receives reports; it does not run searches.",
-  quiet: "Nothing worth your attention.", question: "One question for you.",
+  setup: "Your account is ready.", working: "Last seen",
+  quiet: "Last seen", question: "One question for you.",
   connection: "A connection worth a look.", paused: "Report intake is paused.",
   failed: "The expected check-in has not arrived.",
 };
@@ -111,12 +111,13 @@ try {
       await page.getByRole("button", { name: "Use fictional account", exact: true }).click();
       await page.waitForURL(base + "/app");
       check(`${name}: ${person} signed in through the real OIDC callback`,
-            (await page.locator("h1").innerText()) === "Your dashboard."
+            (await page.locator("[data-dashboard-state]").count()) === 1
             && (await page.locator("body").innerText()).includes(person === "ama" ? "Ama Test" : "Joon Test"));
       return page;
     }
     async function state(page, expected, screenshot = true, words = stateWords[expected]) {
       const root = page.locator("[data-dashboard-state]");
+      await page.waitForLoadState("load");
       check(`${name}: ${expected} reflects stored activity or an explicit setting`,
             await root.getAttribute("data-dashboard-state") === expected && (await root.innerText()).includes(words));
       check(`${name}: ${expected} fits the viewport`, await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth));
@@ -175,8 +176,8 @@ try {
       check(`${name}: public prompt stays key-free and usable without delivery`, !publicPrompt.includes(issued.key)
             && !publicPrompt.includes("Authorization: Bearer") && publicPrompt.includes("This public prompt contains no report key"));
       await page.goto(base + "/app");
-      await state(page, "setup", false, "Ready for your first report.");
-      check(`${name}: no expected time means no missed-report claim`, (await page.locator("body").innerText()).includes("No check-in time has been set."));
+      await state(page, "setup", false, "Waiting for your agent.");
+      check(`${name}: no expected time means no missed-report claim`, (await page.locator("body").innerText()).includes("We never call a report missed without a schedule you choose."));
 
       const common = { checked_at: local.clock, places_checked: [{ name: "Fictional reports board", url: "https://fictional.example.invalid/board" }], posts_read: 17 };
       const nothing = { kind: "nothing", ...common };
@@ -277,7 +278,7 @@ try {
       await settings(page, false, "1440");
       await state(page, "working", false);
       check(`${name}: expected time is explicitly labelled as an expectation`, (await page.locator("body").innerText()).includes("Expected by")
-            && (await page.locator("body").innerText()).includes("not an assistant scheduler"));
+            && (await page.locator("body").innerText()).includes("Your assistant keeps the real schedule"));
       const later = await local.advance(30 * 60 * 60 + 1);
       await page.reload();
       await state(page, "failed");

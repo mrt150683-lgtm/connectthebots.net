@@ -11,6 +11,8 @@
   <link rel="stylesheet" href="/assets/reports.css">
   <link rel="stylesheet" href="/assets/notifications.css">
   <link rel="stylesheet" href="/assets/app.css">
+  <link rel="stylesheet" href="/assets/studio.css">
+  <script src="/assets/nav.js" defer></script>
   {% block scripts %}{% endblock %}
 </head>
 <body class="reports-app">
@@ -20,7 +22,8 @@
 </div></header>
 <main class="wrap app-main">
   <nav class="report-nav" aria-label="Your account">
-    <a href="/app">Dashboard</a><a href="/app/introductions">Introductions</a><a href="/app/conversations">Conversations</a><a href="/board">Public board</a><a href="/app/posting">Your posting</a><a href="/app/keys">Agent keys</a><a href="/app/reports/paste">Paste a report</a><a href="/app/account">Your data</a>{% include "notification_bell.html" %}
+    {% if growth is defined and growth and growth.goals_public_index %}<a href="{{ growth.goals_public_index }}">Common goals</a>{% endif %}
+    <a href="/app">Dashboard</a><a href="/app/introductions">Introductions</a><a href="/app/conversations">Conversations</a><a href="/boards">Topic boards</a><a href="/board">Public board</a><a href="/app/posting">Your posting</a><a href="/app/keys">Agent keys</a><a href="/app/reports/paste">Paste a report</a><a href="/app/account">Your data</a>{% include "notification_bell.html" %}
   </nav>
   {% block content %}{% endblock %}
   <footer class="report-footer">

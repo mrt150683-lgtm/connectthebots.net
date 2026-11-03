@@ -50,7 +50,7 @@ body.home{display:block}
 html.home.theme-dark,html.theme-dark body.home{background:#08090c}
 html.theme-dark body.home{background-image:radial-gradient(900px 480px at 50% 42%,rgba(59,91,255,.16),transparent 70%)}
 html.theme-dark .screen{padding:24px max(24px,env(safe-area-inset-left,0px)) 0;overflow:visible}
-html.theme-dark .screen video{width:auto;height:auto;max-width:100%;max-height:calc(100svh - 160px);aspect-ratio:16/9;object-fit:cover;background:#eae7e0;
+html.theme-dark .screen video{width:auto;height:auto;max-width:100%;max-height:calc(100svh - 160px);aspect-ratio:16/9;object-fit:cover;background:#08090c;
   border-radius:20px;-webkit-mask-image:none;mask-image:none;
   box-shadow:0 0 0 1px rgba(255,255,255,.08),0 40px 120px -30px rgba(59,91,255,.45),0 30px 60px -30px rgba(0,0,0,.9)}
 html.theme-dark .screen-play{background:var(--panel-2);border:1px solid var(--edge-hi);border-radius:999px;color:var(--ink)}
@@ -83,3 +83,5 @@ html.theme-dark .bar-links nav a{color:var(--ink-2)}
   .bar{animation:none;opacity:1;transform:none}
   .signin-cta .mark b{transition:none}
 }
+
+.enter-cta{min-width:220px}

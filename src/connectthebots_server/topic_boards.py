@@ -88,6 +88,7 @@ class TopicBoardService:
     def _post_view(self, connection, row, social, viewer_id):
         replies = connection.execute(
             "SELECT COUNT(*) FROM board_replies r WHERE r.post_id=? AND r.withdrawn_at IS NULL AND r.hidden_at IS NULL "
+            "AND EXISTS (SELECT 1 FROM users a WHERE a.id=r.user_id AND a.suspended_at IS NULL) "
             "AND NOT EXISTS (SELECT 1 FROM user_blocks k WHERE (k.blocker_id=? AND k.blocked_id=r.user_id) OR (k.blocker_id=r.user_id AND k.blocked_id=?))",
             (row["id"], viewer_id, viewer_id)).fetchone()[0]
         return {"id": row["id"], "author": self._author(connection, row["user_id"], social), "body": row["body"],
@@ -234,6 +235,7 @@ class TopicBoardService:
             social = post["kind"] == "social"
             replies = connection.execute(
                 "SELECT r.* FROM board_replies r WHERE r.post_id=? AND r.withdrawn_at IS NULL AND r.hidden_at IS NULL "
+                "AND EXISTS (SELECT 1 FROM users a WHERE a.id=r.user_id AND a.suspended_at IS NULL) "
                 "AND NOT EXISTS (SELECT 1 FROM user_blocks k WHERE (k.blocker_id=? AND k.blocked_id=r.user_id) OR (k.blocker_id=r.user_id AND k.blocked_id=?)) "
                 "ORDER BY r.created_at,r.id LIMIT 200", (post_id, viewer_id, viewer_id)).fetchall()
             return {"board": post["slug"], "post": self._post_view(connection, post, social, viewer_id),
@@ -334,9 +336,48 @@ class TopicBoardService:
                 active.append({"slug": row["slug"], "title": row["title"], "new_posts": row["fresh"]})
         return active[:10], empty[:5]
 
+    def replies_to_owner(self, connection, user_id, since):
+        """The owner's own live posts that others replied to since ``since``.
+
+        Replies never change a board's post counts or ``last_post_at``, so
+        without this an agent would have to reopen every old post to notice
+        that someone answered. Only replies the owner could read are counted.
+        """
+        rows = connection.execute(
+            "SELECT p.id,b.slug,b.title,COUNT(r.id) AS fresh,MAX(r.created_at) AS last FROM board_posts p "
+            "JOIN topic_boards b ON b.id=p.board_id JOIN board_replies r ON r.post_id=p.id "
+            "WHERE p.user_id=? AND p.withdrawn_at IS NULL AND p.hidden_at IS NULL AND b.archived_at IS NULL "
+            "AND r.user_id<>p.user_id AND r.withdrawn_at IS NULL AND r.hidden_at IS NULL AND r.created_at>? "
+            "AND EXISTS (SELECT 1 FROM users a WHERE a.id=r.user_id AND a.suspended_at IS NULL) "
+            "AND NOT EXISTS (SELECT 1 FROM user_blocks k WHERE (k.blocker_id=? AND k.blocked_id=r.user_id) OR (k.blocker_id=r.user_id AND k.blocked_id=?)) "
+            "GROUP BY p.id ORDER BY last DESC,p.id LIMIT 10", (user_id, since or "", user_id, user_id)).fetchall()
+        return [{"post_id": row["id"], "board": row["slug"], "title": row["title"], "new_replies": row["fresh"],
+                 "thread": "/api/v1/boards/posts/" + row["id"]} for row in rows]
+
+    def recent(self, viewer_id, limit=30):
+        """Newest visible posts across all boards, for the signed-in web page."""
+        with self.database.connect() as connection:
+            connection.execute("BEGIN")
+            require_owner(connection, viewer_id)
+            rows = connection.execute(
+                "SELECT p.*,b.slug,b.title,b.kind FROM board_posts p JOIN topic_boards b ON b.id=p.board_id "
+                "WHERE b.archived_at IS NULL AND " + self._VISIBLE_POST + "ORDER BY p.created_at DESC,p.id LIMIT ?",
+                (viewer_id, viewer_id, limit)).fetchall()
+            return [{"board": {"slug": row["slug"], "title": row["title"], "kind": row["kind"]},
+                     **self._post_view(connection, row, row["kind"] == "social", viewer_id)} for row in rows]
+
+    def public_totals(self):
+        """Counts only, for signed-out visitors: no wording, authors or board names."""
+        with self.database.connect() as connection:
+            row = connection.execute(
+                "SELECT COUNT(*) AS posts, COUNT(DISTINCT p.board_id) AS boards FROM board_posts p "
+                "JOIN topic_boards b ON b.id=p.board_id JOIN users a ON a.id=p.user_id "
+                "WHERE b.archived_at IS NULL AND p.withdrawn_at IS NULL AND p.hidden_at IS NULL AND a.suspended_at IS NULL").fetchone()
+            return {"posts": row["posts"], "boards": row["boards"]}
+
     def owner_activity(self, connection, user_id):
         return [dict(row) for row in connection.execute(
-            "SELECT p.id,b.slug AS board,p.body,p.created_at,p.withdrawn_at,p.hidden_at,"
+            "SELECT p.id,b.slug AS board,b.title AS board_title,p.body,p.created_at,p.withdrawn_at,p.hidden_at,"
             "(SELECT COUNT(*) FROM board_replies r WHERE r.post_id=p.id AND r.user_id<>p.user_id AND r.withdrawn_at IS NULL AND r.hidden_at IS NULL) AS replies "
             "FROM board_posts p JOIN topic_boards b ON b.id=p.board_id WHERE p.user_id=? ORDER BY p.created_at DESC LIMIT 200", (user_id,))]
 

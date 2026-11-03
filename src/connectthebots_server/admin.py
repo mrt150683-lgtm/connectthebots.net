@@ -52,6 +52,22 @@ def _parser():
     growth.add_parser("recalculate")
     growth.add_parser("board-reports")
     growth.add_parser("unhide").add_argument("id")
+    goals = commands.add_parser("goals").add_subparsers(dest="action", required=True)
+    goals.add_parser("pending")
+    goals.add_parser("held")
+    goals.add_parser("reports")
+    for action in ("release", "hide", "unhide"):
+        command = goals.add_parser(action)
+        command.add_argument("entry_id")
+        command.add_argument("reason", help="A public reason; do not quote private or held content.")
+    assignment = goals.add_parser("assign-lead")
+    assignment.add_argument("slug")
+    assignment.add_argument("handle")
+    assignment.add_argument("reason", help="A public reason for assigning this approved volunteer.")
+    for action in ("approve", "refuse", "pause", "close", "resume"):
+        command = goals.add_parser(action)
+        command.add_argument("slug")
+        command.add_argument("reason", help="A public reason for this operator decision.")
     alerts = commands.add_parser("alerts")
     alerts.add_argument("kind", choices=("abuse_report", "certificate_expiry"))
     alerts.add_argument("state", choices=("on", "off"))
@@ -85,12 +101,14 @@ def main(argv=None):
         notifications = NotificationService(database, utc_now, settings, operator_alerts=alerts)
         interactions = InteractionService(database, utc_now, board, notifications=notifications)
         moderation = ModerationService(database, utc_now, board, interactions, alerts)
+        from .goals import GoalsService
+        goals = GoalsService(database, utc_now, settings=settings)
         lifecycle = None
         if args.group == "user" and args.action == "delete":
             if args.confirm != args.id:
                 raise OperatorError(422, "Repeat the exact account ID with --confirm before deleting it.")
             from .lifecycle import AccountLifecycle
-            lifecycle = AccountLifecycle(database, utc_now, board, interactions, notifications, moderation)
+            lifecycle = AccountLifecycle(database, utc_now, board, interactions, notifications, moderation, goals=goals)
         operator = OperatorService(database, utc_now, board, interactions, notifications, moderation, lifecycle=lifecycle)
         if args.group == "invite":
             if args.action == "create":
@@ -116,6 +134,27 @@ def main(argv=None):
         elif args.group == "growth":
             from .growth import operate
             result = operate(database, utc_now, args)
+        elif args.group == "goals":
+            if args.action == "pending":
+                result = goals.operator_list()
+            elif args.action in ("held", "reports", "release", "hide", "unhide"):
+                from .goal_moderation import GoalModerationService
+                goal_moderation = GoalModerationService(database, utc_now, goals)
+                if args.action in ("held", "reports"):
+                    result = getattr(goal_moderation, args.action)()
+                else:
+                    result = goal_moderation.action(args.entry_id, args.action, args.reason)
+            elif args.action == "assign-lead":
+                from .goal_leadership import GoalLeadershipService
+                from .goal_members import GoalMemberService
+                from .goal_sessions import GoalSessionService
+                goal_members = GoalMemberService(database, utc_now, goals)
+                goal_work = GoalSessionService(database, utc_now, goals, goal_members)
+                goal_members.sessions = goal_work
+                leadership = GoalLeadershipService(database, utc_now, goals, goal_members, goal_work)
+                result = leadership.assign(args.slug, args.handle, args.reason)
+            else:
+                result = goals.operator_action(args.slug, args.action, args.reason)
         else:
             from .recovery import RecoveryService
             recovery = RecoveryService(database, utc_now, settings)

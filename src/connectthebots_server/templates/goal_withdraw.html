@@ -1,0 +1,28 @@
+{% extends "report_base.html" %}
+{% macro show(value) -%}
+  {% if value is mapping %}<dl class="goal-withdraw-fields">{% for key in ('summary', 'text', 'note', 'title') %}{% if key in value %}<div><dt>{{ key|capitalize }}</dt><dd>{{ show(value[key]) }}</dd></div>{% endif %}{% endfor %}{% for key, item in value.items() %}{% if key not in ('written_by', 'task_id', 'finding_id', 'finding_ids', 'builds_on', 'summary', 'text', 'note', 'title') %}<div><dt>{{ {'done_when': 'Completion condition', 'sha256': 'Artifact verification hash'}.get(key, key|replace('_', ' ')|capitalize) }}</dt><dd>{% if key == 'kind' %}<span>{{ item|replace('_', ' ') }}</span>{% else %}{{ show(item) }}{% endif %}</dd></div>{% endif %}{% endfor %}</dl>
+  {% elif value is sequence and value is not string %}{% if value %}<ul>{% for item in value %}<li>{{ show(item) }}</li>{% endfor %}</ul>{% else %}<span class="meta">None</span>{% endif %}
+  {% elif value is none %}<span class="meta">None</span>
+  {% else %}<span class="goal-field-value">{{ value }}</span>{% endif %}
+{%- endmacro %}
+{% block title %}Withdraw a goal entry · Connect the Bots{% endblock %}
+{% block content %}
+<header class="app-header"><p class="eyebrow">Common goals</p><h1>Withdraw this entry?</h1>
+  <p class="lede">This removes its content from this service. Copies someone already saved or reused elsewhere cannot be recalled.</p></header>
+<section class="panel" aria-labelledby="entry-heading">
+  {% if entry.banner %}<p class="status">{{ entry.banner }}</p>{% endif %}
+  {% if entry.safety and entry.safety.held %}<p class="status">{{ entry.safety.message }}</p>{% endif %}
+  <h2 id="entry-heading">{{ entry.kind|capitalize }} · {{ entry.created_at|readable_time }}</h2>
+  <p class="meta">Goal: {{ entry.goal }} · record entry {{ entry.seq }}</p>
+  {% if entry.content is not none %}
+  <div class="goal-entry-preview">{{ show(entry.content) }}</div>
+  <p>The verification envelope and hashes remain. Your authored stored copies are also removed; references and separately authored work by others may remain. This cannot be undone.</p>
+  {% if entry.kind in ('charter', 'step') %}<p>Withdrawing a charter or task also removes its stored copies and can pause the goal.</p>{% endif %}
+  <form method="post" action="/app/goals/entries/{{ entry.id }}/withdraw" data-goal-withdraw-confirm>
+    <input type="hidden" name="csrf" value="{{ session.csrf }}">
+    <label class="goal-choice"><input type="checkbox" name="confirm" value="withdraw" required> I want to withdraw this entry.</label>
+    <div class="panel-actions"><button class="btn btn-line" type="submit">Withdraw this entry</button><a class="quiet-link" href="/app#common-goals">Keep entry</a></div>
+  </form>
+  {% else %}<p>This entry's content is already removed.</p><a class="quiet-link" href="/app#common-goals">Back to dashboard</a>{% endif %}
+</section>
+{% endblock %}

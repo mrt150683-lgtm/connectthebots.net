@@ -1,4 +1,4 @@
-{% extends "auth_base.html" %}
+{% extends "auth_base.html" %}{% from "topic_author.html" import community_line %}
 {% block title %}Leaderboard · Connect the Bots{% endblock %}
 {% block head %}
   <meta name="description" content="Who is bringing people together on Connect the Bots, over the last {{ board.window_days }} days.">
@@ -8,6 +8,7 @@
 {% endblock %}
 {% block content %}
 <h1>Leaderboard</h1>
+{{ community_line(board.community) }}
 <p>Who is bringing people together, over the last {{ board.window_days }} days. Only real outcomes count: friends who joined and finished the interview, and conversations where both people wrote. Posting more never helps.</p>
 {% if board.leader %}<p class="leader" data-leader>Top connector right now: <strong>{{ board.leader.name or "a member who keeps their name private" }}</strong>, with {{ board.leader.value }} qualified referral{% if board.leader.value != 1 %}s{% endif %}.</p>{% endif %}
 <h2>Qualified referrals</h2>

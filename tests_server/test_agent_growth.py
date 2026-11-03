@@ -438,6 +438,23 @@ class AgentApiTests(unittest.TestCase):
         self.assertEqual(later["boards"]["new_activity"], [])
         self.assertEqual(later["sharing_suggestions"][0]["kind"], "missing_person")
 
+    def test_checkin_lists_new_replies_to_the_owners_own_posts(self):
+        # Before: a reply changed no board count, so the poster's agent never heard of it.
+        post = self.post("ama", "games", "Board game night every Thursday, beginners welcome.")["post"]
+        self.assertEqual(self.ok("ama", "POST", "/api/v1/agent/checkin", {})["boards"]["replies_to_you"], [])
+        self.now += timedelta(hours=1)
+        self.ok("ama", "POST", f"/api/v1/boards/posts/{post['id']}/replies", {"body": "My own follow-up.", "approved_by_owner": True}, status=201)
+        self.ok("joon", "POST", f"/api/v1/boards/posts/{post['id']}/replies", {"body": "Count me in for Thursday.", "approved_by_owner": True}, status=201)
+        self.ok("rui", "POST", f"/api/v1/boards/posts/{post['id']}/replies", {"body": "Me too, if there is room.", "approved_by_owner": True}, status=201)
+        self.ok("ama", "POST", "/api/v1/agent/block", {"member": self.ok("rui", "GET", "/api/v1/agent/me")["member"]["public_id"]})
+        self.now += timedelta(hours=1)
+        found = self.ok("ama", "POST", "/api/v1/agent/checkin", {})["boards"]["replies_to_you"]
+        self.assertEqual(found, [{"post_id": post["id"], "board": "games", "title": found[0]["title"], "new_replies": 1,
+                                  "thread": "/api/v1/boards/posts/" + post["id"]}])   # own and blocked replies excluded
+        self.now += timedelta(hours=1)
+        self.assertEqual(self.ok("ama", "POST", "/api/v1/agent/checkin", {})["boards"]["replies_to_you"], [])
+        self.assertEqual(self.ok("joon", "POST", "/api/v1/agent/checkin", {})["boards"]["replies_to_you"], [])
+
     # Leaderboards and early access --------------------------------------------
     def test_leaderboards_count_engagement_with_others_never_volume(self):
         posts = [self.post("ama", "music", f"Post number {n} about my favourite records.")["post"] for n in range(5)]
@@ -708,6 +725,137 @@ class AgentApiTests(unittest.TestCase):
         self.assertIn('href="https://wa.me/?text=', page)
         self.assertIn('rel="noopener noreferrer"', page)
         self.assertIn('<script src="/assets/share.js" defer></script>', page)
+
+    # Web pages for what agents do -------------------------------------------
+    def web(self, person, path):
+        self.client.cookies.clear()
+        if person is not None:
+            self.client.cookies.set(SESSION_COOKIE, self.sessions[person])
+        return self.client.get(path, follow_redirects=False)
+
+    def test_topic_board_posts_show_on_the_web_to_members_only(self):
+        self.ok("ama", "PATCH", "/api/v1/agent/profile", {"first_name": "Ama", "age": 34, "sex": "female"})
+        walk = self.post("ama", "company-and-friendship", "New in town and would love company for Sunday walks.")["post"]
+        self.post("ama", "hobbies", "Learning to juggle, happy to share tips and practise together.")
+        self.ok("joon", "POST", f"/api/v1/boards/posts/{walk['id']}/replies", {"body": "I walk most Sundays, happy to join!", "approved_by_owner": True}, status=201)
+        # Signed-out visitors get totals only: no wording, names or board titles.
+        visitor = self.web(None, "/boards")
+        self.assertEqual(visitor.status_code, 200)
+        self.assertIn("2 posts on 2 boards", visitor.text)
+        for private in ("Sunday walks", "juggle", "Ama", "Company and friendship", walk["author"]["public_id"]):
+            self.assertNotIn(private, visitor.text)
+        for path in ("/boards/hobbies", f"/boards/posts/{walk['id']}"):
+            with self.subTest(path=path):
+                response = self.web(None, path)
+                self.assertEqual((response.status_code, response.headers["location"]), (303, "/signin"))
+        # A member sees what their own agent would see, with the same author fields.
+        member = self.web("rui", "/boards").text
+        self.assertIn("Sunday walks", member)
+        self.assertIn("juggle", member)
+        self.assertIn("Ama · 34 · female", member)
+        self.assertNotIn("Ama Example", member)
+        self.assertEqual(member.count("Ama · 34"), 1)  # age and sex only on the social board
+        self.assertIn(">1 reply<", member)
+        board = self.web("rui", "/boards/company-and-friendship").text
+        self.assertIn("Sunday walks", board)
+        self.assertNotIn("juggle", board)
+        thread = self.web("rui", f"/boards/posts/{walk['id']}").text
+        self.assertIn("I walk most Sundays", thread)
+        self.assertIn("your agent", self.web("ama", "/boards").text)
+        self.assertEqual(self.web("rui", "/boards/no-such-board").status_code, 404)
+        self.assertEqual(self.web("rui", "/boards?page=2").status_code, 400)
+        # Blocks and withdrawal apply on the web exactly as in the API.
+        self.ok("joon", "POST", "/api/v1/agent/block", {"member": walk["author"]["public_id"]})
+        self.assertNotIn("Sunday walks", self.web("joon", "/boards").text)
+        self.assertEqual(self.web("joon", f"/boards/posts/{walk['id']}").status_code, 404)
+        self.assertNotIn("I walk most Sundays", self.web("ama", f"/boards/posts/{walk['id']}").text)
+        self.ok("ama", "DELETE", f"/api/v1/boards/posts/{walk['id']}")
+        self.assertNotIn("Sunday walks", self.web("rui", "/boards").text)
+        self.assertIn("1 post on 1 board", self.web(None, "/boards").text)
+
+    def test_suspended_reply_authors_disappear_from_api_web_and_counts(self):
+        from connectthebots_server.operator import OperatorService
+
+        post = self.post("ama", "hobbies", "Fictional clock puzzles for a shared reading group.")["post"]
+        bodies = {
+            "joon": "Fictional suspended reply canary.",
+            "sol": "Fictional blocked reply canary.",
+            "tam": "Fictional available reply canary.",
+        }
+        for owner, body in bodies.items():
+            self.ok(owner, "POST", f"/api/v1/boards/posts/{post['id']}/replies",
+                    {"body": body, "approved_by_owner": True}, status=201)
+        initial = self.ok("rui", "GET", f"/api/v1/boards/posts/{post['id']}")
+        self.assertEqual(initial["post"]["replies"], 3)
+        self.assertEqual({reply["body"] for reply in initial["replies"]}, set(bodies.values()))
+        self.assertIn(bodies["joon"], self.web("rui", f"/boards/posts/{post['id']}").text)
+
+        blocked = self.ok("sol", "GET", "/api/v1/agent/me")["member"]["public_id"]
+        self.ok("rui", "POST", "/api/v1/agent/block", {"member": blocked})
+        operator = OperatorService(self.db, lambda: self.now, self.app.state.board,
+                                   self.app.state.interactions, self.app.state.notifications,
+                                   self.app.state.moderation)
+        operator.user_suspend("joon")
+
+        thread = self.ok("rui", "GET", f"/api/v1/boards/posts/{post['id']}")
+        self.assertEqual(thread["post"]["replies"], 1)
+        self.assertEqual([reply["body"] for reply in thread["replies"]], [bodies["tam"]])
+        listing = self.ok("rui", "GET", "/api/v1/boards/hobbies/posts")
+        self.assertEqual(listing["posts"][0]["replies"], 1)
+        for path in ("/boards", "/boards/hobbies"):
+            self.assertIn(">1 reply<", self.web("rui", path).text)
+        page = self.web("rui", f"/boards/posts/{post['id']}")
+        self.assertEqual(page.status_code, 200)
+        self.assertIn(bodies["tam"], page.text)
+        self.assertIn("<h2>1 reply</h2>", page.text)
+        for hidden in (bodies["joon"], bodies["sol"]):
+            self.assertNotIn(hidden, page.text)
+
+        # Suspension applies to every viewer; the separate block stays scoped
+        # to the pair and must not hide the available reply from other members.
+        other = self.ok("ama", "GET", f"/api/v1/boards/posts/{post['id']}")
+        self.assertEqual(other["post"]["replies"], 2)
+        self.assertEqual({reply["body"] for reply in other["replies"]}, {bodies["sol"], bodies["tam"]})
+        self.assertNotIn(bodies["joon"], self.web("ama", f"/boards/posts/{post['id']}").text)
+
+    def test_public_board_points_to_topic_boards_and_counts_connected_agents(self):
+        self.post("ama", "hobbies", "Learning to juggle, happy to share tips and practise together.")
+        page = self.web(None, "/board").text
+        self.assertIn('href="/boards"', page)
+        self.assertIn("1 post from members' agents", page)
+        self.assertNotIn("juggle", page)
+        # Five accounts; only ama's agent has called the API so far. Totals only.
+        self.assertIn("<strong class=\"tabular\" data-agents-connected>1</strong> agent connected", page)
+        self.assertIn("data-members>5</span> members", page)
+        self.ok("joon", "GET", "/api/v1/agent/me")
+        board = self.web(None, "/leaderboard").text
+        self.assertIn("data-agents-connected>2</strong> agents connected", board)
+        with self.db.transaction() as connection:
+            connection.execute("UPDATE users SET suspended_at=? WHERE id='joon'", (storage_time(self.now),))
+        self.assertIn("data-agents-connected>1</strong> agent connected", self.web(None, "/leaderboard").text)
+        self.assertIn("data-members>4</span> members", self.web(None, "/leaderboard").text)
+        self.assertIn("data-agents-connected>", self.web("ama", "/app").text)
+
+    def test_dashboard_says_a_referral_was_accepted_and_waits_for_the_interview(self):
+        code = self.code("ama")
+        self.ok("joon", "POST", "/api/v1/agent/referral", {"code": code})
+        referrer = self.web("ama", "/app").text
+        self.assertIn("data-referrals-entered>1<", referrer)
+        self.assertIn("0 finished the interview", referrer)
+        self.assertIn('data-referrals-waiting="1"', referrer)
+        self.assertIn("1 friend joined with your link", referrer)
+        self.assertNotIn("joon", referrer.lower().replace("joined", ""))
+        referred = self.web("joon", "/app").text
+        self.assertIn('data-referred-by="waiting"', referred)
+        self.assertIn(f"You joined with code {code}.", referred)
+        self.assertIn("It was accepted.", referred)
+        self.horror_fan("joon")
+        referrer = self.web("ama", "/app").text
+        self.assertNotIn("data-referrals-waiting", referrer)
+        self.assertIn("1 finished the interview", referrer)
+        self.assertIn('data-early-access="on"', referrer)
+        self.assertIn('data-referred-by="counted"', self.web("joon", "/app").text)
+        self.assertNotIn("data-referred-by", self.web("rui", "/app").text)
 
 
 if __name__ == "__main__":

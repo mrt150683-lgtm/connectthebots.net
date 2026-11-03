@@ -10,6 +10,7 @@ from starlette.routing import Route
 
 from . import growth_config, qr
 from .campaign import public_board
+from .community import community_counts
 from .leaderboards import connection_rows, referral_rows, window_start
 from .referrals import normalize_code
 
@@ -24,7 +25,7 @@ def campaign_routes(auth, database, clock, settings):
             members = {row["user_id"]: row for row in connection.execute(
                 "SELECT user_id,first_name,show_name_on_leaderboards FROM member_profiles")}
             referrals = public_board(referral_rows(connection, since), members)
-            return {"window_days": config["leaderboard_window_days"], "early_access_percent": config["early_access_percent"],
+            return {"community": community_counts(connection), "window_days": config["leaderboard_window_days"], "early_access_percent": config["early_access_percent"],
                     "perk_days": config["referral_perk_days"], "referrals": referrals,
                     "connections": public_board(connection_rows(connection, since), members),
                     "leader": referrals[0] if referrals and len([row for row in referrals if row["rank"] == 1]) == 1 else None}

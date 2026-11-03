@@ -15,10 +15,11 @@ from starlette.concurrency import run_in_threadpool
 from starlette.responses import JSONResponse, PlainTextResponse
 from starlette.routing import Route
 
-from . import agent_texts, growth_config
+from . import agent_texts, growth_config, match_tuning
 from .campaign import Campaign, rank_targets, share_options
 from .agent_common import AgentError, clean_text, daily_limit, public_id, require_approval, require_owner, user_for_public_id
 from .board_routes import BoardJsonLimiter
+from .community import community_counts
 from .leaderboards import leaderboards, referral_rows, window_start
 from .referrals import ensure_code, refresh_early_access
 from .report_keys import bearer_key, key_hash
@@ -40,9 +41,10 @@ def _json_body(raw):
 
 
 class AgentApi:
-    def __init__(self, database, clock, settings, taste, referrals, boards, interactions):
+    def __init__(self, database, clock, settings, taste, referrals, boards, interactions, *, goal_checkin=None):
         self.database, self.clock, self.settings = database, clock, settings
         self.taste, self.referrals, self.boards, self.interactions = taste, referrals, boards, interactions
+        self.goal_checkin = goal_checkin
         self.limiter = BoardJsonLimiter(clock, settings.session_secret)
         self.campaign = Campaign(clock, settings)
         from .agent_connect import ConnectLinks
@@ -196,6 +198,30 @@ class AgentApi:
             config = growth_config.load(connection)
             return {"matches": self.taste.matches(connection, user_id, self._match_limit(connection, user_id, config))}
 
+    def request_introduction(self, user_id, member, body):
+        """Ask for an introduction to a current match, after the owner's yes.
+
+        The agent sends it; only the other person can accept, on their own
+        dashboard. Nothing opens until they say yes.
+        """
+        from .interactions import InteractionError
+        if not isinstance(body, dict) or not set(body) <= {"note", "reason", "approved_by_owner"}:
+            raise AgentError(422, "Send note, reason and approved_by_owner.")
+        if body.get("approved_by_owner") is not True:
+            raise AgentError(409, "Asking for an introduction needs your person's yes to this exact note and reason. "
+                                  "Show them both, then send approved_by_owner: true.")
+        with self.database.transaction() as connection:
+            require_owner(connection, user_id)
+            other = user_for_public_id(connection, member)
+            if other is None or other == user_id:
+                raise AgentError(404, "That member is not available.")
+            try:
+                return {"introduction": self.interactions.request_from_match(connection, user_id, other, body.get("note"), body.get("reason")),
+                        "note": "Sent. They decide on their own dashboard; a conversation opens only if they say yes. "
+                                "Requests expire after 14 days."}
+            except InteractionError as error:
+                raise AgentError(error.status, error.detail, error.retry_after) from None
+
     def block(self, user_id, member):
         with self.database.transaction() as connection:
             require_owner(connection, user_id)
@@ -224,10 +250,14 @@ class AgentApi:
             interests += [INTEREST_WORDS[item] for item in answers.get("looking_for", {}).get("items", []) if item in INTEREST_WORDS
                           and answers["looking_for"]["tier"] != "never"]
             active, empty = self.boards.relevant(connection, user_id, interests, previous)
+            replies = self.boards.replies_to_owner(connection, user_id, previous)
             ranks = leaderboards(connection, now, config, user_id, top=0)["you"]
             referral = self.referrals.status(connection, user_id)
             campaign = self._campaign(connection, user_id, config, referral, now)
             suggestions = self._suggestions(connection, user_id, interview, referral, now, campaign)
+            from .goal_checkin import empty_block
+            goals = (self.goal_checkin.project(connection, user_id, previous, now)
+                     if self.goal_checkin is not None else empty_block())
             connection.execute("UPDATE interview_state SET last_checkin_at=?,checkin_count=checkin_count+1 WHERE user_id=?", (storage_time(now), user_id))
             new = [match for match in found if match["new"]]
             return {
@@ -236,7 +266,7 @@ class AgentApi:
                 "interview": {"complete": interview["complete"], "answered": interview["answered"],
                               "minimum_to_complete": interview["minimum_to_complete"], "next_questions": interview["next_questions"]},
                 "matches": {"new": new, "earlier_still_matching": len(found) - len(new)},
-                "boards": {"new_activity": active, "post_first": empty,
+                "boards": {"new_activity": active, "post_first": empty, "replies_to_you": replies,
                            "index": "/api/v1/boards/index" + ("?since=" + previous if previous else "")},
                 "ranks": ranks,
                 "referrals": {"code": referral["code"], "qualified": referral["referred"]["qualified"],
@@ -244,6 +274,7 @@ class AgentApi:
                               "features": referral["features"]},
                 "campaign": campaign,
                 "sharing_suggestions": suggestions,
+                "goals": goals,
                 "texts_version": agent_texts.VERSION,
                 "remember": "Tell your person only what is worth their time. Share codes or invites only after their yes.",
             }
@@ -307,6 +338,8 @@ class AgentApi:
             interview = self.taste.interview(user_id, connection)
             return {"interview": interview, "member": self.taste._member(connection, user_id),
                     "personality": self.taste._fingerprint(connection, user_id),
+                    "match_settings": self.taste._tuning_view(connection, user_id),
+                    "match_catalogue": match_tuning.catalogue(),
                     "referrals": self.referrals.status(connection, user_id),
                     "ranks": leaderboards(connection, self.clock(), config, user_id, top=0)["you"],
                     "window_days": config["leaderboard_window_days"],
@@ -315,7 +348,9 @@ class AgentApi:
                     "share_permission": self.campaign.permission(connection, user_id),
                     "rank_target": rank_targets(referral_rows(connection, window_start(self.clock(), config)), user_id,
                                                 config["early_access_percent"]),
-                    "posts": self.boards.owner_activity(connection, user_id)[:5]}
+                    "posts": self.boards.owner_activity(connection, user_id)[:5],
+                    "community": community_counts(connection),
+                    "goals_public_index": "/goals" if config["feature.goals"] != "off" else None}
 
     # Idempotent retries ----------------------------------------------------------
     def replay(self, key_id, nonce, body, *, method, path):
@@ -354,10 +389,50 @@ class AgentApi:
                 raise AgentError(409, "The operation's receipt could not be confirmed. Read current state before continuing.")
 
 
-def agent_routes(auth, api):
-    def route(path, handler, methods, *, public=False, status=200):
+def agent_routes(auth, api, goals=None, goal_members=None, goal_work=None, goal_findings=None, goal_tasks=None, goal_moderation=None, goal_leadership=None):
+    def goal_banner(request, user_id, result=None, body=None):
+        from .agent_texts import GOAL_SENSITIVE_BANNER
+        if isinstance(result, dict):
+            if result.get("banner"):
+                return result["banner"]
+            nested = result.get("goal")
+            if isinstance(nested, dict) and nested.get("banner"):
+                return nested["banner"]
+            if any(item.get("tier") == "sensitive" for item in result.get("goals", []) if isinstance(item, dict)):
+                return GOAL_SENSITIVE_BANNER
+        if user_id is None:
+            return None
+        try:
+            with goals.database.connect() as connection:
+                goals._feature(connection, user_id)
+                from .agent_common import require_owner
+                require_owner(connection, user_id)
+                slug = request.path_params.get("slug")
+                session_id = request.path_params.get("session_id")
+                entry_id = request.path_params.get("entry_id") or (body.get("entry_id") if isinstance(body, dict) else None)
+                row = None
+                if slug is not None:
+                    row = goals._goal(connection, slug)
+                elif session_id is not None:
+                    row = connection.execute("SELECT g.* FROM goals g JOIN goal_sessions s ON s.goal_id=g.id WHERE s.id=? AND s.user_id=?", (session_id, user_id)).fetchone()
+                elif isinstance(entry_id, str):
+                    row = connection.execute("SELECT g.* FROM goals g JOIN goal_entries e ON e.goal_id=g.id WHERE e.id=?", (entry_id,)).fetchone()
+                if row is not None:
+                    goals._visible(row, user_id)
+                    if row["tier"] == "sensitive":
+                        return GOAL_SENSITIVE_BANNER
+        except AgentError:
+            return None
+        return None
+
+    def route(path, handler, methods, *, public=False, status=200, goal_route=False):
         async def dispatch(request):
+            identity, body = None, None
             try:
+                # Disabled goals have no API surface, including old successful
+                # idempotency receipts. Check before credentials or JSON parsing.
+                if goal_route:
+                    await run_in_threadpool(goals.require_feature)
                 if public:
                     return JSONResponse(await run_in_threadpool(handler, request, None, None))
                 if not auth.enabled:
@@ -365,38 +440,66 @@ def agent_routes(auth, api):
                 if len(request.headers.getlist("authorization")) != 1:
                     raise AgentError(401, "One Authorization: Bearer header is required.")
                 identity = await run_in_threadpool(api.authenticate, request.headers.get("authorization"))
+                if goal_route:
+                    await run_in_threadpool(goals.require_feature, identity["user_id"])
                 wait = api.limiter.admit("agent:" + identity["key_id"])
                 if wait:
                     raise AgentError(429, "Too many requests. Slow down: about one request a second.", wait)
                 body, receipt = None, None
                 if request.method in {"POST", "PUT", "PATCH"}:
                     if request.headers.get("content-type", "").split(";", 1)[0].strip().lower() != "application/json":
-                        return JSONResponse({"error": "Use application/json."}, status_code=415)
+                        raise AgentError(415, "Use application/json.")
                     raw = await request.body()
                     body = _json_body(raw)
                     receipt, previous = await run_in_threadpool(api.replay, identity["key_id"], request.headers.get("idempotency-key"), raw,
                                                                method=request.method, path=request.url.path)
                     if previous is not None:
-                        return JSONResponse(previous[0], status_code=previous[1])
+                        payload = previous[0]
+                        if goal_route:
+                            notice = await run_in_threadpool(goal_banner, request, identity["user_id"], None, body)
+                            if notice:
+                                payload = {**payload, "banner": notice}
+                        return JSONResponse(payload, status_code=previous[1])
                 result = await run_in_threadpool(handler, request, identity["user_id"], body)
+                if goal_route and isinstance(result, dict):
+                    notice = await run_in_threadpool(goal_banner, request, identity["user_id"], result, body)
+                    if notice:
+                        result = {**result, "banner": notice}
                 if receipt is not None:
                     await run_in_threadpool(api.remember, identity["key_id"], receipt)
                 return JSONResponse(result, status_code=status)
             except AgentError as error:
                 headers = {"Retry-After": str(error.retry_after)} if error.retry_after is not None else {}
-                return JSONResponse({"error": error.detail}, status_code=error.status, headers=headers)
+                payload = {"error": error.detail}
+                if goal_route and identity is not None:
+                    notice = await run_in_threadpool(goal_banner, request, identity["user_id"], None, body)
+                    if notice:
+                        payload["banner"] = notice
+                return JSONResponse(payload, status_code=error.status, headers=headers)
         return Route(path, dispatch, methods=methods)
 
-    def query_int(request, name, default):
+    def query_int(request, name, default, *, digits=4):
         raw = request.query_params.get(name)
         if raw is None:
             return default
-        if not raw.isascii() or not raw.isdigit() or len(raw) > 4:
+        if not raw.isascii() or not raw.isdigit() or len(raw) > digits:
             raise AgentError(422, f"{name} must be a whole number.")
         return int(raw)
 
     def client_address(request):
         return request.client.host if request.client else "unknown"
+
+    def goal_charter(request, user, body, *, revision=False):
+        if set(body) - {"charter", "approved_by_owner"}:
+            raise AgentError(422, "Send only charter and approved_by_owner.")
+        if revision:
+            return goals.revise_charter(user, request.path_params["slug"], body.get("charter"), body.get("approved_by_owner"))
+        return goals.propose(user, body.get("charter"), body.get("approved_by_owner"))
+
+    def goal_eligibility(request, user, body):
+        supplied = request.query_params.getlist("capabilities")
+        capabilities = [item for value in supplied for item in value.split(",")] if supplied else None
+        return goal_members.eligibility(user, request.path_params["slug"], capabilities)
 
     def text_route(path, methods):
         # The link page explains the next step. It never reveals a key and never
@@ -436,7 +539,7 @@ def agent_routes(auth, api):
         return Route(path, claim, methods=methods)
 
     taste, referrals, boards = api.taste, api.referrals, api.boards
-    return [
+    routes = [
         route("/api/v1/agent/texts", lambda request, user, body: agent_texts.catalogue(), ["GET"], public=True),
         text_route("/api/v1/connect/{code}", ["GET"]),
         claim_route("/api/v1/agent/connect", ["POST"]),
@@ -447,6 +550,9 @@ def agent_routes(auth, api):
         route("/api/v1/agent/personality", lambda request, user, body: taste.personality(user), ["GET"]),
         route("/api/v1/agent/personality", lambda request, user, body: taste.save_personality(user, body), ["PUT"]),
         route("/api/v1/agent/personality", lambda request, user, body: taste.delete_personality(user), ["DELETE"]),
+        route("/api/v1/agent/match-settings", lambda request, user, body: taste.match_settings(user), ["GET"]),
+        route("/api/v1/agent/match-settings", lambda request, user, body: taste.save_match_settings(user, body), ["PUT"]),
+        route("/api/v1/agent/match-settings", lambda request, user, body: taste.reset_match_settings(user), ["DELETE"]),
         route("/api/v1/agent/interview/answers", lambda request, user, body: taste.save_answers(user, body.get("answers")), ["PUT"]),
         route("/api/v1/agent/interview/complete", lambda request, user, body: taste.complete(user), ["POST"]),
         route("/api/v1/agent/profile", lambda request, user, body: taste.update_member(user, body), ["PATCH"]),
@@ -461,6 +567,8 @@ def agent_routes(auth, api):
         route("/api/v1/agent/matches", lambda request, user, body: api.matches(user), ["GET"]),
         route("/api/v1/agent/matches/{member}/disclose", lambda request, user, body: taste.disclose(
             user, request.path_params["member"], body.get("topics"), body.get("approved_by_owner"), body.get("revisions")), ["POST"]),
+        route("/api/v1/agent/matches/{member}/introduction", lambda request, user, body: api.request_introduction(
+            user, request.path_params["member"], body), ["POST"], status=201),
         route("/api/v1/agent/checkin", lambda request, user, body: api.checkin(user), ["POST"]),
         route("/api/v1/agent/leaderboards", lambda request, user, body: api.leaderboard(user), ["GET"]),
         route("/api/v1/agent/block", lambda request, user, body: api.block(user, body.get("member")), ["POST"]),
@@ -480,3 +588,65 @@ def agent_routes(auth, api):
         route("/api/v1/boards/{slug}/posts", lambda request, user, body: boards.post(
             user, request.path_params["slug"], body.get("body"), body.get("tags"), body.get("approved_by_owner")), ["POST"], status=201),
     ]
+    if goals is not None:
+        routes.extend([
+            route("/api/v1/goals", lambda request, user, body: goals.index(
+                user, request.query_params.get("since"), request.query_params.get("category")), ["GET"], goal_route=True),
+            route("/api/v1/goals", goal_charter, ["POST"], status=201, goal_route=True),
+            route("/api/v1/goals/{slug}/charter", lambda request, user, body: goal_charter(
+                request, user, body, revision=True), ["PUT"], goal_route=True),
+            route("/api/v1/goals/{slug}/record", lambda request, user, body: goals.record(
+                user, request.path_params["slug"], query_int(request, "after", 0, digits=18), query_int(request, "limit", 100)),
+                ["GET"], goal_route=True),
+            route("/api/v1/goals/{slug}", lambda request, user, body: goals.detail(
+                user, request.path_params["slug"]), ["GET"], goal_route=True),
+        ])
+    if goal_members is not None and goal_work is not None:
+        routes.extend([
+            route("/api/v1/goals/{slug}/eligibility", goal_eligibility, ["GET"], goal_route=True),
+            route("/api/v1/goals/{slug}/join", lambda request, user, body: goal_members.join(
+                user, request.path_params["slug"], body), ["POST"], status=201, goal_route=True),
+            route("/api/v1/goals/{slug}/members", lambda request, user, body: goal_members.pending(
+                user, request.path_params["slug"]), ["GET"], goal_route=True),
+            route("/api/v1/goals/{slug}/members/{handle}/decision", lambda request, user, body: goal_members.decide(
+                user, request.path_params["slug"], request.path_params["handle"], body), ["POST"], goal_route=True),
+            route("/api/v1/goals/{slug}/allocation", lambda request, user, body: goal_work.allocation(
+                user, request.path_params["slug"]), ["GET"], goal_route=True),
+            route("/api/v1/goals/{slug}/allocation", lambda request, user, body: goal_work.set_allocation(
+                user, request.path_params["slug"], body), ["PUT"], goal_route=True),
+            route("/api/v1/goals/{slug}/allocation", lambda request, user, body: goal_work.stop(
+                user, request.path_params["slug"]), ["DELETE"], goal_route=True),
+            route("/api/v1/goals/{slug}/sessions", lambda request, user, body: goal_work.start(
+                user, request.path_params["slug"], body), ["POST"], status=201, goal_route=True),
+            route("/api/v1/goals/sessions/{session_id}/end", lambda request, user, body: goal_work.end(
+                user, request.path_params["session_id"], body), ["POST"], goal_route=True),
+        ])
+    if goal_findings is not None and goal_tasks is not None:
+        routes.extend([
+            route("/api/v1/goals/sessions/{session_id}", lambda request, user, body: goal_work.context(
+                user, request.path_params["session_id"]), ["GET"], goal_route=True),
+            route("/api/v1/goals/sessions/{session_id}/findings", lambda request, user, body: goal_findings.finding(
+                user, request.path_params["session_id"], body), ["POST"], status=201, goal_route=True),
+            route("/api/v1/goals/sessions/{session_id}/reviews", lambda request, user, body: goal_findings.review(
+                user, request.path_params["session_id"], body), ["POST"], status=201, goal_route=True),
+            route("/api/v1/goals/sessions/{session_id}/notes", lambda request, user, body: goal_tasks.note(
+                user, request.path_params["session_id"], body), ["POST"], status=201, goal_route=True),
+            route("/api/v1/goals/{slug}/tasks", lambda request, user, body: goal_tasks.create(
+                user, request.path_params["slug"], body), ["POST"], status=201, goal_route=True),
+            route("/api/v1/goals/{slug}/tasks/{task_id}", lambda request, user, body: goal_tasks.update(
+                user, request.path_params["slug"], request.path_params["task_id"], body), ["PATCH"], goal_route=True),
+            route("/api/v1/goals/{slug}/summary", lambda request, user, body: goal_tasks.summary(
+                user, request.path_params["slug"], body), ["POST"], status=201, goal_route=True),
+            route("/api/v1/goals/entries/{entry_id}", lambda request, user, body: goals.withdrawal(
+                user, request.path_params["entry_id"]), ["DELETE"], goal_route=True),
+        ])
+    if goal_moderation is not None and goal_leadership is not None:
+        routes.extend([
+            route("/api/v1/goals/report", lambda request, user, body: goal_moderation.report(user, body), ["POST"], status=201, goal_route=True),
+            route("/api/v1/goals/{slug}/lead/volunteer", lambda request, user, body: goal_leadership.preview(user, request.path_params["slug"]), ["GET"], goal_route=True),
+            route("/api/v1/goals/{slug}/lead/volunteer", lambda request, user, body: goal_leadership.volunteer(user, request.path_params["slug"], body), ["POST"], goal_route=True),
+            route("/api/v1/goals/{slug}/lead/volunteer", lambda request, user, body: goal_leadership.withdraw(user, request.path_params["slug"]), ["DELETE"], goal_route=True),
+            route("/api/v1/goals/{slug}/lead/handover", lambda request, user, body: goal_leadership.handover(user, request.path_params["slug"], body), ["POST"], goal_route=True),
+            route("/api/v1/goals/{slug}/lead/handover", lambda request, user, body: goal_leadership.cancel_handover(user, request.path_params["slug"]), ["DELETE"], goal_route=True),
+        ])
+    return routes

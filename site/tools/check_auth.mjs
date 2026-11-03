@@ -103,7 +103,7 @@ try {
         const displayName = person[0].toUpperCase() + person.slice(1)
           + (scenario === "escaped-name" ? ' <script>alert("fixture")</script> Test' : " Test");
         check(`${name} ${mode}: signed-in account belongs to chosen fictional person`,
-          (await page.locator("h1").innerText()) === "Your dashboard."
+          (await page.locator("[data-dashboard-state]").count()) === 1
           && (await page.locator("body").innerText()).includes(displayName));
       }
       return { page, callbackURL: callback.url() };
@@ -163,7 +163,7 @@ try {
 
       const ownData = await context();
       const dataLogin = await login(ownData, "data", { scenario: "escaped-name" });
-      check(`${name}: identity display name is escaped text`, await dataLogin.page.locator("script").count() === 0
+      check(`${name}: identity display name is escaped text`, await dataLogin.page.locator("script:not([src])").count() === 0
             && (await dataLogin.page.locator("body").innerText()).includes('<script>alert("fixture")</script>'));
       await dataLogin.page.getByRole("link", { name: "Your data", exact: true }).click();
       await dataLogin.page.screenshot({ path: path.join(out, `account-data-${name}.png`), fullPage: true });

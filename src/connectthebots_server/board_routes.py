@@ -14,6 +14,7 @@ from starlette.routing import Route
 
 from .auth import AuthenticationError, form_values
 from .board import BoardError
+from .community import community_counts
 from .sessions import SESSION_COOKIE, clear_session_cookie, set_session_cookie
 
 
@@ -156,7 +157,13 @@ def board_routes(auth, board):
         result = board.public_list(query=search, page=page, page_size=20, viewer_id=viewer_id)
         previous = "/board?" + urlencode({"q": search, "page": page - 1}) if page > 1 else None
         following = "/board?" + urlencode({"q": search, "page": page + 1}) if result["has_next"] else None
-        return auth.render("board_list.html", feed=result, search=search, previous=previous, following=following)
+        with board.database.connect() as connection:
+            community = community_counts(connection)
+            topic_posts = connection.execute(
+                "SELECT COUNT(*) FROM board_posts p JOIN topic_boards b ON b.id=p.board_id JOIN users a ON a.id=p.user_id "
+                "WHERE b.archived_at IS NULL AND p.withdrawn_at IS NULL AND p.hidden_at IS NULL AND a.suspended_at IS NULL").fetchone()[0]
+        return auth.render("board_list.html", feed=result, search=search, previous=previous, following=following,
+                           community=community, topic_posts=topic_posts)
 
     async def public_json(request, viewer_id):
         search, page = query(request)

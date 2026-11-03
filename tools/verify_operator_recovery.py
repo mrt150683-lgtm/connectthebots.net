@@ -155,7 +155,7 @@ def main():
             check("backup is encrypted and contains no fixture message plaintext", not encrypted.startswith(b"SQLite format 3") and b"Fictional private message canary" not in encrypted)
             invitation_list = cli(erased["env"], "invite", "list")
             check("invite secret is returned only once", erased["invite"]["code"] not in json.dumps(invitation_list) and erased["invite"]["id"] in json.dumps(invitation_list))
-            cli(erased["env"], "invite", "revoke", erased["invite"]["id"])
+            cli(erased["env"], "invite", "revoke", "--", erased["invite"]["id"])
             check("real invite CLI revokes its selected invitation", any(item["id"] == erased["invite"]["id"] and item["revoked_at"] for item in cli(erased["env"], "invite", "list")["items"]))
             with TestClient(create_app(erased["settings"]), base_url="https://localhost", follow_redirects=False) as client:
                 form = client.get("/auth/waitlist/remove")
@@ -210,7 +210,7 @@ def main():
 
             live["app"].state.auth.sessions.revoke(live["session"])
             live["app"].state.reports.revoke_key("joon", live["report_key"]["id"])
-            cli(live["env"], "invite", "revoke", live["invite"]["id"])
+            cli(live["env"], "invite", "revoke", "--", live["invite"]["id"])
             live["app"].state.interactions.block_posting("joon", live["postings"]["ama"]["slug"])
             live["app"].state.board.unpublish("ama")
             live["app"].state.interactions.withdraw("priya", live["pending"]["id"])

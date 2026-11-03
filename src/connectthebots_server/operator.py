@@ -112,6 +112,8 @@ class OperatorService:
             self._user(connection, user_id)
             now = storage_time(self.clock())
             connection.execute("UPDATE users SET suspended_at=COALESCE(suspended_at,?) WHERE id=?", (now, user_id))
+            from .goal_sessions import revoke_owner
+            revoke_owner(connection, user_id, self.clock(), "suspension")
             connection.execute("DELETE FROM sessions WHERE user_id=?", (user_id,))
             connection.execute("UPDATE report_keys SET revoked_at=COALESCE(revoked_at,?) WHERE user_id=?", (now, user_id))
             posting = connection.execute("SELECT slug FROM board_postings WHERE user_id=?", (user_id,)).fetchone()

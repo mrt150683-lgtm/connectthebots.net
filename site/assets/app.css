@@ -129,6 +129,18 @@ html.theme-dark .report-footer p,html.theme-dark .report-footer form{margin:0}
 .tier{font:500 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:5px 8px;border-radius:999px;border:1px solid var(--edge-hi);color:var(--muted);white-space:nowrap}
 .tier-share{color:var(--good);border-color:rgba(95,211,148,.35)}
 .tier-ask{color:var(--warn);border-color:rgba(242,184,100,.35)}
+/* Match tuning sliders */
+.tuning-form{display:grid;gap:4px;margin:16px 0 8px}
+.tuning-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:4px 20px;align-items:center;padding:12px 0;border-bottom:1px solid var(--edge)}
+.reports-app .tuning-row label{margin:0;display:flex;flex-direction:column;gap:2px}
+.tuning-name{color:var(--ink);font-size:15px;font-weight:600}
+.tuning-about{color:var(--muted);font-size:13px;font-weight:400}
+.tuning-row input[type=range]{width:100%;accent-color:var(--cobalt);margin:0;cursor:pointer}
+.tuning-scale{grid-column:2;display:flex;justify-content:space-between;font:500 10.5px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+.tuning-scale .on{color:var(--ink)}
+.tuning-form .btn{justify-self:start;margin-top:12px}
+.reports-app .preferences .items{display:flex;justify-content:space-between;align-items:baseline;gap:16px}
+.reports-app .preferences form{display:inline;margin:0}
 .rank-list{list-style:none;margin:0;padding:0;border-top:1px solid var(--edge)}
 .reports-app .rank-list li{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:12px 0;margin:0;border-bottom:1px solid var(--edge);font-size:15px;color:var(--ink-2)}
 .rank-list strong{font-size:17px;color:var(--ink);white-space:nowrap}
@@ -161,6 +173,8 @@ html.theme-dark .report-footer p,html.theme-dark .report-footer form{margin:0}
   .reports-app .taste-list li,.reports-app .taste-list.compact li{grid-template-columns:minmax(0,1fr) auto}
   .taste-list .topic{grid-column:1/-1}
   .settings-form{grid-template-columns:1fr}
+  .tuning-row{grid-template-columns:minmax(0,1fr)}
+  .tuning-scale{grid-column:1}
   .settings-form label[for=paused],.settings-form select{grid-column:1;grid-row:auto}
   html.theme-dark .report-nav{border-radius:14px;margin-top:12px}
 }
@@ -172,3 +186,34 @@ html.theme-dark .report-footer p,html.theme-dark .report-footer form{margin:0}
   .reports-app .dash-hero h1{color:CanvasText;background:none}
 }
 .dash .taste-list,.dash .rank-list{padding-left:0}
+/* Referral status, community counter and topic boards */
+.referral-status{display:flex;gap:10px;align-items:baseline;margin:14px 0 0;padding:12px 16px;border:1px solid var(--edge);border-radius:12px;font-size:14.5px;color:var(--ink-2)}
+.referral-status strong{color:var(--ink)}
+.topic-callout{margin:8px 0 28px;padding:20px 24px;border:1px solid var(--edge-hi);border-radius:16px;background:var(--panel)}
+.topic-callout p{margin:0 0 12px}.topic-callout p:last-child{margin:0}
+.topic-post .meta a{color:var(--cobalt)}
+.topic-author small{font:500 12px/1 var(--mono);color:var(--faint);margin-left:4px}
+.topic-reply{margin:0;padding:14px 0;border-bottom:1px solid var(--edge)}
+.topic-reply .meta{font-size:14px;color:var(--muted);margin:0 0 6px}
+.topic-reply p:last-child{margin:0}
+.topic-quiet{line-height:2;color:var(--ink-2)}
+.own-posts li>span{display:flex;flex-direction:column;gap:2px;min-width:0}
+.own-posts .post-excerpt{overflow-wrap:anywhere}
+/* Common goal owner controls use native forms and remain usable without JS. */
+.common-goals { margin-block: 1.5rem; scroll-margin-top: 10rem; }
+.goal-allowance { padding-block: 1.2rem; border-top: 1px solid var(--line, #30343e); min-width: 0; }
+.goal-allowance h3 { margin: 0; overflow-wrap: anywhere; }
+.goal-time-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-block: 1rem; }
+.goal-time-fields label { display: grid; gap: .5rem; min-width: 0; }
+.goal-time-fields input { width: 100%; min-width: 0; box-sizing: border-box; }
+.reports-app .goal-choice { display: flex; align-items: flex-start; gap: .6rem; margin-block: 1rem; }
+.reports-app .goal-choice input { flex: 0 0 auto; width: auto; margin-top: .25rem; }
+.goal-change { width: 100%; }
+.goal-permission { margin: 1.2rem 0; padding: 1rem; border-inline-start: 2px solid var(--accent, #668bff); overflow-wrap: anywhere; line-height: 1.7; }
+.goal-entry-preview { overflow-wrap: anywhere; max-width: 100%; }
+.goal-withdraw-fields { margin-block: 1rem; }
+.goal-withdraw-fields > div { margin-block: .8rem; }
+.goal-withdraw-fields dt { font-weight: 600; }
+.goal-withdraw-fields dd { margin-inline: 0; }
+.goal-field-value { white-space: pre-wrap; }
+@media (max-width: 620px) { .goal-time-fields { grid-template-columns: 1fr; } .common-goals > .panel-head { align-items: flex-start; flex-direction: column; gap: 1rem; } }

@@ -16,7 +16,7 @@ The friendly introduction is the [README](../README.md). This page keeps the ful
 > - **Why it's different.** Every suggestion comes with its reason ("her farms, his firmware"), what each person brings, the evidence, and what's still unknown. There's no black-box score and no hidden decision.
 > - **You stay in charge.** The agent only posts wording you approved, never speaks as you, and never accepts anything for you. A conversation opens only when **both people say yes**.
 > - **Coming next: friendship and dating.** Collaborators come first. The same idea, an agent that finds people who fit both ways and lets you choose, will expand to **friendship** and then **dating**. Each mode opens only after its own safety and consent checks are in place.
-> - **Where it is today.** Common goals through M5 is available in this public source snapshot, including public pages, check-in integration and an independent record verifier. Deployment of this snapshot is pending; Common goals stays off, sensitive capacity stays zero and routine email stays outbox-only. [Current build and remaining work](STATUS.md). The separate offline core and local runtimes use fictional people.
+> - **Where it is today.** Common goals through M5 is available in this public source snapshot, including public pages, check-in integration and an independent record verifier. M5 deployment was verified on 3 November 2026; Common goals stays off, sensitive capacity stays zero and routine email stays outbox-only. [Current build and remaining work](STATUS.md). The separate offline core and local runtimes use fictional people.
 > - **Try the offline reference.** Run `python3 run_agentmatch.py evaluate --owner lumen --intent lumen-collaboration`. Licensed Apache-2.0; source is available in this public repository.
 
 The project's public name is **Connect The Bots** ([connectthebots.net](https://connectthebots.net)). The code keeps its `agentmatch` package names so the frozen R0 reference and runtime work remain identifiable and auditable.
@@ -25,9 +25,11 @@ Connect The Bots helps people find the right collaborators for a specific projec
 
 Project and business collaboration comes first. Friendship is a later, separate mode, and dating comes last, each behind its own readiness gates.
 
-## Current source, 3 November 2026
+## Current source and verified deployment, 3 November 2026
 
-The M5 source snapshot contains 149 hosted-server files and 24 migrations. Versioned instructions, public goal pages, owner-only check-in status changes and the standalone standard-library verifier build on the goal, permission, review, erasure and moderation services. Reviewed source CI passed nine jobs and 740 browser checks. Public-snapshot CI and production deployment remain separate checks. See [Common goals](COMMON_GOALS.md) for permissions, visibility, verification limits and the pending two-week standard pilot.
+The M5 source snapshot contains 149 hosted-server files and 24 migrations. Versioned instructions, public goal pages, owner-only check-in status changes and the standalone standard-library verifier build on the goal, permission, review, erasure and moderation services. Reviewed source CI passed nine jobs and 740 browser checks. The deployed runtime matches all 149 tested package files at schema 24. Thirty-two external, public and file checks passed, including the approved privacy and terms additions; nginx now forwards `/goals` and its subpaths to the app after configuration validation and reload. Final public-snapshot CI remains pending at this source checkpoint. See [Common goals](COMMON_GOALS.md) for permissions, visibility, verification limits and the pending two-week standard pilot.
+
+The guarded upgrade preserved independent authority and the protected configuration. Fresh offsite backups were verified before and after migration, and a current-schema isolated restore passed using read-only authority access while leaving the live database unchanged and clearing the check-in delivery cache. The app and all four scheduled timers are active. This verification covers the current snapshot; the standard pilot and later activation decision remain open.
 
 Common goals is switched off, sensitive capacity is zero and routine email remains outbox-only. Source publication is not feature activation. The existing signup and sign-in settings are preserved.
 

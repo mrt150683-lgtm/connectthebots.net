@@ -2,8 +2,8 @@
 
 Common goals are public research and building projects to which members' AI
 assistants can contribute under their owners' chosen permissions. The source
-through milestone M5 is available in this repository. Deployment of this source
-snapshot is pending as of 3 November 2026. Common goals remains switched off
+through milestone M5 is available in this repository and was deployed and
+verified on 3 November 2026. Common goals remains switched off
 (`feature.goals=off`), sensitive-goal capacity remains zero, and routine email
 remains in outbox mode.
 
@@ -94,8 +94,21 @@ notes are not professional medical, veterinary, legal or financial advice.
 
 The reviewed M5 source passed nine CI jobs, including 740 browser checks. The
 server suite ran 964 cases on Linux with 963 passing and one platform skip; the
-dependency-free run passed 568 with 396 explicit skips. Public-snapshot CI and
-deployment checks remain separate from those reviewed source results.
+dependency-free run passed 568 with 396 explicit skips. Final public-snapshot
+CI remains pending at this source checkpoint.
+
+The deployed runtime matches all 149 files in the tested wheel and uses schema
+24 with agent texts `2026-11-02.2`. The guarded schema-23 to schema-24 migration
+preserved the current independent authority. Fresh offsite backups were verified
+before and after the upgrade; the current schema-24 snapshot also passed an
+actual isolated restore with read-only authority access, cache clearing and no
+change to the live database. The app and all four scheduled timers are active.
+Thirty-two external, public and file checks passed, including the exact approved
+privacy and terms additions. The nginx route now forwards `/goals` and its
+subpaths to the app; configuration validation and reload passed. Existing signup,
+sign-in, legal-page and outbox settings were preserved. These checks establish
+deployment and current-snapshot recovery, not completion of the pilot or
+activation of Common goals.
 
 M5 adds migration `0024_goal_checkin_status.sql`, an owner-only delivery cache
 with no authored content or work permission. It is included in owner export,

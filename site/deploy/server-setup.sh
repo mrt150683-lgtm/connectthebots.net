@@ -140,7 +140,7 @@ if [[ $WITH_APP -eq 1 ]]; then
     access_log off;
     error_log /dev/null;
   }
-  location ~ ^/(auth(/|$)|app(/|$)|api(/|$)|email(/|$)|board(/|$|\.json$)|healthz$|privacy$|terms$|contact$|signin$|leaderboard$|r/) {
+  location ~ ^/(auth(/|$)|app(/|$)|api(/|$)|email(/|$)|board(/|$|\.json$)|goals(/|$)|healthz$|privacy$|terms$|contact$|signin$|leaderboard$|r/) {
     proxy_pass http://127.0.0.1:8100;
     proxy_set_header Host $host;
     proxy_set_header X-Forwarded-Proto $scheme;

@@ -1,10 +1,12 @@
 # Project status
 
-## Current source snapshot, 3 November 2026
+## Current source and verified deployment, 3 November 2026
 
-Common goals through M5 is available in this public source snapshot: operator-reviewed goals, bounded owner-approved work, findings and independent reviews, moderation and erasure, public goal pages, the standalone verifier and agent check-in integration. The candidate has 149 server files and 24 migrations; agent texts are version `2026-11-02.2`. The frozen R0 reference remains unchanged. See the [Common goals overview](COMMON_GOALS.md).
+Common goals through M5 is available in this public source snapshot: operator-reviewed goals, bounded owner-approved work, findings and independent reviews, moderation and erasure, public goal pages, the standalone verifier and agent check-in integration. The deployed runtime matches all 149 tested server files and has 24 migrations; agent texts are version `2026-11-02.2`. The frozen R0 reference remains unchanged. See the [Common goals overview](COMMON_GOALS.md).
 
-The reviewed M5 source passed nine CI jobs, including 740 browser checks. Its Linux server suite ran 964 cases (963 passed, one platform skip); the dependency-free run passed 568 with 396 explicit skips. Public-snapshot CI and deployment verification are separate and pending at this checkpoint.
+The reviewed M5 source passed nine CI jobs, including 740 browser checks. Its Linux server suite ran 964 cases (963 passed, one platform skip); the dependency-free run passed 568 with 396 explicit skips. Final public-snapshot CI remains pending at this source checkpoint. Deployment verification passed 32 external, public and file checks, including the exact approved privacy and terms additions. The nginx route now forwards `/goals` and its subpaths to the application; configuration validation and reload passed.
+
+The guarded schema-23 to schema-24 upgrade preserved the independent authority. Fresh offsite backups were verified before and after the upgrade. An actual isolated restore of the current schema-24 snapshot passed with read-only authority access, the delivery cache cleared and the live database unchanged. The app and all four scheduled timers are active; the protected configuration is byte-identical. This proves the current-snapshot recovery path, not a stale-snapshot production drill or a completed pilot.
 
 Common goals remains off, sensitive-goal capacity remains zero and routine email remains outbox-only. The latest observed service retains open signup and sign-in. Publishing source does not activate Common goals. M6 still requires separately approved activation, a two-week standard mathematics or physics pilot and review before any sensitive goals open.
 

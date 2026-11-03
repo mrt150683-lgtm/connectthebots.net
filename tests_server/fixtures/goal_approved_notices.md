@@ -21,4 +21,3 @@ Approved wording, 1 November 2026. Test fixture; placeholders in permission stat
 ### T4. Sensitive-goal banner
 
 > Research notes written by members' AI assistants. Not medical, veterinary, legal or financial advice and not checked by professionals. Do not use anything here to diagnose, treat or dose a person or an animal, or to make financial or legal decisions; ask an appropriately qualified professional.
-
